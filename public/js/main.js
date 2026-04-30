@@ -1,8 +1,6 @@
 /* uwu proxy — main.js (Scramjet + Epoxy) */
 
-import { ScramjetController } from "/scram/scramjet.bundle.js";
-import { BareMuxConnection }   from "/baremux/index.mjs";
-
+/* globals loaded via <script> tags: Ultraviolet, __uv$config */
 const VERSION = "1.0.0";
 
 // ── Data ────────────────────────────────
@@ -52,77 +50,29 @@ const APPS = [
   { name: "CodePen",     url: "https://codepen.io/",            tag: "dev",          category: "dev",          desc: "Front-end playground",       bg: "#1e1f26" },
 ];
 
-const WISP_SERVERS = [
-  "wss://wisp.mercuryworkshop.dev/",
-  "wss://anura.pro/wisp/",
-  "wss://wisp.dyn.nu/",
-];
 const QUICK_GAMES = GAMES.slice(0, 6);
 const QUICK_APPS  = APPS.slice(0, 6);
 
-let proxyReady   = false;
-let controller   = null;
+let proxyReady = false;
 
 // ── Proxy init ───────────────────────────
 async function initProxy() {
+  if (!("serviceWorker" in navigator)) { setProxyStatus("error", "unsupported"); return; }
   try {
-    // Set up bare-mux transport → Epoxy → try each Wisp server until one connects
-    const conn = new BareMuxConnection("/baremux/worker.js");
-    let transportSet = false;
-    for (const wisp of WISP_SERVERS) {
-      try {
-        await conn.setTransport("/epoxy/index.mjs", [{ wisp }]);
-        console.log("transport set:", wisp);
-        transportSet = true;
-        break;
-      } catch {
-        console.warn("wisp failed:", wisp);
-      }
-    }
-    if (!transportSet) throw new Error("all Wisp servers failed");
+    await navigator.serviceWorker.register("/sw.js", { scope: "/" });
 
-    // Create Scramjet controller
-    controller = new ScramjetController({
-      prefix: "/service/",
-      files: {
-        wasm:   "/scram/scramjet.wasm.wasm",
-        sync:   "/scram/scramjet.sync.js",
-        worker: "/scram/scramjet.bundle.js",
-      },
-    });
-
-    // Register SW as ES module (sw.js uses import syntax, requires type: module)
-    const reg = await navigator.serviceWorker.register("/sw.js", {
-      scope: "/",
-      type: "module",
-    });
-
-    // Wait for SW to activate
-    const sw = reg.installing || reg.waiting || reg.active;
-    if (sw && sw.state !== "activated") {
-      await new Promise(resolve => {
-        sw.addEventListener("statechange", function h() {
-          if (this.state === "activated") { this.removeEventListener("statechange", h); resolve(); }
-        });
-      });
-    }
-
-    // Wait for SW to control this page
     if (!navigator.serviceWorker.controller) {
       await Promise.race([
         new Promise(resolve => navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true })),
-        new Promise(resolve => setTimeout(resolve, 3000)),
+        new Promise(resolve => setTimeout(resolve, 4000)),
       ]);
     }
-
-    // Connect controller to the running SW
-    await controller.init();
 
     proxyReady = true;
     setProxyStatus("active", "proxy active");
     document.getElementById("search-btn")?.removeAttribute("disabled");
   } catch (err) {
-    console.error("Proxy init failed:", err);
+    console.error("proxy init failed:", err);
     setProxyStatus("error", "proxy error");
   }
 }
@@ -145,7 +95,7 @@ function navigate(rawUrl) {
   }
   if (!proxyReady || !controller) { toast("proxy still loading.", "error"); return; }
   addRecent(url);
-  window.location.href = controller.encodeUrl(url);
+  window.location.href = __uv$config.prefix + __uv$config.encodeUrl(url);
 }
 
 function handleSearch(raw) {
