@@ -78,11 +78,14 @@ async function initProxy() {
 
     await controller.init("/sw.js");
 
-    // Wait until the SW is actually controlling this page
+    // Wait until the SW is controlling, with a 5s timeout fallback
     if (!navigator.serviceWorker.controller) {
-      await new Promise(resolve => {
-        navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true });
-      });
+      await Promise.race([
+        new Promise(resolve => {
+          navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true });
+        }),
+        new Promise(resolve => setTimeout(resolve, 5000)),
+      ]);
     }
 
     proxyReady = true;

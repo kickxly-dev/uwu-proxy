@@ -158,6 +158,15 @@ img { display: block; max-width: 100%; }
   font-weight: 400;
   margin-left: 2px;
 }
+.nav-credit {
+  font-family: var(--ff-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--dim);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  order: -1;
+}
 
 .nav-links {
   display: flex;
