@@ -215,17 +215,7 @@
 
 <div class="toast-container" id="toast-container"></div>
 
-<script src="/uv/uv.bundle.js"></script>
-<script src="/uv/uv.config.js"></script>
 <script src="/js/main.js" type="module"></script>
-<script>
-  // mirror version into footer
-  document.addEventListener("DOMContentLoaded", () => {
-    const v = document.getElementById("version-tag")?.textContent || "";
-    const f = document.getElementById("footer-version");
-    if (f) f.textContent = v;
-  });
-</script>
 
 </body>
 </html>

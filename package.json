@@ -1,18 +1,18 @@
 {
   "name": "uwu-proxy",
   "version": "1.0.0",
-  "description": "your cute gateway to the internet ✨",
+  "description": "browse freely.",
   "type": "module",
-  "main": "server.js",
   "scripts": {
+    "build": "node scripts/setup.js",
+    "postinstall": "node scripts/setup.js",
     "start": "node server.js",
-    "dev": "node --watch server.js",
-    "setup": "node scripts/setup.js",
-    "postinstall": "node scripts/setup.js"
+    "dev": "node --watch server.js"
   },
   "dependencies": {
-    "@titaniumnetwork-dev/ultraviolet": "^2.0.0",
-    "@tomphttp/bare-server-node": "^2.0.3",
+    "@mercuryworkshop/bare-mux": "^2.1.9",
+    "@mercuryworkshop/epoxy-transport": "^3.0.1",
+    "@mercuryworkshop/scramjet": "^1.1.0",
     "express": "^4.18.2"
   }
 }

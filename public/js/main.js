@@ -1,67 +1,101 @@
-/* uwu proxy — main.js */
+/* uwu proxy — main.js (Scramjet + Epoxy) */
+
+import { ScramjetController } from "/scram/scramjet.bundle.js";
+import { BareMuxConnection }   from "/baremux/index.mjs";
 
 const VERSION = "1.0.0";
 
 // ── Data ────────────────────────────────
 const GAMES = [
-  { name: "Slope",          url: "https://slope-game.github.io/",                       tag: "action",  category: "action",  desc: "Roll a ball down an endless slope"       },
-  { name: "Retro Bowl",     url: "https://retrobowl.io/",                               tag: "casual",  category: "casual",  desc: "Lead your team to victory"               },
-  { name: "Cookie Clicker", url: "https://orteil.dashnet.org/cookieclicker/",            tag: "casual",  category: "casual",  desc: "Click cookies, build an empire"          },
-  { name: "2048",           url: "https://play2048.co/",                                tag: "puzzle",  category: "puzzle",  desc: "Slide tiles to reach 2048"               },
-  { name: "Wordle",         url: "https://www.nytimes.com/games/wordle/index.html",     tag: "puzzle",  category: "puzzle",  desc: "Guess the 5-letter word"                 },
-  { name: "Minecraft",      url: "https://classic.minecraft.net/",                      tag: "classic", category: "classic", desc: "Classic Minecraft in your browser"       },
-  { name: "Shell Shockers", url: "https://shellshock.io/",                              tag: "action",  category: "action",  desc: "Egg-based FPS battle royale"             },
-  { name: "Krunker",        url: "https://krunker.io/",                                 tag: "action",  category: "action",  desc: "Fast-paced browser FPS"                  },
-  { name: "Slither.io",     url: "https://slither.io/",                                 tag: "io",      category: "io",      desc: "Grow your snake, eat everything"         },
-  { name: "Agar.io",        url: "https://agar.io/",                                    tag: "io",      category: "io",      desc: "Eat cells, grow massive"                 },
-  { name: "Paper.io",       url: "https://paper-io.com/",                               tag: "io",      category: "io",      desc: "Claim territory on the map"              },
-  { name: "Skribbl.io",     url: "https://skribbl.io/",                                 tag: "io",      category: "io",      desc: "Draw and guess with friends"             },
-  { name: "Chess.com",      url: "https://chess.com/",                                  tag: "classic", category: "classic", desc: "Play chess online"                       },
-  { name: "Tetris",         url: "https://tetris.com/play-tetris",                      tag: "classic", category: "classic", desc: "The original block stacker"              },
-  { name: "GeoGuessr",      url: "https://www.geoguessr.com/",                          tag: "casual",  category: "casual",  desc: "Guess where you are in the world"        },
-  { name: "Blooket",        url: "https://blooket.com/",                                tag: "puzzle",  category: "puzzle",  desc: "Study games and quizzes"                 },
-  { name: "Kahoot",         url: "https://kahoot.com/",                                 tag: "puzzle",  category: "puzzle",  desc: "Live quiz games"                         },
-  { name: "1v1.LOL",        url: "https://1v1.lol/",                                   tag: "action",  category: "action",  desc: "Build and battle in real-time"           },
-  { name: "Little Alchemy",  url: "https://littlealchemy2.com/",                        tag: "puzzle",  category: "puzzle",  desc: "Combine elements to make new things"     },
-  { name: "Among Us",       url: "https://www.innersloth.com/games/among-us/",          tag: "casual",  category: "casual",  desc: "Find the impostor"                       },
+  { name: "Slope",          url: "https://slope-game.github.io/",                    tag: "action",  category: "action",  desc: "Roll a ball down an endless slope"    },
+  { name: "Retro Bowl",     url: "https://retrobowl.io/",                            tag: "casual",  category: "casual",  desc: "Lead your team to victory"            },
+  { name: "Cookie Clicker", url: "https://orteil.dashnet.org/cookieclicker/",        tag: "casual",  category: "casual",  desc: "Click cookies, build an empire"       },
+  { name: "2048",           url: "https://play2048.co/",                             tag: "puzzle",  category: "puzzle",  desc: "Slide tiles to reach 2048"            },
+  { name: "Wordle",         url: "https://www.nytimes.com/games/wordle/index.html",  tag: "puzzle",  category: "puzzle",  desc: "Guess the 5-letter word"              },
+  { name: "Minecraft",      url: "https://classic.minecraft.net/",                  tag: "classic", category: "classic", desc: "Classic Minecraft in your browser"    },
+  { name: "Shell Shockers", url: "https://shellshock.io/",                          tag: "action",  category: "action",  desc: "Egg-based FPS battle royale"          },
+  { name: "Krunker",        url: "https://krunker.io/",                             tag: "action",  category: "action",  desc: "Fast-paced browser FPS"               },
+  { name: "Slither.io",     url: "https://slither.io/",                             tag: "io",      category: "io",      desc: "Grow your snake, eat everything"      },
+  { name: "Agar.io",        url: "https://agar.io/",                                tag: "io",      category: "io",      desc: "Eat cells, grow massive"              },
+  { name: "Paper.io",       url: "https://paper-io.com/",                           tag: "io",      category: "io",      desc: "Claim territory on the map"           },
+  { name: "Skribbl.io",     url: "https://skribbl.io/",                             tag: "io",      category: "io",      desc: "Draw and guess with friends"          },
+  { name: "Chess.com",      url: "https://chess.com/",                              tag: "classic", category: "classic", desc: "Play chess online"                    },
+  { name: "Tetris",         url: "https://tetris.com/play-tetris",                  tag: "classic", category: "classic", desc: "The original block stacker"           },
+  { name: "GeoGuessr",      url: "https://www.geoguessr.com/",                      tag: "casual",  category: "casual",  desc: "Guess where you are in the world"     },
+  { name: "Blooket",        url: "https://blooket.com/",                            tag: "puzzle",  category: "puzzle",  desc: "Study games and quizzes"              },
+  { name: "Kahoot",         url: "https://kahoot.com/",                             tag: "puzzle",  category: "puzzle",  desc: "Live quiz games"                      },
+  { name: "1v1.LOL",        url: "https://1v1.lol/",                               tag: "action",  category: "action",  desc: "Build and battle in real-time"        },
+  { name: "Little Alchemy",  url: "https://littlealchemy2.com/",                   tag: "puzzle",  category: "puzzle",  desc: "Combine elements to make new things"  },
+  { name: "Among Us",       url: "https://www.innersloth.com/games/among-us/",      tag: "casual",  category: "casual",  desc: "Find the impostor"                    },
 ];
 
 const APPS = [
-  { name: "YouTube",     url: "https://youtube.com/",             tag: "media",        category: "media",        desc: "Watch & stream videos",         bg: "#ff0000" },
-  { name: "Netflix",     url: "https://netflix.com/",             tag: "media",        category: "media",        desc: "Movies & TV shows",             bg: "#e50914" },
-  { name: "Spotify",     url: "https://open.spotify.com/",        tag: "media",        category: "media",        desc: "Stream music & podcasts",       bg: "#1db954" },
-  { name: "Discord",     url: "https://discord.com/app",          tag: "social",       category: "social",       desc: "Chat with your server",         bg: "#5865f2" },
-  { name: "Instagram",   url: "https://instagram.com/",           tag: "social",       category: "social",       desc: "Photos & reels",                bg: "#e1306c" },
-  { name: "Twitter / X", url: "https://x.com/",                   tag: "social",       category: "social",       desc: "What's happening",              bg: "#000000" },
-  { name: "Reddit",      url: "https://reddit.com/",              tag: "social",       category: "social",       desc: "Front page of the internet",    bg: "#ff4500" },
-  { name: "TikTok",      url: "https://www.tiktok.com/",          tag: "social",       category: "social",       desc: "Short-form video",              bg: "#010101" },
-  { name: "ChatGPT",     url: "https://chatgpt.com/",             tag: "ai",           category: "ai",           desc: "AI assistant by OpenAI",        bg: "#10a37f" },
-  { name: "Claude",      url: "https://claude.ai/",               tag: "ai",           category: "ai",           desc: "AI by Anthropic",               bg: "#d97706" },
-  { name: "Gemini",      url: "https://gemini.google.com/",       tag: "ai",           category: "ai",           desc: "AI by Google",                  bg: "#4285f4" },
-  { name: "Perplexity",  url: "https://perplexity.ai/",           tag: "ai",           category: "ai",           desc: "AI-powered search",             bg: "#20b2aa" },
-  { name: "Google",      url: "https://google.com/",              tag: "productivity", category: "productivity",  desc: "Search the web",                bg: "#4285f4" },
-  { name: "Gmail",       url: "https://mail.google.com/",         tag: "productivity", category: "productivity",  desc: "Email by Google",               bg: "#ea4335" },
-  { name: "Google Docs", url: "https://docs.google.com/",         tag: "productivity", category: "productivity",  desc: "Write & collaborate",           bg: "#4285f4" },
-  { name: "Notion",      url: "https://notion.so/",               tag: "productivity", category: "productivity",  desc: "Notes, docs & wikis",           bg: "#ffffff" },
-  { name: "Canva",       url: "https://canva.com/",               tag: "productivity", category: "productivity",  desc: "Design anything",               bg: "#00c4cc" },
-  { name: "GitHub",      url: "https://github.com/",              tag: "dev",          category: "dev",           desc: "Code & collaborate",            bg: "#24292f" },
-  { name: "Replit",      url: "https://replit.com/",              tag: "dev",          category: "dev",           desc: "Code in the browser",           bg: "#f26207" },
-  { name: "CodePen",     url: "https://codepen.io/",              tag: "dev",          category: "dev",           desc: "Front-end playground",          bg: "#1e1f26" },
+  { name: "YouTube",     url: "https://youtube.com/",           tag: "media",        category: "media",       desc: "Watch & stream videos",       bg: "#ff0000" },
+  { name: "Netflix",     url: "https://netflix.com/",           tag: "media",        category: "media",       desc: "Movies & TV shows",           bg: "#e50914" },
+  { name: "Spotify",     url: "https://open.spotify.com/",      tag: "media",        category: "media",       desc: "Stream music & podcasts",     bg: "#1db954" },
+  { name: "Discord",     url: "https://discord.com/app",        tag: "social",       category: "social",      desc: "Chat with your server",       bg: "#5865f2" },
+  { name: "Instagram",   url: "https://instagram.com/",         tag: "social",       category: "social",      desc: "Photos & reels",              bg: "#e1306c" },
+  { name: "Twitter / X", url: "https://x.com/",                 tag: "social",       category: "social",      desc: "What's happening",            bg: "#000000" },
+  { name: "Reddit",      url: "https://reddit.com/",            tag: "social",       category: "social",      desc: "Front page of the internet",  bg: "#ff4500" },
+  { name: "TikTok",      url: "https://www.tiktok.com/",        tag: "social",       category: "social",      desc: "Short-form video",            bg: "#010101" },
+  { name: "ChatGPT",     url: "https://chatgpt.com/",           tag: "ai",           category: "ai",          desc: "AI assistant by OpenAI",      bg: "#10a37f" },
+  { name: "Claude",      url: "https://claude.ai/",             tag: "ai",           category: "ai",          desc: "AI by Anthropic",             bg: "#d97706" },
+  { name: "Gemini",      url: "https://gemini.google.com/",     tag: "ai",           category: "ai",          desc: "AI by Google",                bg: "#4285f4" },
+  { name: "Perplexity",  url: "https://perplexity.ai/",         tag: "ai",           category: "ai",          desc: "AI-powered search",           bg: "#20b2aa" },
+  { name: "Google",      url: "https://google.com/",            tag: "productivity", category: "productivity", desc: "Search the web",             bg: "#4285f4" },
+  { name: "Gmail",       url: "https://mail.google.com/",       tag: "productivity", category: "productivity", desc: "Email by Google",            bg: "#ea4335" },
+  { name: "Google Docs", url: "https://docs.google.com/",       tag: "productivity", category: "productivity", desc: "Write & collaborate",        bg: "#4285f4" },
+  { name: "Notion",      url: "https://notion.so/",             tag: "productivity", category: "productivity", desc: "Notes, docs & wikis",        bg: "#ffffff" },
+  { name: "Canva",       url: "https://canva.com/",             tag: "productivity", category: "productivity", desc: "Design anything",            bg: "#00c4cc" },
+  { name: "GitHub",      url: "https://github.com/",            tag: "dev",          category: "dev",          desc: "Code & collaborate",         bg: "#24292f" },
+  { name: "Replit",      url: "https://replit.com/",            tag: "dev",          category: "dev",          desc: "Code in the browser",        bg: "#f26207" },
+  { name: "CodePen",     url: "https://codepen.io/",            tag: "dev",          category: "dev",          desc: "Front-end playground",       bg: "#1e1f26" },
 ];
 
+const WISP_URL   = "wss://wisp.mercuryworkshop.dev/";
 const QUICK_GAMES = GAMES.slice(0, 6);
 const QUICK_APPS  = APPS.slice(0, 6);
 
-function faviconUrl(siteUrl) {
+let proxyReady   = false;
+let controller   = null;
+
+// ── Proxy init ───────────────────────────
+async function initProxy() {
   try {
-    const host = new URL(siteUrl).hostname;
-    return `https://www.google.com/s2/favicons?domain=${host}&sz=64`;
-  } catch { return ""; }
+    // Set up bare-mux transport → Epoxy → public Wisp server
+    const conn = new BareMuxConnection("/baremux/worker.js");
+    await conn.setTransport("/epoxy/index.mjs", [{ wisp: WISP_URL }]);
+
+    // Create and init Scramjet controller
+    controller = new ScramjetController({
+      prefix: "/service/",
+      files: {
+        wasm:   "/scram/scramjet.wasm.wasm",
+        sync:   "/scram/scramjet.sync.js",
+        worker: "/scram/scramjet.bundle.js",
+      },
+    });
+
+    await controller.init("/sw.js");
+
+    proxyReady = true;
+    setProxyStatus("active", "proxy active");
+    document.getElementById("search-btn")?.removeAttribute("disabled");
+  } catch (err) {
+    console.error("Proxy init failed:", err);
+    setProxyStatus("error", "proxy error");
+  }
 }
 
-// ── Proxy navigation ─────────────────────
-let proxyReady = false;
+function setProxyStatus(state, text) {
+  const el  = document.getElementById("proxy-status");
+  const txt = document.getElementById("proxy-status-text");
+  if (!el || !txt) return;
+  el.className    = "proxy-badge " + state;
+  txt.textContent = text;
+}
 
+// ── Navigation ───────────────────────────
 function navigate(rawUrl) {
   if (!rawUrl.trim()) return;
   let url = rawUrl.trim();
@@ -69,12 +103,9 @@ function navigate(rawUrl) {
   try { new URL(url); } catch {
     url = `https://www.google.com/search?q=${encodeURIComponent(rawUrl)}`;
   }
-  if (!proxyReady) { toast("proxy still loading.", "error"); return; }
-  const encoded = __uv$config.encodeUrl(url);
+  if (!proxyReady || !controller) { toast("proxy still loading.", "error"); return; }
   addRecent(url);
-  // Open in new tab — new tabs are controlled by the already-active SW immediately,
-  // no race with clients.claim() on the current page
-  window.open(__uv$config.prefix + encoded, "_blank");
+  window.open(controller.encodeUrl(url), "_blank");
 }
 
 function handleSearch(raw) {
@@ -84,141 +115,69 @@ function handleSearch(raw) {
   navigate(looksLikeUrl ? input : `https://www.google.com/search?q=${encodeURIComponent(input)}`);
 }
 
-// ── Service worker ───────────────────────
-async function registerSW() {
-  if (!("serviceWorker" in navigator)) {
-    setProxyStatus("error", "unsupported");
-    return;
-  }
-  try {
-    // Unregister any stale SWs from previous attempts
-    const existing = await navigator.serviceWorker.getRegistrations();
-    for (const reg of existing) {
-      const url = reg.active?.scriptURL || reg.installing?.scriptURL || "";
-      if (!url.endsWith("/uv/sw.js")) {
-        await reg.unregister();
-      }
-    }
-
-    await navigator.serviceWorker.register("/uv/sw.js", { scope: "/" });
-
-    // Wait until this page is actually controlled (skipWaiting + clients.claim fires controllerchange)
-    if (!navigator.serviceWorker.controller) {
-      await new Promise(resolve => {
-        navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true });
-      });
-    }
-
-    proxyReady = true;
-    setProxyStatus("active", "proxy active");
-    document.getElementById("search-btn")?.removeAttribute("disabled");
-  } catch (err) {
-    console.error("SW failed:", err);
-    setProxyStatus("error", "proxy error");
-  }
-}
-
-function setProxyStatus(state, text) {
-  const el   = document.getElementById("proxy-status");
-  const txt  = document.getElementById("proxy-status-text");
-  if (!el || !txt) return;
-  el.className   = "proxy-badge " + state;
-  txt.textContent = text;
-}
-
-// ── Version display ──────────────────────
-function showVersion() {
-  const el = document.getElementById("version-tag");
-  if (el) el.textContent = `v${VERSION}`;
+// ── Favicon helper ───────────────────────
+function faviconUrl(siteUrl) {
+  try { return `https://www.google.com/s2/favicons?domain=${new URL(siteUrl).hostname}&sz=64`; }
+  catch { return ""; }
 }
 
 // ── Recent sites ─────────────────────────
 const RECENT_KEY = "uwu_recent";
-const MAX_RECENT = 8;
-
 function getRecent() {
   try { return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); } catch { return []; }
 }
-
 function addRecent(url) {
   const list = getRecent().filter(r => r.url !== url);
   list.unshift({ url, domain: new URL(url).hostname.replace(/^www\./, ""), ts: Date.now() });
-  localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, MAX_RECENT)));
+  localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 8)));
   renderRecent();
 }
-
-function clearRecent() {
-  localStorage.removeItem(RECENT_KEY);
-  renderRecent();
-  toast("history cleared", "success");
-}
+function clearRecent() { localStorage.removeItem(RECENT_KEY); renderRecent(); toast("history cleared", "success"); }
 
 function renderRecent() {
   const grid = document.getElementById("recent-grid");
   if (!grid) return;
   const list = getRecent();
-  if (!list.length) {
-    grid.innerHTML = '<div class="recent-empty">nothing yet — browse something.</div>';
-    return;
-  }
+  if (!list.length) { grid.innerHTML = '<div class="recent-empty">nothing yet — browse something.</div>'; return; }
   grid.innerHTML = list.map(r => `
     <div class="recent-card" data-url="${escHtml(r.url)}" title="${escHtml(r.url)}">
-      <div class="recent-favicon">
-        <img src="${escHtml(faviconUrl(r.url))}" alt="" loading="lazy"
-             onerror="this.style.opacity=0" />
-      </div>
+      <div class="recent-favicon"><img src="${escHtml(faviconUrl(r.url))}" alt="" loading="lazy" onerror="this.style.opacity=0"/></div>
       <div class="recent-domain">${escHtml(r.domain)}</div>
     </div>`).join("");
-  grid.querySelectorAll(".recent-card").forEach(c => {
-    c.addEventListener("click", () => navigate(c.dataset.url));
-  });
+  grid.querySelectorAll(".recent-card").forEach(c => c.addEventListener("click", () => navigate(c.dataset.url)));
 }
 
-// ── Quick cards ───────────────────────────
+// ── Card renderers ───────────────────────
+function quickCard(item) {
+  return `<div class="card" data-url="${escHtml(item.url)}">
+    <div class="card-favicon"><img src="${escHtml(faviconUrl(item.url))}" alt="${escHtml(item.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
+    <div class="card-name">${escHtml(item.name)}</div>
+    <div class="card-desc">${escHtml(item.desc)}</div>
+    <div class="card-tag tag-${item.tag}">${item.tag}</div>
+  </div>`;
+}
+
 function renderQuickGames() {
   const el = document.getElementById("quick-games");
   if (!el) return;
-  el.innerHTML = QUICK_GAMES.map(g => quickCard(g)).join("");
-  bindCards(el);
+  el.innerHTML = QUICK_GAMES.map(quickCard).join("");
+  el.querySelectorAll(".card").forEach(c => c.addEventListener("click", () => navigate(c.dataset.url)));
 }
 
 function renderQuickApps() {
   const el = document.getElementById("quick-apps");
   if (!el) return;
-  el.innerHTML = QUICK_APPS.map(a => quickCard(a)).join("");
-  bindCards(el);
+  el.innerHTML = QUICK_APPS.map(quickCard).join("");
+  el.querySelectorAll(".card").forEach(c => c.addEventListener("click", () => navigate(c.dataset.url)));
 }
 
-function quickCard(item) {
-  return `
-    <div class="card" data-url="${escHtml(item.url)}">
-      <div class="card-favicon">
-        <img src="${escHtml(faviconUrl(item.url))}" alt="${escHtml(item.name)}" loading="lazy"
-             onerror="this.style.opacity=0" />
-      </div>
-      <div class="card-name">${escHtml(item.name)}</div>
-      <div class="card-desc">${escHtml(item.desc)}</div>
-      <div class="card-tag tag-${item.tag}">${item.tag}</div>
-    </div>`;
-}
-
-function bindCards(container) {
-  container.querySelectorAll(".card").forEach(c => {
-    c.addEventListener("click", () => navigate(c.dataset.url));
-  });
-}
-
-// ── Games page ───────────────────────────
 function renderGames(filter = "all") {
   const grid = document.getElementById("games-grid");
   if (!grid) return;
   const list = filter === "all" ? GAMES : GAMES.filter(g => g.category === filter);
   grid.innerHTML = list.map(g => `
     <div class="game-card" data-url="${escHtml(g.url)}">
-      <div class="game-thumb">
-        <img src="${escHtml(faviconUrl(g.url))}" alt="${escHtml(g.name)}" loading="lazy"
-             onerror="this.style.opacity=0" />
-      </div>
+      <div class="game-thumb"><img src="${escHtml(faviconUrl(g.url))}" alt="${escHtml(g.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
       <div class="game-info">
         <div class="game-name">${escHtml(g.name)}</div>
         <div class="game-desc">${escHtml(g.desc)}</div>
@@ -229,25 +188,11 @@ function renderGames(filter = "all") {
       </div>
     </div>`).join("");
   grid.querySelectorAll(".game-card").forEach(card => {
-    card.querySelector(".play-btn")?.addEventListener("click", e => {
-      e.stopPropagation();
-      navigate(card.dataset.url);
-    });
+    card.querySelector(".play-btn")?.addEventListener("click", e => { e.stopPropagation(); navigate(card.dataset.url); });
     card.addEventListener("click", () => navigate(card.dataset.url));
   });
 }
 
-function initGameFilters() {
-  document.getElementById("game-filters")?.querySelectorAll(".filter-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll("#game-filters .filter-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      renderGames(btn.dataset.filter);
-    });
-  });
-}
-
-// ── Apps page ────────────────────────────
 function renderApps(filter = "all") {
   const grid = document.getElementById("apps-grid");
   if (!grid) return;
@@ -255,42 +200,36 @@ function renderApps(filter = "all") {
   grid.innerHTML = list.map(a => `
     <div class="app-card" data-url="${escHtml(a.url)}">
       <div class="app-icon" style="background:${a.bg}18;border:1px solid ${a.bg}35">
-        <img src="${escHtml(faviconUrl(a.url))}" alt="${escHtml(a.name)}" loading="lazy"
-             onerror="this.style.opacity=0" />
+        <img src="${escHtml(faviconUrl(a.url))}" alt="${escHtml(a.name)}" loading="lazy" onerror="this.style.opacity=0"/>
       </div>
       <div class="app-name">${escHtml(a.name)}</div>
       <div class="app-desc">${escHtml(a.desc)}</div>
       <div class="card-tag tag-${a.tag}">${a.tag}</div>
     </div>`).join("");
-  grid.querySelectorAll(".app-card").forEach(card => {
-    card.addEventListener("click", () => navigate(card.dataset.url));
-  });
+  grid.querySelectorAll(".app-card").forEach(c => c.addEventListener("click", () => navigate(c.dataset.url)));
 }
 
-function initAppFilters() {
-  document.getElementById("app-filters")?.querySelectorAll(".filter-btn").forEach(btn => {
+// ── Filters ──────────────────────────────
+function initFilters(filterId, renderFn) {
+  document.getElementById(filterId)?.querySelectorAll(".filter-btn").forEach(btn => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll("#app-filters .filter-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(`#${filterId} .filter-btn`).forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      renderApps(btn.dataset.filter);
+      renderFn(btn.dataset.filter);
     });
   });
 }
 
 // ── Settings modal ───────────────────────
 function initSettings() {
-  const overlay     = document.getElementById("settings-modal");
-  const settingsBtn = document.getElementById("settings-btn");
-  const closeBtn    = document.getElementById("modal-close-btn");
-
-  settingsBtn?.addEventListener("click", () => overlay?.classList.add("open"));
-  closeBtn?.addEventListener("click",    () => overlay?.classList.remove("open"));
+  const overlay = document.getElementById("settings-modal");
+  document.getElementById("settings-btn")?.addEventListener("click",    () => overlay?.classList.add("open"));
+  document.getElementById("modal-close-btn")?.addEventListener("click", () => overlay?.classList.remove("open"));
   overlay?.addEventListener("click", e => { if (e.target === overlay) overlay.classList.remove("open"); });
 
   document.querySelectorAll(".cloak-preset").forEach(btn => {
     btn.addEventListener("click", () => {
-      const title = btn.dataset.title;
-      const icon  = btn.dataset.icon;
+      const { title, icon } = btn.dataset;
       if (document.getElementById("cloak-title")) document.getElementById("cloak-title").value = title;
       if (document.getElementById("cloak-icon"))  document.getElementById("cloak-icon").value  = icon;
       applyCloak(title, icon);
@@ -299,9 +238,10 @@ function initSettings() {
   });
 
   document.getElementById("apply-cloak-btn")?.addEventListener("click", () => {
-    const title = document.getElementById("cloak-title")?.value || "New Tab";
-    const icon  = document.getElementById("cloak-icon")?.value  || "";
-    applyCloak(title, icon);
+    applyCloak(
+      document.getElementById("cloak-title")?.value || "New Tab",
+      document.getElementById("cloak-icon")?.value  || ""
+    );
     toast("cloak applied", "success");
   });
 
@@ -318,10 +258,7 @@ function applyCloak(title, iconUrl) {
 }
 
 function loadCloak() {
-  try {
-    const c = JSON.parse(localStorage.getItem("uwu_cloak") || "null");
-    if (c) applyCloak(c.title, c.iconUrl);
-  } catch {}
+  try { const c = JSON.parse(localStorage.getItem("uwu_cloak") || "null"); if (c) applyCloak(c.title, c.iconUrl); } catch {}
 }
 
 // ── Keyboard shortcuts ───────────────────
@@ -341,23 +278,23 @@ function initSearch() {
   form.addEventListener("submit", e => { e.preventDefault(); handleSearch(input.value); });
 }
 
+// ── Version ──────────────────────────────
+function showVersion() {
+  document.querySelectorAll("#version-tag, #footer-version").forEach(el => { el.textContent = `v${VERSION}`; });
+}
+
 // ── Starfield ────────────────────────────
 function initStars() {
   const canvas = document.getElementById("stars-canvas");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
   const stars = Array.from({ length: 100 }, () => ({
-    x: Math.random(), y: Math.random(),
-    r: Math.random() * 1.4 + 0.3,
-    a: Math.random(),
-    da: (Math.random() - 0.5) * 0.004,
-    drift: (Math.random() - 0.5) * 0.00007,
+    x: Math.random(), y: Math.random(), r: Math.random() * 1.4 + 0.3,
+    a: Math.random(), da: (Math.random() - 0.5) * 0.004, drift: (Math.random() - 0.5) * 0.00007,
   }));
-
   function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
   resize();
   window.addEventListener("resize", resize);
-
   (function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (const s of stars) {
@@ -376,27 +313,21 @@ function initStars() {
 
 // ── Toast ────────────────────────────────
 function toast(msg, type = "info") {
-  const container = document.getElementById("toast-container");
-  if (!container) return;
-  const icons = { success: "✓", error: "✕", info: "·" };
+  const c = document.getElementById("toast-container");
+  if (!c) return;
   const el = document.createElement("div");
   el.className = `toast ${type}`;
-  el.innerHTML = `<span>${icons[type]}</span><span>${escHtml(msg)}</span>`;
-  container.appendChild(el);
-  setTimeout(() => {
-    el.style.animation = "toastOut 0.3s ease forwards";
-    setTimeout(() => el.remove(), 300);
-  }, 3000);
+  el.innerHTML = `<span>${{ success: "✓", error: "✕", info: "·" }[type]}</span><span>${escHtml(msg)}</span>`;
+  c.appendChild(el);
+  setTimeout(() => { el.style.animation = "toastOut .3s ease forwards"; setTimeout(() => el.remove(), 300); }, 3000);
 }
 
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+function escHtml(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
 // ── Boot ─────────────────────────────────
-(async function init() {
+(async () => {
   loadCloak();
   showVersion();
   initStars();
@@ -408,8 +339,9 @@ function escHtml(str) {
   renderQuickApps();
   renderGames();
   renderApps();
-  initGameFilters();
-  initAppFilters();
-  await registerSW();
+  initFilters("game-filters", renderGames);
+  initFilters("app-filters",  renderApps);
+  await initProxy();
+  // Re-render game play buttons now that proxy is ready
   renderGames(document.querySelector("#game-filters .filter-btn.active")?.dataset.filter || "all");
 })();
