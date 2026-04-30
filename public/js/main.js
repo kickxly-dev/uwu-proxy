@@ -66,7 +66,7 @@ async function initProxy() {
     const conn = new BareMuxConnection("/baremux/worker.js");
     await conn.setTransport("/epoxy/index.mjs", [{ wisp: WISP_URL }]);
 
-    // Create and init Scramjet controller
+    // Create Scramjet controller
     controller = new ScramjetController({
       prefix: "/service/",
       files: {
@@ -76,17 +76,32 @@ async function initProxy() {
       },
     });
 
-    await controller.init("/sw.js");
+    // Register SW as ES module (sw.js uses import syntax, requires type: module)
+    const reg = await navigator.serviceWorker.register("/sw.js", {
+      scope: "/",
+      type: "module",
+    });
 
-    // Wait until the SW is controlling, with a 5s timeout fallback
+    // Wait for SW to activate
+    const sw = reg.installing || reg.waiting || reg.active;
+    if (sw && sw.state !== "activated") {
+      await new Promise(resolve => {
+        sw.addEventListener("statechange", function h() {
+          if (this.state === "activated") { this.removeEventListener("statechange", h); resolve(); }
+        });
+      });
+    }
+
+    // Wait for SW to control this page
     if (!navigator.serviceWorker.controller) {
       await Promise.race([
-        new Promise(resolve => {
-          navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true });
-        }),
-        new Promise(resolve => setTimeout(resolve, 5000)),
+        new Promise(resolve => navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true })),
+        new Promise(resolve => setTimeout(resolve, 3000)),
       ]);
     }
+
+    // Connect controller to the running SW
+    await controller.init();
 
     proxyReady = true;
     setProxyStatus("active", "proxy active");
