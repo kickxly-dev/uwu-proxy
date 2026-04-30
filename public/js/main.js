@@ -126,7 +126,7 @@ function handleSearch(raw) {
   const input = raw.trim();
   if (!input) return;
   const looksLikeUrl = /^(https?:\/\/)?[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(input);
-  navigate(looksLikeUrl ? input : `https://www.google.com/search?q=${encodeURIComponent(input)}`);
+  navigate(looksLikeUrl ? input : `https://duckduckgo.com/?q=${encodeURIComponent(input)}`);
 }
 
 // ── Favicon helper ───────────────────────
