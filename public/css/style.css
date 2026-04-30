@@ -162,10 +162,21 @@ img { display: block; max-width: 100%; }
   font-family: var(--ff-mono);
   font-size: 0.7rem;
   font-weight: 500;
-  color: var(--dim);
+  color: var(--muted);
   letter-spacing: 0.04em;
   white-space: nowrap;
   order: -1;
+}
+.nav-user-badge {
+  font-family: var(--ff-mono);
+  font-size: 0.72rem;
+  color: var(--pink);
+  font-weight: 500;
+  padding: 3px 10px;
+  background: rgba(255,121,198,0.08);
+  border: 1px solid rgba(255,121,198,0.2);
+  border-radius: var(--r-xl);
+  white-space: nowrap;
 }
 
 .nav-links {

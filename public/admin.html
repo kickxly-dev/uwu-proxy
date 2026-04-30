@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin · uwu proxy</title>
+  <script>
+    (function(){
+      var s=localStorage.getItem("uwu_session");
+      if(!s)return location.replace("/login.html");
+      try{
+        var d=JSON.parse(s);
+        if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem("uwu_session");return location.replace("/login.html");}
+        if(d.role!=="admin"){return location.replace("/");}
+      }catch{location.replace("/login.html");}
+    })()
+  </script>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔐</text></svg>"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Comfortaa:wght@600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--bg:#050510;--bg2:#0c0c1e;--bg3:#13132b;--border:rgba(255,255,255,0.07);--pink:#ff79c6;--purple:#bd93f9;--mint:#50fa7b;--yellow:#f1fa8c;--red:#ff5555;--text:#f8f8f2;--dim:#6272a4;--r:12px;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;min-height:100vh;}
+    .header{padding:20px 32px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+    .header-left{display:flex;align-items:center;gap:16px;}
+    .logo{font-family:'Comfortaa',sans-serif;font-size:1.05rem;font-weight:700;}
+    .badge{padding:3px 10px;border-radius:20px;background:rgba(255,121,198,.12);border:1px solid rgba(255,121,198,.25);color:var(--pink);font-size:.7rem;font-family:'JetBrains Mono',monospace;}
+    .admin-badge{background:rgba(241,250,140,.12);border-color:rgba(241,250,140,.25);color:var(--yellow);}
+    .btn-sm{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:.78rem;cursor:pointer;transition:color .2s,border-color .2s;}
+    .btn-sm:hover{color:var(--text);border-color:rgba(255,255,255,.15);}
+    .main{max-width:960px;margin:0 auto;padding:32px 24px;}
+    h2{font-family:'Comfortaa',sans-serif;font-size:.88rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:36px;}
+    .stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;}
+    .stat-label{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+    .stat-value{font-size:1.2rem;font-weight:600;}
+    .green{color:var(--mint);}
+    .pink{color:var(--pink);}
+    .purple{color:var(--purple);}
+    .users-table{width:100%;border-collapse:collapse;margin-bottom:36px;}
+    .users-table th{text-align:left;padding:10px 16px;border-bottom:1px solid var(--border);color:var(--dim);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;font-weight:500;}
+    .users-table td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.83rem;}
+    .users-table tr:hover td{background:rgba(255,255,255,.02);}
+    .code-cell{font-family:'JetBrains Mono',monospace;letter-spacing:.15em;color:var(--pink);}
+    .role-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:600;}
+    .role-admin{background:rgba(241,250,140,.12);color:var(--yellow);}
+    .role-member{background:rgba(189,147,249,.12);color:var(--purple);}
+    .copy-btn{padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--dim);font-size:.7rem;cursor:pointer;transition:color .2s;}
+    .copy-btn:hover{color:var(--text);}
+    .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;animation:pulse 2s ease-in-out infinite;}
+    .dot-green{background:var(--mint);}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    a{color:var(--pink);text-decoration:none;}
+    a:hover{text-decoration:underline;}
+    .back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--dim);font-size:.83rem;transition:color .2s;}
+    .back-btn:hover{color:var(--text);}
+    .note{background:rgba(241,250,140,.06);border:1px solid rgba(241,250,140,.15);border-radius:var(--r);padding:14px 16px;color:var(--yellow);font-size:.8rem;margin-bottom:24px;}
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <a href="/" class="back-btn">← back</a>
+    <span class="logo">uwu proxy</span>
+    <span class="badge">v1.0.0</span>
+    <span class="badge admin-badge">admin</span>
+  </div>
+  <button class="btn-sm" onclick="localStorage.removeItem('uwu_session');location.replace('/login.html')">logout</button>
+</div>
+
+<div class="main">
+
+  <h2>Overview</h2>
+  <div class="grid">
+    <div class="stat"><div class="stat-label">Status</div><div class="stat-value green"><span class="dot dot-green"></span>online</div></div>
+    <div class="stat"><div class="stat-label">Version</div><div class="stat-value pink">v1.0.0</div></div>
+    <div class="stat"><div class="stat-label">Users</div><div class="stat-value purple">5</div></div>
+    <div class="stat"><div class="stat-label">Logged In As</div><div class="stat-value" id="admin-name">—</div></div>
+  </div>
+
+  <h2>User Codes</h2>
+  <div class="note">keep these private — share each code only with the right person.</div>
+  <table class="users-table">
+    <thead><tr><th>Name</th><th>Code</th><th>Role</th><th>Share</th></tr></thead>
+    <tbody id="users-tbody"></tbody>
+  </table>
+
+  <h2>Quick Links</h2>
+  <div class="grid">
+    <div class="stat"><div class="stat-label">Site</div><div class="stat-value"><a href="/" target="_blank">open site</a></div></div>
+    <div class="stat"><div class="stat-label">GitHub</div><div class="stat-value"><a href="https://github.com/kickxly-dev/uwu-proxy" target="_blank">repo</a></div></div>
+    <div class="stat"><div class="stat-label">Netlify</div><div class="stat-value"><a href="https://app.netlify.com" target="_blank">dashboard</a></div></div>
+    <div class="stat"><div class="stat-label">Groq AI</div><div class="stat-value"><a href="https://console.groq.com" target="_blank">console</a></div></div>
+  </div>
+
+  <h2>Setup Notes</h2>
+  <div class="note" style="color:var(--dim)">
+    To enable AI: go to Netlify dashboard → Site config → Environment variables → add <span style="color:var(--pink)">GROQ_API_KEY</span> from console.groq.com (free).<br/><br/>
+    To change codes: add env vars <span style="color:var(--pink)">CODE_RYDER</span>, <span style="color:var(--pink)">CODE_BECKHAM</span>, <span style="color:var(--pink)">CODE_KOLLBY</span>, <span style="color:var(--pink)">CODE_LEVI</span>, <span style="color:var(--pink)">CODE_LIAM</span> in Netlify.
+  </div>
+
+</div>
+
+<script>
+  const USERS = [
+    { user: "Ryder",   code: "47291", role: "admin"  },
+    { user: "Beckham", code: "83650", role: "member" },
+    { user: "Kollby",  code: "29174", role: "member" },
+    { user: "Levi",    code: "61837", role: "member" },
+    { user: "Liam",    code: "94523", role: "member" },
+  ];
+
+  const session = JSON.parse(localStorage.getItem("uwu_session") || "{}");
+  document.getElementById("admin-name").textContent = session.user || "—";
+
+  const tbody = document.getElementById("users-tbody");
+  tbody.innerHTML = USERS.map(u => `
+    <tr>
+      <td><strong>${u.user}</strong></td>
+      <td class="code-cell">${u.code}</td>
+      <td><span class="role-badge role-${u.role}">${u.role}</span></td>
+      <td><button class="copy-btn" onclick="copyCode('${u.code}','${u.user}')">copy</button></td>
+    </tr>`).join("");
+
+  function copyCode(code, name) {
+    navigator.clipboard.writeText(code).then(() => {
+      const note = document.createElement("div");
+      note.style.cssText = "position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid rgba(80,250,123,.3);border-radius:10px;padding:10px 16px;font-size:.82rem;color:var(--mint);z-index:999";
+      note.textContent = `copied ${name}'s code`;
+      document.body.appendChild(note);
+      setTimeout(() => note.remove(), 2000);
+    });
+  }
+</script>
+</body>
+</html>

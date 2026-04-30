@@ -8,6 +8,16 @@
   status = 200
   force = true
 
+[[redirects]]
+  from = "/.netlify/functions/auth"
+  to = "/.netlify/functions/auth"
+  status = 200
+
+[[redirects]]
+  from = "/.netlify/functions/ai"
+  to = "/.netlify/functions/ai"
+  status = 200
+
 # Catch /service/* — SW intercepts first, this is the fallback
 [[redirects]]
   from = "/service/*"
