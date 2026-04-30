@@ -52,7 +52,11 @@ const APPS = [
   { name: "CodePen",     url: "https://codepen.io/",            tag: "dev",          category: "dev",          desc: "Front-end playground",       bg: "#1e1f26" },
 ];
 
-const WISP_URL   = "wss://wisp.mercuryworkshop.dev/";
+const WISP_SERVERS = [
+  "wss://wisp.mercuryworkshop.dev/",
+  "wss://anura.pro/wisp/",
+  "wss://wisp.dyn.nu/",
+];
 const QUICK_GAMES = GAMES.slice(0, 6);
 const QUICK_APPS  = APPS.slice(0, 6);
 
@@ -62,9 +66,20 @@ let controller   = null;
 // ── Proxy init ───────────────────────────
 async function initProxy() {
   try {
-    // Set up bare-mux transport → Epoxy → public Wisp server
+    // Set up bare-mux transport → Epoxy → try each Wisp server until one connects
     const conn = new BareMuxConnection("/baremux/worker.js");
-    await conn.setTransport("/epoxy/index.mjs", [{ wisp: WISP_URL }]);
+    let transportSet = false;
+    for (const wisp of WISP_SERVERS) {
+      try {
+        await conn.setTransport("/epoxy/index.mjs", [{ wisp }]);
+        console.log("transport set:", wisp);
+        transportSet = true;
+        break;
+      } catch {
+        console.warn("wisp failed:", wisp);
+      }
+    }
+    if (!transportSet) throw new Error("all Wisp servers failed");
 
     // Create Scramjet controller
     controller = new ScramjetController({
@@ -130,7 +145,7 @@ function navigate(rawUrl) {
   }
   if (!proxyReady || !controller) { toast("proxy still loading.", "error"); return; }
   addRecent(url);
-  window.open(controller.encodeUrl(url), "_blank");
+  window.location.href = controller.encodeUrl(url);
 }
 
 function handleSearch(raw) {
