@@ -1,6 +1,12 @@
 [build]
   publish = "public"
-  # No build command needed — scramjet/epoxy/baremux files are pre-built in public/
+
+# Catch /service/* before Netlify 404s — SW intercepts first, this is the fallback
+[[redirects]]
+  from = "/service/*"
+  to = "/index.html"
+  status = 200
+  force = false
 
 [[headers]]
   for = "/sw.js"

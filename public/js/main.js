@@ -78,6 +78,13 @@ async function initProxy() {
 
     await controller.init("/sw.js");
 
+    // Wait until the SW is actually controlling this page
+    if (!navigator.serviceWorker.controller) {
+      await new Promise(resolve => {
+        navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true });
+      });
+    }
+
     proxyReady = true;
     setProxyStatus("active", "proxy active");
     document.getElementById("search-btn")?.removeAttribute("disabled");
