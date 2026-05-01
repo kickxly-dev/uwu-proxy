@@ -5,41 +5,43 @@ const VERSION = "1.0.0";
 
 // ── Data ────────────────────────────────
 const GAMES = [
-  // All games go through UV proxy — strips X-Frame-Options so games actually load
-  { name: "Retro Bowl",          url: "https://game316009.konggames.com/gamez/0031/6009/live/index.html", tag: "casual",  category: "casual",  desc: "Lead your team to the championship" },
-  { name: "Slope",               url: "https://slopegame.online/",                                        tag: "action",  category: "action",  desc: "Roll a ball down an endless slope"  },
-  { name: "1v1 LOL",             url: "https://1v1.lol/",                                                 tag: "action",  category: "action",  desc: "Build and battle in real-time"      },
-  { name: "Run 3",               url: "https://run3freegame.com/",                                        tag: "action",  category: "action",  desc: "Run through the tunnel in space"    },
-  { name: "Happy Wheels",        url: "https://slopeunblocked.online/happy-wheels-full-version",          tag: "action",  category: "action",  desc: "Ragdoll physics mayhem"             },
-  { name: "Stickman Hook",       url: "https://www.friv.cm/stickman-hook/fullscreen/",                    tag: "action",  category: "action",  desc: "Swing through levels"               },
-  { name: "Krunker",             url: "https://krunker.io/",                                              tag: "action",  category: "action",  desc: "Fast-paced browser FPS"             },
-  { name: "Shell Shockers",      url: "https://shellshock.io/",                                           tag: "action",  category: "action",  desc: "Egg-based FPS battle royale"        },
-  { name: "Merc Zone",           url: "https://www.merc.zone/",                                           tag: "action",  category: "action",  desc: "Mercenary combat zone"              },
-  { name: "Backrooms",           url: "https://v6p9d9t4.ssl.hwcdn.net/html/5227008/Backrooms%20v1.6%20-%20WebGL/index.html", tag: "action", category: "action", desc: "Escape the backrooms" },
-  { name: "Poppy Playtime",      url: "https://popppp.vakhtangi1980.repl.co/",                            tag: "action",  category: "action",  desc: "Survive the toy factory"            },
-  { name: "Doomz.io",            url: "https://doomz.io/",                                                tag: "io",      category: "io",      desc: "Multiplayer doom-style shooter"     },
-  { name: "JustFall.lol",        url: "https://justfall.lol/",                                            tag: "io",      category: "io",      desc: "Fall and survive"                   },
-  { name: "LOLBeans",            url: "https://lolbeans.io/",                                             tag: "io",      category: "io",      desc: "Bean battle royale"                 },
-  { name: "Slither.io",          url: "https://slither.io/",                                              tag: "io",      category: "io",      desc: "Grow your snake, eat everything"    },
-  { name: "Agar.io",             url: "https://agar.io/",                                                 tag: "io",      category: "io",      desc: "Eat cells, grow massive"            },
-  { name: "Skribbl.io",          url: "https://skribbl.io/",                                              tag: "io",      category: "io",      desc: "Draw and guess with friends"        },
-  { name: "Paper.io",            url: "https://paperio-live.com/",                                        tag: "io",      category: "io",      desc: "Claim territory on the map"         },
-  { name: "Minecraft Classic",   url: "https://classic.minecraft.net/",                                   tag: "classic", category: "classic", desc: "Classic Minecraft in browser"       },
-  { name: "Minecraft",           url: "https://g.eags.us/eaglercraft/",                                   tag: "classic", category: "classic", desc: "Minecraft browser edition"          },
-  { name: "Lichess",             url: "https://lichess.org/",                                             tag: "classic", category: "classic", desc: "Free open-source chess"             },
-  { name: "Tower Defense",       url: "https://oldj.net/static/html5-tower-defense-en/td.html",          tag: "puzzle",  category: "puzzle",  desc: "Defend your base"                   },
-  { name: "Connect Four",        url: "https://papergames.io/en/connect4",                                tag: "puzzle",  category: "puzzle",  desc: "Classic connect four"               },
-  { name: "Blooket",             url: "https://blooket.com/",                                             tag: "puzzle",  category: "puzzle",  desc: "Study games and quizzes"            },
-  { name: "Kahoot",              url: "https://kahoot.com/",                                              tag: "puzzle",  category: "puzzle",  desc: "Live quiz games"                    },
-  { name: "Little Alchemy",      url: "https://littlealchemy2.com/",                                      tag: "puzzle",  category: "puzzle",  desc: "Combine elements to make new things"},
-  { name: "Cookie Clicker",      url: "https://orteil.dashnet.org/cookieclicker/",                        tag: "casual",  category: "casual",  desc: "Click cookies, build an empire"     },
-  { name: "Helix Jump",          url: "https://www.bestgames.com/Helix-Jump",                             tag: "casual",  category: "casual",  desc: "Jump down the helix tower"          },
-  { name: "Gartic Phone",        url: "https://garticphone.com/",                                         tag: "casual",  category: "casual",  desc: "Telephone with drawings"            },
-  { name: "Friday Night Funkin", url: "https://www.snokido.com/game/friday-night-funkin",                 tag: "casual",  category: "casual",  desc: "Rhythm battle game"                 },
-  { name: "FNAF",                url: "https://scratch.mit.edu/projects/636308429/embed",                 tag: "action",  category: "action",  desc: "Five Nights at Freddy's"            },
-  { name: "FNAF 2",              url: "https://scratch.mit.edu/projects/583538210/embed",                 tag: "action",  category: "action",  desc: "Five Nights at Freddy's 2"          },
-  { name: "Sister Location",     url: "https://scratch.mit.edu/projects/436798588/embed",                 tag: "action",  category: "action",  desc: "FNAF Sister Location"               },
-  { name: "Super Mario",         url: "https://supermarioplay.com/",                                      tag: "classic", category: "classic", desc: "Play Mario in your browser"         },
+  // Verified safe sources only
+  { name: "Retro Bowl",         url: "https://game316009.konggames.com/gamez/0031/6009/live/index.html", tag: "casual",  category: "casual",  desc: "Lead your team to the championship" },
+  { name: "Slope",              url: "https://poki.com/en/g/slope",                                      tag: "action",  category: "action",  desc: "Roll a ball down an endless slope"  },
+  { name: "1v1 LOL",            url: "https://1v1.lol/",                                                  tag: "action",  category: "action",  desc: "Build and battle in real-time"      },
+  { name: "Run 3",              url: "https://poki.com/en/g/run-3",                                       tag: "action",  category: "action",  desc: "Run through the tunnel in space"    },
+  { name: "Stickman Hook",      url: "https://poki.com/en/g/stickman-hook",                               tag: "action",  category: "action",  desc: "Swing through levels"               },
+  { name: "Krunker",            url: "https://krunker.io/",                                               tag: "action",  category: "action",  desc: "Fast-paced browser FPS"             },
+  { name: "Shell Shockers",     url: "https://shellshock.io/",                                            tag: "action",  category: "action",  desc: "Egg-based FPS battle royale"        },
+  { name: "Subway Surfers",     url: "https://poki.com/en/g/subway-surfers",                              tag: "action",  category: "action",  desc: "Endless runner"                     },
+  { name: "Temple Run 2",       url: "https://poki.com/en/g/temple-run-2",                                tag: "action",  category: "action",  desc: "Classic endless runner"             },
+  { name: "Crossy Road",        url: "https://poki.com/en/g/crossy-road",                                 tag: "casual",  category: "casual",  desc: "Cross the road, don't get hit"      },
+  { name: "Geometry Dash",      url: "https://poki.com/en/g/geometry-dash-lite",                          tag: "action",  category: "action",  desc: "Rhythm-based platformer"            },
+  { name: "Flappy Bird",        url: "https://poki.com/en/g/flappy-bird",                                 tag: "casual",  category: "casual",  desc: "Tap to fly through pipes"           },
+  { name: "Doomz.io",           url: "https://doomz.io/",                                                 tag: "io",      category: "io",      desc: "Multiplayer doom-style shooter"     },
+  { name: "JustFall.lol",       url: "https://justfall.lol/",                                             tag: "io",      category: "io",      desc: "Fall and survive"                   },
+  { name: "LOLBeans",           url: "https://lolbeans.io/",                                              tag: "io",      category: "io",      desc: "Bean battle royale"                 },
+  { name: "Slither.io",         url: "https://slither.io/",                                               tag: "io",      category: "io",      desc: "Grow your snake, eat everything"    },
+  { name: "Agar.io",            url: "https://agar.io/",                                                  tag: "io",      category: "io",      desc: "Eat cells, grow massive"            },
+  { name: "Skribbl.io",         url: "https://skribbl.io/",                                               tag: "io",      category: "io",      desc: "Draw and guess with friends"        },
+  { name: "Paper.io 2",         url: "https://poki.com/en/g/paper-io-2",                                  tag: "io",      category: "io",      desc: "Claim territory on the map"         },
+  { name: "Minecraft Classic",  url: "https://classic.minecraft.net/",                                    tag: "classic", category: "classic", desc: "Classic Minecraft in browser"       },
+  { name: "Minecraft",          url: "https://g.eags.us/eaglercraft/",                                    tag: "classic", category: "classic", desc: "Minecraft browser edition"          },
+  { name: "Lichess",            url: "https://lichess.org/",                                              tag: "classic", category: "classic", desc: "Free open-source chess"             },
+  { name: "Tetris",             url: "https://poki.com/en/g/tetris",                                      tag: "classic", category: "classic", desc: "The original block stacker"         },
+  { name: "2048",               url: "https://play2048.co/",                                              tag: "puzzle",  category: "puzzle",  desc: "Slide tiles to reach 2048"          },
+  { name: "Connect Four",       url: "https://papergames.io/en/connect4",                                 tag: "puzzle",  category: "puzzle",  desc: "Classic connect four"               },
+  { name: "Blooket",            url: "https://blooket.com/",                                              tag: "puzzle",  category: "puzzle",  desc: "Study games and quizzes"            },
+  { name: "Kahoot",             url: "https://kahoot.com/",                                               tag: "puzzle",  category: "puzzle",  desc: "Live quiz games"                    },
+  { name: "Little Alchemy 2",   url: "https://littlealchemy2.com/",                                       tag: "puzzle",  category: "puzzle",  desc: "Combine elements to make new things"},
+  { name: "Cookie Clicker",     url: "https://orteil.dashnet.org/cookieclicker/",                         tag: "casual",  category: "casual",  desc: "Click cookies, build an empire"     },
+  { name: "Gartic Phone",       url: "https://garticphone.com/",                                          tag: "casual",  category: "casual",  desc: "Telephone with drawings"            },
+  { name: "GeoGuessr",          url: "https://www.geoguessr.com/",                                        tag: "casual",  category: "casual",  desc: "Guess where you are in the world"   },
+  { name: "Monkeytype",         url: "https://monkeytype.com/",                                           tag: "casual",  category: "casual",  desc: "Clean typing speed test"            },
+  { name: "FNAF",               url: "https://scratch.mit.edu/projects/636308429/embed",                  tag: "action",  category: "action",  desc: "Five Nights at Freddy's"            },
+  { name: "FNAF 2",             url: "https://scratch.mit.edu/projects/583538210/embed",                  tag: "action",  category: "action",  desc: "Five Nights at Freddy's 2"          },
+  { name: "Friday Night Funkin",url: "https://scratch.mit.edu/projects/496383972/embed",                  tag: "casual",  category: "casual",  desc: "Rhythm battle game"                 },
+  { name: "Among Us",           url: "https://scratch.mit.edu/projects/452959335/embed",                  tag: "casual",  category: "casual",  desc: "Find the impostor"                  },
 ];
 
 const APPS = [
@@ -127,19 +129,10 @@ function navigate(rawUrl) {
   try { new URL(url); } catch {
     url = `https://www.google.com/search?q=${encodeURIComponent(rawUrl)}`;
   }
-  // Local game files open directly — no proxy needed
-  if (url.startsWith("/")) {
-    window.location.href = url;
-    return;
-  }
   if (!proxyReady) { toast("proxy still loading.", "error"); return; }
-  if (!window.__uv$config) { toast("UV config missing — reload page", "error"); return; }
   addRecent(url);
-  try {
-    window.location.href = __uv$config.prefix + __uv$config.encodeUrl(url);
-  } catch (e) {
-    toast("nav error: " + e.message, "error");
-  }
+  // Everything opens in the embedded proxy viewer — keeps nav/back/forward inside the site
+  window.location.href = `/proxy.html?url=${encodeURIComponent(url)}`;
 }
 
 function handleSearch(raw) {
@@ -337,7 +330,7 @@ function initStars() {
 
   // Falling particles
   const COLORS = ["255,121,198", "189,147,249", "139,233,253", "80,250,123", "248,248,242"];
-  const particles = Array.from({ length: 40 }, () => spawnParticle(true));
+  const particles = Array.from({ length: 22 }, () => spawnParticle(true));
 
   function spawnParticle(randomY = false) {
     return {
@@ -346,7 +339,7 @@ function initStars() {
       r: Math.random() * 2.5 + 0.8,
       speed: Math.random() * 0.4 + 0.15,
       drift: (Math.random() - 0.5) * 0.3,
-      a: Math.random() * 0.6 + 0.2,
+      a: Math.random() * 0.35 + 0.1,
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
       spin: Math.random() * Math.PI * 2,
       spinSpeed: (Math.random() - 0.5) * 0.02,

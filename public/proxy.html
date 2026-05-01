@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>uwu proxy</title>
+  <script>(function(){var s=localStorage.getItem("uwu_session");if(!s)return location.replace("/login.html");try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem("uwu_session");location.replace("/login.html");}}catch{location.replace("/login.html");}})()</script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html,body{height:100%;overflow:hidden;background:#050510;font-family:'DM Sans',sans-serif;}
+    .toolbar{
+      display:flex;align-items:center;gap:6px;
+      padding:0 10px;height:44px;
+      background:#0c0c1e;
+      border-bottom:1px solid rgba(255,255,255,0.07);
+      flex-shrink:0;
+    }
+    .tb-btn{
+      width:32px;height:32px;border-radius:7px;
+      display:flex;align-items:center;justify-content:center;
+      background:none;border:none;color:#6272a4;cursor:pointer;
+      transition:color .15s,background .15s;flex-shrink:0;
+    }
+    .tb-btn:hover{color:#f8f8f2;background:rgba(255,255,255,0.07);}
+    .tb-btn:disabled{opacity:.25;pointer-events:none;}
+    .tb-url{
+      flex:1;height:28px;
+      background:#13132b;border:1px solid rgba(255,255,255,0.07);
+      border-radius:6px;padding:0 10px;
+      color:#f8f8f2;font-size:.8rem;font-family:'JetBrains Mono',monospace;
+      outline:none;transition:border-color .15s;
+    }
+    .tb-url:focus{border-color:rgba(255,121,198,0.5);}
+    .tb-home{
+      padding:0 12px;height:28px;border-radius:6px;
+      background:rgba(255,121,198,0.12);border:1px solid rgba(255,121,198,0.25);
+      color:#ff79c6;font-size:.75rem;font-weight:600;cursor:pointer;
+      white-space:nowrap;transition:background .15s;flex-shrink:0;
+      font-family:'DM Sans',sans-serif;
+    }
+    .tb-home:hover{background:rgba(255,121,198,0.2);}
+    .proxy-frame{width:100%;flex:1;border:none;display:block;}
+    .wrap{display:flex;flex-direction:column;height:100vh;}
+    .loading-bar{
+      position:fixed;top:44px;left:0;height:2px;
+      background:linear-gradient(90deg,#ff79c6,#bd93f9);
+      width:0%;transition:width .3s ease;z-index:99;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"/>
+</head>
+<body>
+<div class="wrap">
+  <div class="toolbar">
+    <button class="tb-btn" id="btn-back" title="Back" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button class="tb-btn" id="btn-fwd" title="Forward" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+    <button class="tb-btn" id="btn-reload" title="Reload">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+    </button>
+    <input class="tb-url" id="url-bar" type="text" placeholder="enter url or search..." spellcheck="false" autocomplete="off"/>
+    <button class="tb-home" id="btn-home">⌂ home</button>
+  </div>
+  <div class="loading-bar" id="loading-bar"></div>
+  <iframe class="proxy-frame" id="proxy-frame" allowfullscreen allow="fullscreen; autoplay; gamepad; microphone; camera"></iframe>
+</div>
+
+<script src="/uv/uv.bundle.js"></script>
+<script src="/uv/uv.config.js"></script>
+<script>
+  const frame   = document.getElementById("proxy-frame");
+  const urlBar  = document.getElementById("url-bar");
+  const btnBack = document.getElementById("btn-back");
+  const btnFwd  = document.getElementById("btn-fwd");
+  const loadBar = document.getElementById("loading-bar");
+
+  // Register SW
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
+  }
+
+  let history = [], histIdx = -1;
+
+  function encodeNav(url) {
+    if (!url.startsWith("http")) url = "https://" + url;
+    return __uv$config.prefix + __uv$config.encodeUrl(url);
+  }
+
+  function loadUrl(url) {
+    if (!url.trim()) return;
+    if (!url.startsWith("http")) url = "https://" + url;
+    urlBar.value = url;
+    showLoader();
+    frame.src = encodeNav(url);
+    if (histIdx < history.length - 1) history = history.slice(0, histIdx + 1);
+    history.push(url);
+    histIdx = history.length - 1;
+    updateBtns();
+  }
+
+  function showLoader() {
+    loadBar.style.width = "0%";
+    loadBar.style.transition = "none";
+    setTimeout(() => { loadBar.style.transition = "width 2s ease"; loadBar.style.width = "80%"; }, 10);
+  }
+
+  function hideLoader() {
+    loadBar.style.transition = "width .2s ease";
+    loadBar.style.width = "100%";
+    setTimeout(() => { loadBar.style.width = "0%"; loadBar.style.transition = "none"; }, 250);
+  }
+
+  function updateBtns() {
+    btnBack.disabled = histIdx <= 0;
+    btnFwd.disabled  = histIdx >= history.length - 1;
+  }
+
+  // Decode current iframe URL for the URL bar
+  frame.addEventListener("load", () => {
+    hideLoader();
+    try {
+      const href = frame.contentWindow.location.href;
+      if (href.includes(__uv$config.prefix)) {
+        const encoded = href.split(__uv$config.prefix)[1];
+        const decoded = __uv$config.decodeUrl(encoded.split("?")[0]);
+        urlBar.value = decoded;
+        document.title = decoded;
+      }
+    } catch {}
+  });
+
+  btnBack.addEventListener("click", () => {
+    if (histIdx > 0) { histIdx--; showLoader(); frame.src = encodeNav(history[histIdx]); urlBar.value = history[histIdx]; updateBtns(); }
+  });
+  btnFwd.addEventListener("click", () => {
+    if (histIdx < history.length - 1) { histIdx++; showLoader(); frame.src = encodeNav(history[histIdx]); urlBar.value = history[histIdx]; updateBtns(); }
+  });
+  document.getElementById("btn-reload").addEventListener("click", () => { showLoader(); frame.contentWindow?.location.reload(); });
+  document.getElementById("btn-home").addEventListener("click", () => location.replace("/"));
+
+  urlBar.addEventListener("keydown", e => {
+    if (e.key !== "Enter") return;
+    let v = urlBar.value.trim();
+    if (!v.includes(".") || v.includes(" ")) v = `https://duckduckgo.com/?q=${encodeURIComponent(v)}`;
+    loadUrl(v);
+  });
+
+  // Load from query param
+  const params = new URLSearchParams(location.search);
+  const target = params.get("url");
+  if (target) loadUrl(decodeURIComponent(target));
+</script>
+</body>
+</html>
