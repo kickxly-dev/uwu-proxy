@@ -5,6 +5,7 @@ const USERS = {
   [process.env.CODE_KOLLBY   || "29174"]: { user: "Kollby",  role: "member" },
   [process.env.CODE_LEVI     || "61837"]: { user: "Levi",    role: "member" },
   [process.env.CODE_LIAM     || "94523"]: { user: "Liam",    role: "member" },
+  [process.env.CODE_LOGAN    || "35817"]: { user: "Logan",   role: "member" },
 };
 
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*" };

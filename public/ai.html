@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>AI · uwu proxy</title>
   <script>(function(){var s=localStorage.getItem("uwu_session");if(!s)return location.replace("/login.html");try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem("uwu_session");location.replace("/login.html");}}catch{location.replace("/login.html");}})()</script>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23ff79c6'/><circle cx='11' cy='14' r='3' fill='white'/><circle cx='21' cy='14' r='3' fill='white'/><path d='M10 20 Q16 24 22 20' stroke='white' stroke-width='2' fill='none' stroke-linecap='round'/></svg>"/>
   <link rel="stylesheet" href="/css/style.css"/>
   <style>
     .chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 60px);}
@@ -61,9 +61,8 @@
 <main class="page chat-wrap">
   <div class="chat-messages" id="chat-messages">
     <div class="chat-empty" id="chat-empty">
-      <div class="chat-empty-icon">🤖</div>
-      <div class="chat-empty-title">AI Assistant</div>
-      <div>powered by Groq — ask me anything</div>
+      <div class="chat-empty-title">AI</div>
+      <div>ask me anything</div>
     </div>
   </div>
   <div class="chat-input-wrap">

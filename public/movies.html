@@ -5,8 +5,37 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Movies · uwu proxy</title>
   <script>(function(){var s=localStorage.getItem("uwu_session");if(!s)return location.replace("/login.html");try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem("uwu_session");location.replace("/login.html");}}catch{location.replace("/login.html");}})()</script>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>"/>
   <link rel="stylesheet" href="/css/style.css"/>
+  <style>
+    .movies-search{max-width:520px;margin:0 auto 40px;display:flex;gap:10px;}
+    .movies-search input{flex:1;background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:12px 20px;color:var(--text);font-family:var(--ff-mono);font-size:.9rem;outline:none;transition:border-color .2s;}
+    .movies-search input:focus{border-color:var(--pink);}
+    .movies-search button{padding:12px 22px;background:linear-gradient(135deg,var(--pink),var(--purple));border:none;border-radius:var(--r-xl);color:#fff;font-family:var(--ff-display);font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .2s;}
+    .movies-search button:hover{opacity:.85;}
+    .tabs{display:flex;gap:6px;margin-bottom:28px;flex-wrap:wrap;}
+    .tab{padding:8px 18px;border-radius:var(--r-xl);font-size:.83rem;font-weight:700;font-family:var(--ff-display);color:var(--dim);background:var(--card);border:1px solid var(--border);cursor:pointer;transition:color .2s,background .2s,border-color .2s;}
+    .tab:hover{color:var(--text);background:var(--card-h);}
+    .tab.active{color:var(--text);background:linear-gradient(135deg,rgba(255,121,198,.18),rgba(189,147,249,.18));border-color:rgba(255,121,198,.4);}
+    .poster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;margin-bottom:40px;}
+    .poster-card{position:relative;border-radius:var(--r);overflow:hidden;cursor:pointer;aspect-ratio:2/3;background:var(--bg3);transition:transform .2s,box-shadow .2s;}
+    .poster-card:hover{transform:scale(1.04);box-shadow:0 16px 40px rgba(0,0,0,.5);}
+    .poster-card img{width:100%;height:100%;object-fit:cover;display:block;}
+    .poster-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.9) 0%,transparent 50%);opacity:0;transition:opacity .2s;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;}
+    .poster-card:hover .poster-overlay{opacity:1;}
+    .poster-title{font-size:.8rem;font-weight:700;color:#fff;line-height:1.3;margin-bottom:4px;}
+    .poster-meta{font-size:.7rem;color:rgba(255,255,255,.6);font-family:var(--ff-mono);}
+    .poster-rating{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);padding:3px 7px;border-radius:6px;font-size:.7rem;font-weight:600;color:var(--yellow);font-family:var(--ff-mono);}
+    .no-poster{display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--muted);font-size:.75rem;text-align:center;padding:12px;}
+    .watch-modal{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.95);display:none;flex-direction:column;}
+    .watch-modal.open{display:flex;}
+    .watch-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);flex-shrink:0;}
+    .watch-title{font-family:var(--ff-display);font-size:1rem;font-weight:700;}
+    .watch-close{padding:8px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);color:var(--text);cursor:pointer;font-family:var(--ff-body);transition:background .2s;}
+    .watch-close:hover{background:var(--bg2);}
+    .watch-frame{flex:1;border:none;width:100%;background:#000;}
+    .loading-msg{text-align:center;padding:80px 24px;color:var(--dim);}
+    .error-msg{text-align:center;padding:80px 24px;color:var(--red);}
+  </style>
 </head>
 <body>
 <div class="bg-canvas"><div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div></div>
@@ -32,64 +61,127 @@
 <main class="page">
   <div class="page-hero">
     <h1 class="page-hero-title">Movies</h1>
-    <p class="page-hero-sub">watch anything through the proxy</p>
+    <p class="page-hero-sub">search, browse, watch</p>
   </div>
+
   <div class="container" style="padding-bottom:60px">
-
-    <div class="section-header" style="margin-bottom:20px">
-      <h2 class="section-title"><div class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="m10 8 6 4-6 4V8z"/></svg></div>Streaming Services</h2>
+    <div class="movies-search">
+      <input id="search-input" type="text" placeholder="search movies..." autocomplete="off" spellcheck="false"/>
+      <button id="search-btn">search</button>
     </div>
-    <div class="apps-grid" id="stream-grid"></div>
 
-    <div class="section-header" style="margin:40px 0 20px">
-      <h2 class="section-title"><div class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>Free Movies</h2>
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-type="popular">Popular</button>
+      <button class="tab" data-type="top_rated">Top Rated</button>
+      <button class="tab" data-type="now_playing">In Theaters</button>
+      <button class="tab" data-type="upcoming">Upcoming</button>
     </div>
-    <div class="apps-grid" id="free-grid"></div>
 
+    <div id="movies-container"><div class="loading-msg">loading...</div></div>
   </div>
 </main>
 
+<!-- Watch modal -->
+<div class="watch-modal" id="watch-modal">
+  <div class="watch-header">
+    <span class="watch-title" id="watch-title">—</span>
+    <button class="watch-close" id="watch-close">close</button>
+  </div>
+  <iframe class="watch-frame" id="watch-frame" allowfullscreen allow="autoplay; fullscreen"></iframe>
+</div>
+
 <div class="toast-container" id="toast-container"></div>
-<script src="/uv/uv.bundle.js"></script>
-<script src="/uv/uv.config.js"></script>
 <script src="/js/main.js" type="module"></script>
 <script>
   const session = JSON.parse(localStorage.getItem("uwu_session") || "{}");
   document.getElementById("nav-user").textContent = session.user || "";
   document.getElementById("logout-btn")?.addEventListener("click", () => { localStorage.removeItem("uwu_session"); location.replace("/login.html"); });
 
-  const STREAMING = [
-    { name: "Netflix",        url: "https://netflix.com/",              desc: "Movies & TV shows",      bg: "#e50914" },
-    { name: "Hulu",           url: "https://hulu.com/",                 desc: "Stream live & on demand",bg: "#1ce783" },
-    { name: "HBO Max",        url: "https://max.com/",                  desc: "HBO, DC, and more",      bg: "#5822b4" },
-    { name: "Disney+",        url: "https://disneyplus.com/",           desc: "Disney, Marvel, Star Wars",bg:"#113ccf" },
-    { name: "Prime Video",    url: "https://primevideo.com/",           desc: "Amazon's streaming",     bg: "#00a8e0" },
-    { name: "Peacock",        url: "https://peacocktv.com/",            desc: "NBC Universal content",  bg: "#ff5f00" },
-    { name: "Crunchyroll",    url: "https://crunchyroll.com/",          desc: "Anime streaming",        bg: "#f47521" },
-    { name: "Paramount+",     url: "https://paramountplus.com/",        desc: "Paramount content",      bg: "#0064ff" },
-  ];
+  const IMG = "https://image.tmdb.org/t/p/w342";
+  let activeTab = "popular";
 
-  const FREE = [
-    { name: "Tubi",           url: "https://tubitv.com/",               desc: "Free movies & TV",       bg: "#fa4928" },
-    { name: "Pluto TV",       url: "https://pluto.tv/",                 desc: "Free live TV & VOD",     bg: "#fff04d" },
-    { name: "Plex",           url: "https://watch.plex.tv/",            desc: "Free streaming + more",  bg: "#e5a00d" },
-    { name: "Kanopy",         url: "https://kanopy.com/",               desc: "Library-powered films",  bg: "#2c5f2e" },
-    { name: "Popcornflix",    url: "https://www.popcornflix.com/",      desc: "Free full movies",       bg: "#e91e63" },
-    { name: "YouTube",        url: "https://youtube.com/",              desc: "Free videos & movies",   bg: "#ff0000" },
-  ];
-
-  function faviconUrl(u) { try { return `https://www.google.com/s2/favicons?domain=${new URL(u).hostname}&sz=64`; } catch { return ""; } }
-  function escHtml(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-  function renderGrid(id, list) {
-    document.getElementById(id).innerHTML = list.map(a => `
-      <div class="app-card" onclick="navigate('${escHtml(a.url)}')">
-        <div class="app-icon" style="background:${a.bg}18;border:1px solid ${a.bg}35"><img src="${faviconUrl(a.url)}" alt="${escHtml(a.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
-        <div class="app-name">${escHtml(a.name)}</div>
-        <div class="app-desc">${escHtml(a.desc)}</div>
-      </div>`).join("");
+  async function fetchMovies(path, params = {}) {
+    const q = new URLSearchParams({ path, ...params });
+    const res = await fetch(`/.netlify/functions/movies?${q}`);
+    return res.json();
   }
 
-  window.addEventListener("proxyReady", () => { renderGrid("stream-grid", STREAMING); renderGrid("free-grid", FREE); });
+  function renderMovies(results) {
+    const container = document.getElementById("movies-container");
+    if (!results?.length) {
+      container.innerHTML = '<div class="error-msg">no results found.</div>';
+      return;
+    }
+    container.innerHTML = `<div class="poster-grid">${results.map(m => {
+      const year = m.release_date?.slice(0, 4) || "—";
+      const rating = m.vote_average?.toFixed(1) || "—";
+      const poster = m.poster_path
+        ? `<img src="${IMG}${m.poster_path}" alt="${escHtml(m.title)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=no-poster>${escHtml(m.title)}</div>'">`
+        : `<div class="no-poster">${escHtml(m.title)}</div>`;
+      return `<div class="poster-card" data-id="${m.id}" data-title="${escHtml(m.title)}">
+        ${poster}
+        <div class="poster-rating">${rating}</div>
+        <div class="poster-overlay">
+          <div class="poster-title">${escHtml(m.title)}</div>
+          <div class="poster-meta">${year} · Watch</div>
+        </div>
+      </div>`;
+    }).join("")}</div>`;
+    document.querySelectorAll(".poster-card").forEach(c => {
+      c.addEventListener("click", () => openMovie(c.dataset.id, c.dataset.title));
+    });
+  }
+
+  function openMovie(id, title) {
+    const modal = document.getElementById("watch-modal");
+    document.getElementById("watch-title").textContent = title;
+    // Use vidsrc embed for movie playback
+    document.getElementById("watch-frame").src = `https://vidsrc.to/embed/movie/${id}`;
+    modal.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  document.getElementById("watch-close").addEventListener("click", () => {
+    document.getElementById("watch-modal").classList.remove("open");
+    document.getElementById("watch-frame").src = "";
+    document.body.style.overflow = "";
+  });
+
+  async function loadTab(type) {
+    document.getElementById("movies-container").innerHTML = '<div class="loading-msg">loading...</div>';
+    const data = await fetchMovies(`/movie/${type}`, { page: 1 });
+    if (data.error) {
+      document.getElementById("movies-container").innerHTML = `<div class="error-msg">${data.error}<br><small style="color:var(--muted);font-size:.78rem;margin-top:8px;display:block">Add TMDB_API_KEY to Netlify environment variables — get a free key at themoviedb.org</small></div>`;
+      return;
+    }
+    renderMovies(data.results);
+  }
+
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      activeTab = tab.dataset.type;
+      loadTab(activeTab);
+    });
+  });
+
+  const searchInput = document.getElementById("search-input");
+  document.getElementById("search-btn").addEventListener("click", search);
+  searchInput.addEventListener("keydown", e => { if (e.key === "Enter") search(); });
+
+  async function search() {
+    const q = searchInput.value.trim();
+    if (!q) return;
+    document.getElementById("movies-container").innerHTML = '<div class="loading-msg">searching...</div>';
+    const data = await fetchMovies("/search/movie", { query: q });
+    if (data.error) { document.getElementById("movies-container").innerHTML = `<div class="error-msg">${data.error}</div>`; return; }
+    renderMovies(data.results);
+  }
+
+  function escHtml(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+  loadTab("popular");
 </script>
 </body>
 </html>
