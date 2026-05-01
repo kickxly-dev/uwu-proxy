@@ -141,9 +141,12 @@
       typingEl.remove();
 
       if (!res.ok) {
-        addMsg("ai", data.error || "something went wrong");
+        const err = data?.error?.message || data?.error || JSON.stringify(data);
+        addMsg("ai", typeof err === "string" ? err : "something went wrong");
       } else {
-        const reply = data.choices?.[0]?.message?.content || "no response";
+        let reply = data.choices?.[0]?.message?.content;
+        if (typeof reply !== "string") reply = JSON.stringify(reply) || "no response";
+        if (!reply) reply = "no response";
         messages.push({ role: "assistant", content: reply });
         addMsg("ai", reply);
       }
