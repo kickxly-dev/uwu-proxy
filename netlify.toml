@@ -1,0 +1,34 @@
+[build]
+  publish = "public"
+  command = "npm run build"
+
+# Map /api/* to Netlify functions
+[[redirects]]
+  from = "/api/auth"
+  to = "/.netlify/functions/auth"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/ai"
+  to = "/.netlify/functions/ai"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/movies"
+  to = "/.netlify/functions/movies"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/bare/*"
+  to = "/.netlify/functions/bare"
+  status = 200
+  force = true
+
+# SW scope header
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Service-Worker-Allowed = "/"
