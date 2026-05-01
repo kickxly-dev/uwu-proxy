@@ -7,6 +7,13 @@
   <script>(function(){var s=localStorage.getItem("uwu_session");if(!s)return location.replace("/login.html");try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem("uwu_session");location.replace("/login.html");}}catch{location.replace("/login.html");}})()</script>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23ff79c6'/><circle cx='11' cy='14' r='3' fill='white'/><circle cx='21' cy='14' r='3' fill='white'/><path d='M10 20 Q16 24 22 20' stroke='white' stroke-width='2' fill='none' stroke-linecap='round'/></svg>"/>
   <link rel="stylesheet" href="/css/style.css"/>
+  <style>
+    .wip-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;}
+    .wip-title{font-family:'Comfortaa',sans-serif;font-size:2rem;font-weight:700;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .wip-sub{color:var(--dim);font-size:.95rem;}
+    .wip-back{margin-top:16px;padding:10px 22px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-xl);color:var(--dim);font-family:'Comfortaa',sans-serif;font-size:.88rem;cursor:pointer;text-decoration:none;transition:color .2s,border-color .2s;}
+    .wip-back:hover{color:var(--text);border-color:rgba(255,255,255,.15);}
+  </style>
 </head>
 <body>
 <div class="bg-canvas"><div class="bg-orb"></div><div class="bg-orb"></div><div class="bg-orb"></div></div>
@@ -55,6 +62,12 @@
 
   </div>
 </main>
+
+<div class="wip-overlay">
+  <div class="wip-title">under construction</div>
+  <div class="wip-sub">music player is coming soon — check back later</div>
+  <a class="wip-back" href="/">go back</a>
+</div>
 
 <div class="toast-container" id="toast-container"></div>
 <script src="/uv/uv.bundle.js"></script>
