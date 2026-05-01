@@ -317,20 +317,61 @@ function showVersion() {
   document.querySelectorAll("#version-tag, #footer-version").forEach(el => { el.textContent = `v${VERSION}`; });
 }
 
-// ── Starfield ────────────────────────────
+// ── Particles + Starfield ─────────────────
 function initStars() {
   const canvas = document.getElementById("stars-canvas");
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
-  const stars = Array.from({ length: 100 }, () => ({
-    x: Math.random(), y: Math.random(), r: Math.random() * 1.4 + 0.3,
-    a: Math.random(), da: (Math.random() - 0.5) * 0.004, drift: (Math.random() - 0.5) * 0.00007,
-  }));
+
   function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
   resize();
   window.addEventListener("resize", resize);
+
+  // Static twinkling stars
+  const stars = Array.from({ length: 80 }, () => ({
+    x: Math.random(), y: Math.random(),
+    r: Math.random() * 1.2 + 0.2,
+    a: Math.random(), da: (Math.random() - 0.5) * 0.003,
+    drift: (Math.random() - 0.5) * 0.00005,
+  }));
+
+  // Falling particles
+  const COLORS = ["255,121,198", "189,147,249", "139,233,253", "80,250,123", "248,248,242"];
+  const particles = Array.from({ length: 40 }, () => spawnParticle(true));
+
+  function spawnParticle(randomY = false) {
+    return {
+      x: Math.random() * canvas.width,
+      y: randomY ? Math.random() * canvas.height : -10,
+      r: Math.random() * 2.5 + 0.8,
+      speed: Math.random() * 0.4 + 0.15,
+      drift: (Math.random() - 0.5) * 0.3,
+      a: Math.random() * 0.6 + 0.2,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      spin: Math.random() * Math.PI * 2,
+      spinSpeed: (Math.random() - 0.5) * 0.02,
+      type: Math.random() > 0.6 ? "star" : "dot",
+    };
+  }
+
+  function drawStar(x, y, r, rotation) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+    ctx.beginPath();
+    for (let i = 0; i < 4; i++) {
+      const angle = (i * Math.PI) / 2;
+      ctx.moveTo(0, 0);
+      ctx.lineTo(Math.cos(angle) * r * 2.5, Math.sin(angle) * r * 2.5);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
   (function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Twinkling stars
     for (const s of stars) {
       s.a += s.da; s.x += s.drift;
       if (s.a < 0) s.da = Math.abs(s.da);
@@ -338,9 +379,36 @@ function initStars() {
       if (s.x < 0) s.x = 1; if (s.x > 1) s.x = 0;
       ctx.beginPath();
       ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(248,248,242,${s.a * 0.55})`;
+      ctx.fillStyle = `rgba(248,248,242,${s.a * 0.4})`;
       ctx.fill();
     }
+
+    // Falling particles
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.y += p.speed;
+      p.x += p.drift;
+      p.spin += p.spinSpeed;
+
+      if (p.y > canvas.height + 20) {
+        particles[i] = spawnParticle(false);
+        continue;
+      }
+
+      ctx.globalAlpha = p.a;
+      if (p.type === "star") {
+        ctx.strokeStyle = `rgba(${p.color},${p.a})`;
+        ctx.lineWidth = 0.8;
+        drawStar(p.x, p.y, p.r, p.spin);
+      } else {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${p.color},${p.a})`;
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
     requestAnimationFrame(draw);
   })();
 }

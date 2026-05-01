@@ -142,6 +142,31 @@
 
   boxes[0].focus();
 
+  function playUwuSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      // Cute ascending sparkle chime
+      const notes = [
+        { f: 523.25, t: 0.00 }, { f: 659.25, t: 0.10 },
+        { f: 783.99, t: 0.20 }, { f: 1046.50, t: 0.32 },
+        { f: 1318.51, t: 0.46 }, { f: 1046.50, t: 0.58 },
+      ];
+      notes.forEach(({ f, t }) => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = "sine";
+        osc.frequency.value = f;
+        gain.gain.setValueAtTime(0, ctx.currentTime + t);
+        gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + t + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.35);
+        osc.start(ctx.currentTime + t);
+        osc.stop(ctx.currentTime + t + 0.4);
+      });
+    } catch {}
+  }
+
   function checkFull() {
     const code = [...boxes].map(b => b.value).join("");
     btn.disabled = code.length < 5;
@@ -175,6 +200,7 @@
         const seen = localStorage.getItem("uwu_onboarded_" + data.user);
         if (seen) { window.location.replace("/"); return; }
         localStorage.setItem("uwu_onboarded_" + data.user, "1");
+        playUwuSound();
         document.getElementById("onboard-go").addEventListener("click", () => {
           window.location.replace("/");
         });
