@@ -118,7 +118,7 @@
     btn.disabled = true;
     errEl.textContent = "";
     try {
-      const res  = await fetch("/.netlify/functions/auth", {
+      const res  = await fetch("/api/auth", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ code }),

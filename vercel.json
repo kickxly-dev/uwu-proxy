@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    { "source": "/bare/:path*", "destination": "/api/bare" }
+  ],
+  "routes": [
+    {
+      "src": "/sw.js",
+      "headers": { "Service-Worker-Allowed": "/" },
+      "dest": "/sw.js"
+    },
+    {
+      "src": "/service/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}

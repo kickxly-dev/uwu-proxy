@@ -115,7 +115,7 @@
 
   async function fetchMovies(path, params = {}) {
     const q = new URLSearchParams({ path, ...params });
-    const res = await fetch(`/.netlify/functions/movies?${q}`);
+    const res = await fetch(`/api/movies?${q}`);
     return res.json();
   }
 

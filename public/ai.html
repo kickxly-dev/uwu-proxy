@@ -132,7 +132,7 @@
     sendBtn.disabled = true;
 
     try {
-      const res = await fetch("/.netlify/functions/ai", {
+      const res = await fetch("/api/ai", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ messages }),
