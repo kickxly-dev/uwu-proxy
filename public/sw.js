@@ -1,9 +1,9 @@
-importScripts("/uv/uv.bundle.js");
-importScripts("/uv/uv.config.js");
-importScripts("/uv/uv.sw.js");
+import { ScramjetServiceWorker } from "/scram/scramjet.bundle.js";
 
-const uvSW = new UVServiceWorker();
+const sw = new ScramjetServiceWorker();
 
 self.addEventListener("install",  () => self.skipWaiting());
-self.addEventListener("activate", (e) => e.waitUntil(clients.claim()));
-self.addEventListener("fetch", (event) => event.respondWith(uvSW.fetch(event)));
+self.addEventListener("activate", e => e.waitUntil(clients.claim()));
+self.addEventListener("fetch", event => {
+  if (sw.route(event)) event.respondWith(sw.fetch(event));
+});

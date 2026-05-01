@@ -68,25 +68,54 @@
   <iframe class="proxy-frame" id="proxy-frame" allowfullscreen allow="fullscreen; autoplay; gamepad; microphone; camera"></iframe>
 </div>
 
-<script src="/uv/uv.bundle.js"></script>
-<script src="/uv/uv.config.js"></script>
-<script>
+<script type="module">
+  import { ScramjetController } from "/scram/scramjet.bundle.js";
+  import { BareMuxConnection }   from "/baremux/index.mjs";
+
+  const WISP_SERVERS = [
+    "wss://wisp.mercuryworkshop.dev/",
+    "wss://anura.pro/wisp/",
+    "wss://wisp.dyn.nu/",
+  ];
+
   const frame   = document.getElementById("proxy-frame");
   const urlBar  = document.getElementById("url-bar");
   const btnBack = document.getElementById("btn-back");
   const btnFwd  = document.getElementById("btn-fwd");
   const loadBar = document.getElementById("loading-bar");
 
-  // Register SW
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
+  let controller = null;
+
+  // Set up Scramjet + Wisp transport — stays alive while proxy.html is open
+  async function initScramjet() {
+    const conn = new BareMuxConnection("/baremux/worker.js");
+    for (const wisp of WISP_SERVERS) {
+      try { await conn.setTransport("/epoxy/index.mjs", [{ wisp }]); break; } catch {}
+    }
+    controller = new ScramjetController({
+      prefix: "/scramjet/",
+      files: {
+        wasm:   "/scram/scramjet.wasm.wasm",
+        sync:   "/scram/scramjet.sync.js",
+        worker: "/scram/scramjet.bundle.js",
+      },
+    });
+    await controller.init("/sw.js");
+
+    // Wait for SW to control this page
+    if (!navigator.serviceWorker.controller) {
+      await Promise.race([
+        new Promise(r => navigator.serviceWorker.addEventListener("controllerchange", r, { once: true })),
+        new Promise(r => setTimeout(r, 4000)),
+      ]);
+    }
   }
 
   let history = [], histIdx = -1;
 
   function encodeNav(url) {
     if (!url.startsWith("http")) url = "https://" + url;
-    return __uv$config.prefix + __uv$config.encodeUrl(url);
+    return controller ? controller.encodeUrl(url) : url;
   }
 
   function loadUrl(url) {
@@ -118,16 +147,13 @@
     btnFwd.disabled  = histIdx >= history.length - 1;
   }
 
-  // Decode current iframe URL for the URL bar
   frame.addEventListener("load", () => {
     hideLoader();
     try {
       const href = frame.contentWindow.location.href;
-      if (href.includes(__uv$config.prefix)) {
-        const encoded = href.split(__uv$config.prefix)[1];
-        const decoded = __uv$config.decodeUrl(encoded.split("?")[0]);
-        urlBar.value = decoded;
-        document.title = decoded;
+      if (controller && href.includes("/scramjet/")) {
+        const decoded = controller.decodeUrl(href);
+        if (decoded) { urlBar.value = decoded; document.title = decoded; }
       }
     } catch {}
   });
@@ -148,10 +174,17 @@
     loadUrl(v);
   });
 
-  // Load from query param
+  // Init Scramjet then load target URL
   const params = new URLSearchParams(location.search);
   const target = params.get("url");
-  if (target) loadUrl(decodeURIComponent(target));
+
+  initScramjet().then(() => {
+    if (target) loadUrl(decodeURIComponent(target));
+  }).catch(err => {
+    console.error("proxy init failed:", err);
+    // Fallback: load anyway
+    if (target) { urlBar.value = decodeURIComponent(target); frame.src = decodeURIComponent(target); }
+  });
 </script>
 </body>
 </html>
