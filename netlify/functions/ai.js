@@ -20,7 +20,7 @@ exports.handler = async (event) => {
     method: "POST",
     headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "llama-3.1-70b-versatile",
+      model: "llama-3.3-70b-versatile",
       messages: [
         { role: "system", content: "You are a chill, helpful AI assistant on uwu proxy. Be concise and friendly. No need to be overly formal." },
         ...messages,
