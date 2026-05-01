@@ -1,10 +1,11 @@
 const USERS = {
-  [process.env.CODE_RYDER   || "47291"]: { user: "Ryder",   role: "admin"  },
-  [process.env.CODE_BECKHAM || "83650"]: { user: "Beckham", role: "member" },
-  [process.env.CODE_KOLLBY  || "29174"]: { user: "Kollby",  role: "member" },
-  [process.env.CODE_LEVI    || "61837"]: { user: "Levi",    role: "member" },
-  [process.env.CODE_LIAM    || "94523"]: { user: "Liam",    role: "member" },
-  [process.env.CODE_LOGAN   || "35817"]: { user: "Logan",   role: "member" },
+  [process.env.CODE_RYDER   || "82047"]: { user: "Ryder",   role: "owner"       },
+  [process.env.CODE_LOGAN   || "63914"]: { user: "Logan",   role: "slave owner" },
+  [process.env.CODE_BECKHAM || "39571"]: { user: "Beckham", role: "slave"       },
+  [process.env.CODE_KOLBY   || "74286"]: { user: "Kolby",   role: "slave"       },
+  [process.env.CODE_LEVI    || "51839"]: { user: "Levi",    role: "slave"       },
+  [process.env.CODE_LIAM    || "26473"]: { user: "Liam",    role: "slave"       },
+  [process.env.CODE_GIBSON  || "98132"]: { user: "Gibson",  role: "slave"       },
 };
 
 module.exports = async (req, res) => {

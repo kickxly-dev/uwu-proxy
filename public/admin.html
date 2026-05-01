@@ -151,7 +151,7 @@
       <div class="stat-grid">
         <div class="stat"><div class="stat-label">Status</div><div class="stat-value" style="color:var(--mint)"><span class="dot dot-mint"></span>online</div></div>
         <div class="stat"><div class="stat-label">Version</div><div class="stat-value" style="color:var(--pink)">v1.0.0</div></div>
-        <div class="stat"><div class="stat-label">Users</div><div class="stat-value" style="color:var(--purple)">6</div></div>
+        <div class="stat"><div class="stat-label">Users</div><div class="stat-value" style="color:var(--purple)">7</div></div>
         <div class="stat"><div class="stat-label">Games</div><div class="stat-value" style="color:var(--cyan)">39</div></div>
         <div class="stat"><div class="stat-label">Uptime</div><div class="stat-value" id="uptime-val">—</div></div>
         <div class="stat"><div class="stat-label">Logged in as</div><div class="stat-value" id="admin-name">—</div></div>
@@ -300,12 +300,13 @@
 
   // Users table
   const USERS = [
-    { user:"Ryder",   code:"47291", role:"admin",  env:"CODE_RYDER"   },
-    { user:"Beckham", code:"83650", role:"member", env:"CODE_BECKHAM" },
-    { user:"Kollby",  code:"29174", role:"member", env:"CODE_KOLLBY"  },
-    { user:"Levi",    code:"61837", role:"member", env:"CODE_LEVI"    },
-    { user:"Liam",    code:"94523", role:"member", env:"CODE_LIAM"    },
-    { user:"Logan",   code:"35817", role:"member", env:"CODE_LOGAN"   },
+    { user:"Ryder",   code:"82047", role:"owner",       env:"CODE_RYDER"   },
+    { user:"Logan",   code:"63914", role:"slave owner", env:"CODE_LOGAN"   },
+    { user:"Beckham", code:"39571", role:"slave",       env:"CODE_BECKHAM" },
+    { user:"Kolby",   code:"74286", role:"slave",       env:"CODE_KOLBY"   },
+    { user:"Levi",    code:"51839", role:"slave",       env:"CODE_LEVI"    },
+    { user:"Liam",    code:"26473", role:"slave",       env:"CODE_LIAM"    },
+    { user:"Gibson",  code:"98132", role:"slave",       env:"CODE_GIBSON"  },
   ];
   document.getElementById("users-tbody").innerHTML = USERS.map(u=>`
     <tr>

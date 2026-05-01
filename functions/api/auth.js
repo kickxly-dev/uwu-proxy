@@ -10,12 +10,13 @@ export async function onRequestOptions() {
 
 export async function onRequestPost({ request, env }) {
   const USERS = {
-    [env.CODE_RYDER   || "47291"]: { user: "Ryder",   role: "admin"  },
-    [env.CODE_BECKHAM || "83650"]: { user: "Beckham", role: "member" },
-    [env.CODE_KOLLBY  || "29174"]: { user: "Kollby",  role: "member" },
-    [env.CODE_LEVI    || "61837"]: { user: "Levi",    role: "member" },
-    [env.CODE_LIAM    || "94523"]: { user: "Liam",    role: "member" },
-    [env.CODE_LOGAN   || "35817"]: { user: "Logan",   role: "member" },
+    [env.CODE_RYDER   || "82047"]: { user: "Ryder",   role: "owner"       },
+    [env.CODE_LOGAN   || "63914"]: { user: "Logan",   role: "slave owner" },
+    [env.CODE_BECKHAM || "39571"]: { user: "Beckham", role: "slave"       },
+    [env.CODE_KOLBY   || "74286"]: { user: "Kolby",   role: "slave"       },
+    [env.CODE_LEVI    || "51839"]: { user: "Levi",    role: "slave"       },
+    [env.CODE_LIAM    || "26473"]: { user: "Liam",    role: "slave"       },
+    [env.CODE_GIBSON  || "98132"]: { user: "Gibson",  role: "slave"       },
   };
 
   try {
