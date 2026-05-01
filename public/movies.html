@@ -4,7 +4,14 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Movies · uwu proxy</title>
-  <script>(function(){var s=localStorage.getItem("uwu_session");if(!s)return location.replace("/login.html");try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem("uwu_session");location.replace("/login.html");}}catch{location.replace("/login.html");}})()</script>
+  <script>(function(){var s=localStorage.getItem("uwu_session");if(!s)return location.replace("/login.html");try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem("uwu_session");location.replace("/login.html");}}catch{location.replace("/login.html");}})();</script>
+  <style>
+    .wip-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:24px;}
+    .wip-title{font-family:'Comfortaa',sans-serif;font-size:2rem;font-weight:700;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .wip-sub{color:var(--dim);font-size:.95rem;}
+    .wip-back{margin-top:16px;padding:10px 22px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-xl);color:var(--dim);font-family:'Comfortaa',sans-serif;font-size:.88rem;cursor:pointer;text-decoration:none;transition:color .2s,border-color .2s;}
+    .wip-back:hover{color:var(--text);border-color:rgba(255,255,255,.15);}
+  </style>
   <link rel="stylesheet" href="/css/style.css"/>
   <style>
     .movies-search{max-width:520px;margin:0 auto 40px;display:flex;gap:10px;}
@@ -88,6 +95,12 @@
     <button class="watch-close" id="watch-close">close</button>
   </div>
   <iframe class="watch-frame" id="watch-frame" allowfullscreen allow="autoplay; fullscreen"></iframe>
+</div>
+
+<div class="wip-overlay">
+  <div class="wip-title">under construction</div>
+  <div class="wip-sub">movies are coming soon — check back later</div>
+  <a class="wip-back" href="/">go back</a>
 </div>
 
 <div class="toast-container" id="toast-container"></div>
