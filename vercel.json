@@ -1,16 +1,14 @@
 {
   "rewrites": [
-    { "source": "/bare/:path*", "destination": "/api/bare" }
+    { "source": "/bare/:path*", "destination": "/api/bare" },
+    { "source": "/service/:path*", "destination": "/index.html" }
   ],
-  "routes": [
+  "headers": [
     {
-      "src": "/sw.js",
-      "headers": { "Service-Worker-Allowed": "/" },
-      "dest": "/sw.js"
-    },
-    {
-      "src": "/service/(.*)",
-      "dest": "/index.html"
+      "source": "/sw.js",
+      "headers": [
+        { "key": "Service-Worker-Allowed", "value": "/" }
+      ]
     }
   ]
 }

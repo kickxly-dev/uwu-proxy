@@ -8,27 +8,17 @@ const USERS = {
 };
 
 module.exports = async (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin",  "*");
   res.setHeader("Access-Control-Allow-Headers", "*");
 
   if (req.method === "OPTIONS") return res.status(200).end();
-  if (req.method !== "POST")   return res.status(405).end("Method Not Allowed");
+  if (req.method !== "POST")   return res.status(405).json({ error: "method not allowed" });
 
-  let code;
-  try { code = String(req.body?.code ?? JSON.parse(await rawBody(req)).code); } catch {
-    return res.status(400).json({ error: "bad request" });
-  }
+  const code = String(req.body?.code || "");
+  if (!code) return res.status(400).json({ error: "missing code" });
 
   const match = USERS[code];
   if (!match) return res.status(401).json({ error: "wrong code" });
+
   return res.status(200).json(match);
 };
-
-function rawBody(req) {
-  return new Promise((resolve, reject) => {
-    let data = "";
-    req.on("data", chunk => data += chunk);
-    req.on("end", () => resolve(data));
-    req.on("error", reject);
-  });
-}
