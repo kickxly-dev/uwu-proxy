@@ -395,16 +395,9 @@ function escHtml(s) {
 // ── Whip system ──────────────────────────
 function initWhipListener() {
   const session = JSON.parse(localStorage.getItem("uwu_session") || "{}");
-  if (!session.user) return;
+  if (!session.user || !session.channel) return;
 
-  // Channel is derived from their code so it's not guessable
-  const code = Object.entries({
-    Ryder:"82047",Beckham:"39571",Kolby:"74286",Levi:"51839",Liam:"26473",Gibson:"98132",Logan:"63914"
-  }).find(([n]) => n === session.user)?.[1];
-  if (!code) return;
-
-  const channel = `uwuprx-${code}`;
-  const es = new EventSource(`https://ntfy.sh/${channel}/sse`);
+  const es = new EventSource(`https://ntfy.sh/${session.channel}/sse`);
 
   es.addEventListener("message", e => {
     try {
