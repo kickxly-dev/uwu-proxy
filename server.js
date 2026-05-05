@@ -70,9 +70,13 @@ app.all("/bare/*", async (req, res) => {
 });
 
 // SW at root and UV SW need scope "/" — serve both with the required header
-app.get(["/sw.js", "/uv/sw.js"], (req, res) => {
+const SW_FILES = {
+  "/sw.js":    join(__dirname, "public/sw.js"),
+  "/uv/sw.js": join(__dirname, "public/uv/sw.js"),
+};
+app.get(Object.keys(SW_FILES), (req, res) => {
   res.setHeader("Service-Worker-Allowed", "/");
-  res.sendFile(join(__dirname, "public" + req.path));
+  res.sendFile(SW_FILES[req.path]);
 });
 
 app.use(express.static(join(__dirname, "public")));
