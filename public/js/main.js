@@ -649,6 +649,7 @@ function playAnnounceTone() {
       osc.start(ctx.currentTime + i * 0.12);
       osc.stop(ctx.currentTime + i * 0.12 + 0.3);
     });
+    setTimeout(() => ctx.close(), 600);
   } catch {}
 }
 
