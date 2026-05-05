@@ -74,13 +74,13 @@ let proxyReady = false;
 
 // ── Proxy init ───────────────────────────
 async function initProxy() {
-  // Navigation goes to proxy.html which handles all proxy setup
-  // Just pre-register the SW so it's ready when proxy.html opens
+  // Navigation goes to proxy.html which handles the UV bootstrap.
+  // Pre-register the UV worker so the first open is less flaky.
   proxyReady = true;
   setProxyStatus("active", "proxy active");
   document.getElementById("search-btn")?.removeAttribute("disabled");
   try {
-    navigator.serviceWorker.register("/sw.js", { scope: "/", type: "module" }).catch(() => {});
+    navigator.serviceWorker.register("/uv/sw.js", { scope: "/service/" }).catch(() => {});
   } catch {}
 }
 
