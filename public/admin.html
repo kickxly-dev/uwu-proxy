@@ -502,9 +502,10 @@
         const data = JSON.parse(e.data);
         if (data.event === "message") {
           const user = data.title;
+          const wasOnline = lastSeen[user] && (Date.now() - lastSeen[user] < 90000);
           lastSeen[user] = Date.now();
           setOnline(user, true);
-          addLog("🟢", `${user} is online`, "green");
+          if (!wasOnline) addLog("🟢", `${user} is online`, "green");
         }
       } catch {}
     });

@@ -21,8 +21,15 @@
     var u = p.get("url");
     var n = p.get("name");
     if (u) {
-      document.getElementById("gf").src = u;
-      document.title = (n ? n + " · " : "") + "uwu proxy";
+      try {
+        var parsed = new URL(u);
+        // Only allow http(s) URLs — block javascript: and other schemes
+        if (parsed.protocol !== "https:" && parsed.protocol !== "http:") throw new Error("bad protocol");
+        document.getElementById("gf").src = parsed.href;
+        document.title = (n ? n.slice(0, 80) + " · " : "") + "uwu proxy";
+      } catch {
+        location.replace("/games.html");
+      }
     } else {
       location.replace("/games.html");
     }

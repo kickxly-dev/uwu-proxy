@@ -151,11 +151,6 @@ function renderRecent() {
 }
 
 // ── Card renderers ───────────────────────
-function gameUrl(item) {
-  if (item.direct) return `/game-frame.html?url=${encodeURIComponent(item.url)}&name=${encodeURIComponent(item.name)}`;
-  return null; // caller should use navigate()
-}
-
 function quickCard(item) {
   return `<div class="card" data-url="${escHtml(item.url)}" data-name="${escHtml(item.name)}" data-direct="${item.direct ? "1" : ""}">
     <div class="card-favicon"><img src="${escHtml(faviconUrl(item.url))}" alt="${escHtml(item.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
