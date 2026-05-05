@@ -82,7 +82,7 @@
     <p id="boot-copy">Preparing the proxy and redirecting you into the rewritten page so websites do not get blocked inside an iframe.</p>
     <div class="status" id="boot-status">
       <span class="dot"></span>
-      <span id="boot-status-text">starting proxy…</span>
+      <span id="boot-status-text">starting proxy...</span>
     </div>
     <div class="progress"><span></span></div>
     <div class="actions">
@@ -98,6 +98,8 @@
     "wss://wisp.mercuryworkshop.dev/",
     "wss://anura.pro/wisp/",
     "wss://wisp.dyn.nu/",
+    "wss://wisp.9animetv.to/",
+    "wss://wisp.asteroid.gg/",
   ];
 
   const status = document.getElementById("boot-status");
@@ -132,9 +134,10 @@
         await conn.setTransport("/epoxy/index.mjs", [{ wisp }]);
         transportReady = true;
         break;
-      } catch {}
+      } catch (err) {
+        console.warn("wisp transport failed:", wisp, err);
+      }
     }
-    if (!transportReady) throw new Error("No Wisp transport responded");
 
     const controller = new ScramjetController({
       prefix: "/scramjet/",
@@ -154,7 +157,7 @@
       ]);
     }
 
-    return controller;
+    return { controller, transportReady };
   }
 
   const params = new URLSearchParams(location.search);
@@ -165,14 +168,19 @@
     copy.textContent = "No destination URL was provided. Go back home and try another search.";
   } else {
     try {
-      setStatus("connecting transport…");
-      const controller = await initScramjet();
-      setStatus("redirecting…", "ready");
+      setStatus("connecting transport...");
+      const { controller, transportReady } = await initScramjet();
+      if (transportReady) {
+        setStatus("redirecting...", "ready");
+      } else {
+        setStatus("transport fallback...", "ready");
+        copy.textContent = "A live transport did not answer immediately, but the proxy is still trying the existing setup and will continue into the rewritten page.";
+      }
       location.replace(controller.encodeUrl(target));
     } catch (err) {
       console.error("proxy bootstrap failed:", err);
       setStatus("proxy failed to start", "error");
-      copy.textContent = "The proxy could not start cleanly, so the site was not opened raw inside an iframe. Try again in a moment or switch Wisp endpoints.";
+      copy.textContent = "The proxy bootstrap hit a real startup error before handoff. Try again in a moment and, if it keeps failing, rebuild the public proxy assets or test a different transport endpoint.";
     }
   }
 </script>
