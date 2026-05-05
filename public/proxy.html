@@ -6,71 +6,93 @@
   <title>uwu proxy</title>
   <script>(function(){var s=localStorage.getItem("uwu_session");if(!s)return location.replace("/login.html");try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem("uwu_session");location.replace("/login.html");}}catch{location.replace("/login.html");}})()</script>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    html,body{height:100%;overflow:hidden;background:#050510;font-family:'DM Sans',sans-serif;}
-    .toolbar{
-      display:flex;align-items:center;gap:6px;
-      padding:0 10px;height:44px;
-      background:#0c0c1e;
-      border-bottom:1px solid rgba(255,255,255,0.07);
-      flex-shrink:0;
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%;background:#050510;color:#f8f8f2;font-family:"DM Sans",sans-serif}
+    body{display:grid;place-items:center;padding:28px}
+    .boot{
+      width:min(520px,100%);
+      background:rgba(12,12,30,.9);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:28px;
+      padding:28px;
+      box-shadow:0 20px 70px rgba(0,0,0,.35);
+      backdrop-filter:blur(18px)
     }
-    .tb-btn{
-      width:32px;height:32px;border-radius:7px;
-      display:flex;align-items:center;justify-content:center;
-      background:none;border:none;color:#6272a4;cursor:pointer;
-      transition:color .15s,background .15s;flex-shrink:0;
+    .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#6272a4;margin-bottom:10px}
+    h1{font-size:clamp(2rem,5vw,2.8rem);line-height:.92;margin-bottom:10px}
+    p{color:#9aa3c6;line-height:1.6;font-size:.95rem}
+    .status{
+      margin-top:22px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:#13132b;
+      border:1px solid rgba(255,255,255,.06)
     }
-    .tb-btn:hover{color:#f8f8f2;background:rgba(255,255,255,0.07);}
-    .tb-btn:disabled{opacity:.25;pointer-events:none;}
-    .tb-url{
-      flex:1;height:28px;
-      background:#13132b;border:1px solid rgba(255,255,255,0.07);
-      border-radius:6px;padding:0 10px;
-      color:#f8f8f2;font-size:.8rem;font-family:'JetBrains Mono',monospace;
-      outline:none;transition:border-color .15s;
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:#f1fa8c;
+      box-shadow:0 0 0 8px rgba(241,250,140,.08)
     }
-    .tb-url:focus{border-color:rgba(255,121,198,0.5);}
-    .tb-home{
-      padding:0 12px;height:28px;border-radius:6px;
-      background:rgba(255,121,198,0.12);border:1px solid rgba(255,121,198,0.25);
-      color:#ff79c6;font-size:.75rem;font-weight:600;cursor:pointer;
-      white-space:nowrap;transition:background .15s;flex-shrink:0;
-      font-family:'DM Sans',sans-serif;
+    .status.ready .dot{background:#50fa7b;box-shadow:0 0 0 8px rgba(80,250,123,.08)}
+    .status.error .dot{background:#ff5555;box-shadow:0 0 0 8px rgba(255,85,85,.08)}
+    .progress{
+      margin-top:18px;
+      height:8px;
+      width:100%;
+      overflow:hidden;
+      border-radius:999px;
+      background:rgba(255,255,255,.06)
     }
-    .tb-home:hover{background:rgba(255,121,198,0.2);}
-    .proxy-frame{width:100%;flex:1;border:none;display:block;}
-    .wrap{display:flex;flex-direction:column;height:100vh;}
-    .loading-bar{
-      position:fixed;top:44px;left:0;height:2px;
+    .progress>span{
+      display:block;
+      width:38%;
+      height:100%;
+      border-radius:999px;
       background:linear-gradient(90deg,#ff79c6,#bd93f9);
-      width:0%;transition:width .3s ease;z-index:99;
+      animation:load 1.2s ease-in-out infinite
+    }
+    .actions{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:42px;
+      padding:0 16px;
+      border-radius:12px;
+      text-decoration:none;
+      border:1px solid rgba(255,255,255,.08);
+      color:#f8f8f2;
+      background:#13132b
+    }
+    @keyframes load{
+      0%{transform:translateX(-120%)}
+      100%{transform:translateX(320%)}
     }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"/>
 </head>
 <body>
-<div class="wrap">
-  <div class="toolbar">
-    <button class="tb-btn" id="btn-back" title="Back" disabled>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-    </button>
-    <button class="tb-btn" id="btn-fwd" title="Forward" disabled>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-    </button>
-    <button class="tb-btn" id="btn-reload" title="Reload">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-    </button>
-    <input class="tb-url" id="url-bar" type="text" placeholder="enter url or search..." spellcheck="false" autocomplete="off"/>
-    <button class="tb-home" id="btn-home">⌂ home</button>
+  <div class="boot">
+    <div class="eyebrow">Proxy Bootstrap</div>
+    <h1>opening site</h1>
+    <p id="boot-copy">Preparing the proxy and redirecting you into the rewritten page so websites do not get blocked inside an iframe.</p>
+    <div class="status" id="boot-status">
+      <span class="dot"></span>
+      <span id="boot-status-text">starting proxy…</span>
+    </div>
+    <div class="progress"><span></span></div>
+    <div class="actions">
+      <a class="btn" href="/">go home</a>
+    </div>
   </div>
-  <div class="loading-bar" id="loading-bar"></div>
-  <iframe class="proxy-frame" id="proxy-frame" allowfullscreen allow="fullscreen; autoplay; gamepad; microphone; camera"></iframe>
-</div>
 
 <script type="module">
   import { ScramjetController } from "/scram/scramjet.bundle.js";
-  import { BareMuxConnection }   from "/baremux/index.mjs";
+  import { BareMuxConnection } from "/baremux/index.mjs";
 
   const WISP_SERVERS = [
     "wss://wisp.mercuryworkshop.dev/",
@@ -78,113 +100,81 @@
     "wss://wisp.dyn.nu/",
   ];
 
-  const frame   = document.getElementById("proxy-frame");
-  const urlBar  = document.getElementById("url-bar");
-  const btnBack = document.getElementById("btn-back");
-  const btnFwd  = document.getElementById("btn-fwd");
-  const loadBar = document.getElementById("loading-bar");
+  const status = document.getElementById("boot-status");
+  const statusText = document.getElementById("boot-status-text");
+  const copy = document.getElementById("boot-copy");
 
-  let controller = null;
+  function setStatus(text, state = "") {
+    statusText.textContent = text;
+    status.className = `status ${state}`.trim();
+  }
 
-  // Set up Scramjet + Wisp transport — stays alive while proxy.html is open
-  async function initScramjet() {
-    const conn = new BareMuxConnection("/baremux/worker.js");
-    for (const wisp of WISP_SERVERS) {
-      try { await conn.setTransport("/epoxy/index.mjs", [{ wisp }]); break; } catch {}
+  function normalizeTarget(raw) {
+    let value = decodeURIComponent(raw || "").trim();
+    if (!value) return "";
+    if (!value.includes(".") || value.includes(" ")) {
+      value = `https://www.google.com/search?q=${encodeURIComponent(value)}`;
+    } else if (!/^https?:\/\//i.test(value)) {
+      value = "https://" + value;
     }
-    controller = new ScramjetController({
+    return value;
+  }
+
+  async function initScramjet() {
+    try {
+      await navigator.serviceWorker.register("/sw.js", { scope: "/", type: "module" });
+    } catch {}
+
+    const conn = new BareMuxConnection("/baremux/worker.js");
+    let transportReady = false;
+    for (const wisp of WISP_SERVERS) {
+      try {
+        await conn.setTransport("/epoxy/index.mjs", [{ wisp }]);
+        transportReady = true;
+        break;
+      } catch {}
+    }
+    if (!transportReady) throw new Error("No Wisp transport responded");
+
+    const controller = new ScramjetController({
       prefix: "/scramjet/",
       files: {
-        wasm:   "/scram/scramjet.wasm.wasm",
-        sync:   "/scram/scramjet.sync.js",
+        wasm: "/scram/scramjet.wasm.wasm",
+        sync: "/scram/scramjet.sync.js",
         worker: "/scram/scramjet.bundle.js",
       },
     });
+
     await controller.init("/sw.js");
 
-    // Wait for SW to control this page
     if (!navigator.serviceWorker.controller) {
       await Promise.race([
-        new Promise(r => navigator.serviceWorker.addEventListener("controllerchange", r, { once: true })),
-        new Promise(r => setTimeout(r, 4000)),
+        new Promise(resolve => navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true })),
+        new Promise(resolve => setTimeout(resolve, 5000)),
       ]);
     }
+
+    return controller;
   }
 
-  let history = [], histIdx = -1;
-
-  function encodeNav(url) {
-    if (!url.startsWith("http")) url = "https://" + url;
-    return controller ? controller.encodeUrl(url) : url;
-  }
-
-  function loadUrl(url) {
-    if (!url.trim()) return;
-    if (!url.startsWith("http")) url = "https://" + url;
-    urlBar.value = url;
-    showLoader();
-    frame.src = encodeNav(url);
-    if (histIdx < history.length - 1) history = history.slice(0, histIdx + 1);
-    history.push(url);
-    histIdx = history.length - 1;
-    updateBtns();
-  }
-
-  function showLoader() {
-    loadBar.style.width = "0%";
-    loadBar.style.transition = "none";
-    setTimeout(() => { loadBar.style.transition = "width 2s ease"; loadBar.style.width = "80%"; }, 10);
-  }
-
-  function hideLoader() {
-    loadBar.style.transition = "width .2s ease";
-    loadBar.style.width = "100%";
-    setTimeout(() => { loadBar.style.width = "0%"; loadBar.style.transition = "none"; }, 250);
-  }
-
-  function updateBtns() {
-    btnBack.disabled = histIdx <= 0;
-    btnFwd.disabled  = histIdx >= history.length - 1;
-  }
-
-  frame.addEventListener("load", () => {
-    hideLoader();
-    try {
-      const href = frame.contentWindow.location.href;
-      if (controller && href.includes("/scramjet/")) {
-        const decoded = controller.decodeUrl(href);
-        if (decoded) { urlBar.value = decoded; document.title = decoded; }
-      }
-    } catch {}
-  });
-
-  btnBack.addEventListener("click", () => {
-    if (histIdx > 0) { histIdx--; showLoader(); frame.src = encodeNav(history[histIdx]); urlBar.value = history[histIdx]; updateBtns(); }
-  });
-  btnFwd.addEventListener("click", () => {
-    if (histIdx < history.length - 1) { histIdx++; showLoader(); frame.src = encodeNav(history[histIdx]); urlBar.value = history[histIdx]; updateBtns(); }
-  });
-  document.getElementById("btn-reload").addEventListener("click", () => { showLoader(); frame.contentWindow?.location.reload(); });
-  document.getElementById("btn-home").addEventListener("click", () => location.replace("/"));
-
-  urlBar.addEventListener("keydown", e => {
-    if (e.key !== "Enter") return;
-    let v = urlBar.value.trim();
-    if (!v.includes(".") || v.includes(" ")) v = `https://www.google.com/search?q=${encodeURIComponent(v)}`;
-    loadUrl(v);
-  });
-
-  // Init Scramjet then load target URL
   const params = new URLSearchParams(location.search);
-  const target = params.get("url");
+  const target = normalizeTarget(params.get("url"));
 
-  initScramjet().then(() => {
-    if (target) loadUrl(decodeURIComponent(target));
-  }).catch(err => {
-    console.error("proxy init failed:", err);
-    // Fallback: load anyway
-    if (target) { urlBar.value = decodeURIComponent(target); frame.src = decodeURIComponent(target); }
-  });
+  if (!target) {
+    setStatus("missing destination", "error");
+    copy.textContent = "No destination URL was provided. Go back home and try another search.";
+  } else {
+    try {
+      setStatus("connecting transport…");
+      const controller = await initScramjet();
+      setStatus("redirecting…", "ready");
+      location.replace(controller.encodeUrl(target));
+    } catch (err) {
+      console.error("proxy bootstrap failed:", err);
+      setStatus("proxy failed to start", "error");
+      copy.textContent = "The proxy could not start cleanly, so the site was not opened raw inside an iframe. Try again in a moment or switch Wisp endpoints.";
+    }
+  }
 </script>
 </body>
 </html>
