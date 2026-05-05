@@ -5,6 +5,9 @@ const CORS = {
   "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS,HEAD",
 };
 
+const CHAT_CHANNEL     = "uwuprx-chat";
+const PRESENCE_CHANNEL = "uwuprx-presence";
+
 function cors(body, status = 200, extra = {}) {
   return new Response(body, { status, headers: { ...CORS, ...extra } });
 }
@@ -89,6 +92,75 @@ async function handleMovies(request, env) {
   }
 }
 
+// ── Chat relay ───────────────────────────────
+async function handleChatSend(request) {
+  if (request.method === "OPTIONS") return cors(null);
+  if (request.method !== "POST") return json({ error: "method not allowed" }, 405);
+  const user = request.headers.get("x-chat-user") || "anon";
+  const body = await request.text();
+  if (!body.trim()) return json({ error: "empty message" }, 400);
+  try {
+    const res = await fetch(`https://ntfy.sh/${CHAT_CHANNEL}`, {
+      method: "POST",
+      headers: { "Title": user, "Content-Type": "text/plain" },
+      body,
+    });
+    return cors(null, res.ok ? 200 : 502);
+  } catch (e) {
+    return json({ error: e.message }, 500);
+  }
+}
+
+async function handleChatStream() {
+  const upstream = await fetch(`https://ntfy.sh/${CHAT_CHANNEL}/sse`);
+  const headers = new Headers(CORS);
+  headers.set("content-type", "text/event-stream");
+  headers.set("cache-control", "no-cache");
+  headers.set("x-accel-buffering", "no");
+  return new Response(upstream.body, { headers });
+}
+
+// ── Presence relay ───────────────────────────
+function makeUsers(env) {
+  return {
+    [env.CODE_RYDER   || "82047"]: { user: "Ryder",   role: "owner"       },
+    [env.CODE_LOGAN   || "63914"]: { user: "Logan",   role: "slave owner" },
+    [env.CODE_BECKHAM || "39571"]: { user: "Beckham", role: "slave"       },
+    [env.CODE_KOLBY   || "74286"]: { user: "Kolby",   role: "slave"       },
+    [env.CODE_LEVI    || "51839"]: { user: "Levi",    role: "slave"       },
+    [env.CODE_LIAM    || "26473"]: { user: "Liam",    role: "slave"       },
+    [env.CODE_GIBSON  || "98132"]: { user: "Gibson",  role: "slave"       },
+  };
+}
+
+async function handlePresenceSend(request, env) {
+  if (request.method === "OPTIONS") return cors(null);
+  if (request.method !== "POST") return json({ error: "method not allowed" }, 405);
+  try {
+    const { code } = await request.json();
+    const USERS = makeUsers(env);
+    const match = USERS[String(code || "")];
+    if (!match) return json({ error: "unauthorized" }, 401);
+    await fetch(`https://ntfy.sh/${PRESENCE_CHANNEL}`, {
+      method: "POST",
+      headers: { "Title": match.user, "Content-Type": "text/plain" },
+      body: "online",
+    });
+    return cors(null, 200);
+  } catch (e) {
+    return json({ error: e.message }, 500);
+  }
+}
+
+async function handlePresenceStream() {
+  const upstream = await fetch(`https://ntfy.sh/${PRESENCE_CHANNEL}/sse`);
+  const headers = new Headers(CORS);
+  headers.set("content-type", "text/event-stream");
+  headers.set("cache-control", "no-cache");
+  headers.set("x-accel-buffering", "no");
+  return new Response(upstream.body, { headers });
+}
+
 // ── Bare server (v3) ─────────────────────────
 async function handleBare(request) {
   if (request.method === "OPTIONS") return cors(null);
@@ -147,11 +219,15 @@ export default {
     const url = new URL(request.url);
     const p   = url.pathname;
 
-    if (p === "/api/auth")          return handleAuth(request, env);
-    if (p === "/api/ai")            return handleAI(request, env);
-    if (p === "/api/movies")        return handleMovies(request, env);
-    if (p.startsWith("/bare/"))     return handleBare(request, env);
-    if (p === "/bare")              return handleBare(request, env);
+    if (p === "/api/auth")             return handleAuth(request, env);
+    if (p === "/api/ai")               return handleAI(request, env);
+    if (p === "/api/movies")           return handleMovies(request, env);
+    if (p === "/api/chat/send")        return handleChatSend(request);
+    if (p === "/api/chat/stream")      return handleChatStream();
+    if (p === "/api/presence")         return handlePresenceSend(request, env);
+    if (p === "/api/presence/stream")  return handlePresenceStream();
+    if (p.startsWith("/bare/"))        return handleBare(request, env);
+    if (p === "/bare")                 return handleBare(request, env);
 
     // Serve service workers with correct scope header
     if (p === "/sw.js" || p === "/uv/sw.js") {

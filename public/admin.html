@@ -99,6 +99,12 @@
     .role-slave{background:rgba(255,255,255,.06);color:var(--dim);}
     .copy-btn{padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--dim);font-size:.65rem;cursor:pointer;transition:all .18s;font-family:'JetBrains Mono',monospace;}
     .copy-btn:hover{color:var(--text);border-color:rgba(255,255,255,.2);}
+
+    /* ── Online status ── */
+    .online-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);transition:background .4s,box-shadow .4s;flex-shrink:0;}
+    .online-dot.online{background:var(--mint);box-shadow:0 0 0 3px rgba(34,197,94,.15);}
+    .status-cell{display:flex;align-items:center;gap:6px;font-size:.72rem;color:var(--muted);}
+    .status-cell .status-txt{font-size:.65rem;}
     .whip-btn{padding:5px 14px;border-radius:6px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--accent);font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:background .18s,transform .1s;}
     .whip-btn:hover{background:rgba(239,68,68,.22);transform:scale(1.04);}
     .whip-btn:active{transform:scale(.96);}
@@ -232,7 +238,7 @@
     <div class="box" style="padding:0;overflow:hidden;">
       <table class="user-table">
         <thead><tr>
-          <th>Name</th><th>Code</th><th>Role</th><th></th><th id="whip-col"></th>
+          <th>Name</th><th>Code</th><th>Role</th><th>Status</th><th></th><th id="whip-col"></th>
         </tr></thead>
         <tbody id="users-tbody"></tbody>
       </table>
@@ -387,10 +393,11 @@
   document.getElementById("users-tbody").innerHTML = USERS.map(u => {
     const rc = u.role === "owner" ? "role-owner" : u.role === "slave owner" ? "role-slave-owner" : "role-slave";
     const showWhip = canWhip && u.role === "slave" && u.user !== session.user;
-    return `<tr>
+    return `<tr data-user="${escHtml(u.user)}">
       <td><span class="user-name">${escHtml(u.user)}</span></td>
       <td><span class="code">${escHtml(u.code)}</span></td>
       <td><span class="role ${rc}">${escHtml(u.role)}</span></td>
+      <td><div class="status-cell"><span class="online-dot" id="odot-${escHtml(u.user)}"></span><span class="status-txt" id="otxt-${escHtml(u.user)}">offline</span></div></td>
       <td><button class="copy-btn" data-code="${escHtml(u.code)}" data-name="${escHtml(u.user)}">copy</button></td>
       <td>${showWhip ? `<button class="whip-btn" id="wb-${escHtml(u.user)}" data-user="${escHtml(u.user)}" data-code="${escHtml(u.code)}">WHIP</button>` : ""}</td>
     </tr>`;
@@ -478,6 +485,41 @@
     });
   })();
 
+  // ── Presence (online status) ──
+  (function() {
+    const lastSeen = {};
+
+    function setOnline(user, online) {
+      const dot = document.getElementById(`odot-${user}`);
+      const txt = document.getElementById(`otxt-${user}`);
+      if (dot) dot.classList.toggle("online", online);
+      if (txt) txt.textContent = online ? "online" : "offline";
+    }
+
+    const presenceEs = new EventSource("/api/presence/stream");
+    presenceEs.addEventListener("message", e => {
+      try {
+        const data = JSON.parse(e.data);
+        if (data.event === "message") {
+          const user = data.title;
+          const wasOnline = lastSeen[user] && (Date.now() - lastSeen[user] < 90000);
+          lastSeen[user] = Date.now();
+          setOnline(user, true);
+          if (!wasOnline) addLog("🟢", `${user} is online`, "green");
+        }
+      } catch {}
+    });
+
+    // Expire status after 90 s without a ping
+    setInterval(() => {
+      const now = Date.now();
+      USERS.forEach(u => {
+        const seen = lastSeen[u.user] || 0;
+        setOnline(u.user, now - seen < 90000);
+      });
+    }, 15000);
+  })();
+
   // ── Live Chat ──
   (function() {
     const msgs   = document.getElementById("chat-msgs");
@@ -496,7 +538,7 @@
       msgs.scrollTop = msgs.scrollHeight;
     }
 
-    const es = new EventSource(`https://ntfy.sh/${CHAT_CHANNEL}/sse`);
+    const es = new EventSource(`/api/chat/stream`);
     es.addEventListener("open",    () => dot.classList.add("live"));
     es.addEventListener("error",   () => dot.classList.remove("live"));
     es.addEventListener("message", e => {
@@ -512,9 +554,9 @@
       if (!text) return;
       inp.value = "";
       try {
-        await fetch(`https://ntfy.sh/${CHAT_CHANNEL}`, {
+        await fetch("/api/chat/send", {
           method: "POST",
-          headers: { "Title": session.user || "admin" },
+          headers: { "x-chat-user": session.user || "admin" },
           body: text,
         });
         addLog("💬", `sent chat: "${text.slice(0, 40)}"`, "green");

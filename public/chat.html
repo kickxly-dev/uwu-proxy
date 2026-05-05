@@ -221,9 +221,9 @@
     if (!text) return;
     chatSend.disabled = true;
     try {
-      await fetch(`https://ntfy.sh/${CHAT_CHANNEL}`, {
+      await fetch("/api/chat/send", {
         method: "POST",
-        headers: { "Title": session.user || "anon" },
+        headers: { "x-chat-user": session.user || "anon" },
         body: text,
       });
       chatInput.value = "";
@@ -235,7 +235,7 @@
     chatInput.focus();
   });
 
-  const chatEs = new EventSource(`https://ntfy.sh/${CHAT_CHANNEL}/sse`);
+  const chatEs = new EventSource(`/api/chat/stream`);
   chatEs.addEventListener("open", () => setStatus("live", true));
   chatEs.addEventListener("error", () => setStatus("reconnecting...", false));
   chatEs.addEventListener("message", e => {

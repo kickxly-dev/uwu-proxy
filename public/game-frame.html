@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>game · uwu proxy</title>
+  <script>(function(){var s=localStorage.getItem("uwu_session");if(!s)return location.replace("/login.html");try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem("uwu_session");location.replace("/login.html");}}catch{location.replace("/login.html");}})()</script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{width:100%;height:100%;background:#000;overflow:hidden}
+    iframe{width:100%;height:100%;border:none;display:block}
+    .back{position:fixed;top:10px;left:10px;z-index:9999;background:rgba(0,0,0,.75);color:#fff;padding:7px 14px;border-radius:8px;font-family:sans-serif;font-size:13px;backdrop-filter:blur(4px);cursor:pointer;border:none;transition:background .15s}
+    .back:hover{background:rgba(0,0,0,.92)}
+  </style>
+</head>
+<body>
+  <button class="back" onclick="history.back()">← back</button>
+  <iframe id="gf" allowfullscreen allow="fullscreen; autoplay; gamepad; clipboard-write"></iframe>
+  <script>
+    var p = new URLSearchParams(location.search);
+    var u = p.get("url");
+    var n = p.get("name");
+    if (u) {
+      try {
+        var parsed = new URL(u);
+        // Only allow http(s) URLs — block javascript: and other schemes
+        if (parsed.protocol !== "https:" && parsed.protocol !== "http:") throw new Error("bad protocol");
+        document.getElementById("gf").src = parsed.href;
+        document.title = (n ? n.slice(0, 80) + " · " : "") + "uwu proxy";
+      } catch {
+        location.replace("/games.html");
+      }
+    } else {
+      location.replace("/games.html");
+    }
+  </script>
+</body>
+</html>

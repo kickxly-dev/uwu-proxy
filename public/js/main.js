@@ -6,47 +6,47 @@ const VERSION = "1.1.0";
 // ── Data ────────────────────────────────
 const GAMES = [
   // Action — all from reliable hosts (no Poki)
-  { name: "Slope",              url: "https://3kh0.github.io/projects/slope/index.html",              tag: "action",  category: "action",  desc: "Roll a ball down an endless slope"   },
-  { name: "1v1 LOL",            url: "https://1v1.lol/",                                              tag: "action",  category: "action",  desc: "Build and battle in real-time"       },
-  { name: "Krunker",            url: "https://krunker.io/",                                           tag: "action",  category: "action",  desc: "Fast-paced browser FPS"              },
-  { name: "Shell Shockers",     url: "https://shellshock.io/",                                        tag: "action",  category: "action",  desc: "Egg-based FPS battle royale"         },
-  { name: "Tunnel Rush",        url: "https://3kh0.github.io/projects/tunnel-rush/index.html",        tag: "action",  category: "action",  desc: "Race through colorful tunnels"       },
-  { name: "MotoX3M",            url: "https://3kh0.github.io/projects/motox3m/index.html",            tag: "action",  category: "action",  desc: "Extreme motocross stunts"            },
-  { name: "Vex 5",              url: "https://3kh0.github.io/projects/vex5/index.html",               tag: "action",  category: "action",  desc: "Stick figure platformer"             },
-  { name: "Rooftop Snipers",    url: "https://3kh0.github.io/projects/rooftop-snipers/index.html",   tag: "action",  category: "action",  desc: "2-player rooftop battle"             },
-  { name: "Temple Run 2",       url: "https://3kh0.github.io/projects/temple-run-2/index.html",       tag: "action",  category: "action",  desc: "Classic endless runner"              },
-  { name: "Flappy Bird",        url: "https://3kh0.github.io/projects/flappy-bird/index.html",        tag: "action",  category: "action",  desc: "Tap to fly through pipes"            },
-  { name: "Geometry Dash",      url: "https://3kh0.github.io/projects/geodash/index.html",            tag: "action",  category: "action",  desc: "Rhythm-based platformer"             },
-  { name: "Doodle Jump",        url: "https://3kh0.github.io/projects/doodle-jump/index.html",        tag: "action",  category: "action",  desc: "Jump your way to the top"            },
+  { name: "Slope",              url: "https://3kh0.github.io/projects/slope/index.html",              tag: "action",  category: "action",  desc: "Roll a ball down an endless slope",    direct: true  },
+  { name: "1v1 LOL",            url: "https://1v1.lol/",                                              tag: "action",  category: "action",  desc: "Build and battle in real-time"                       },
+  { name: "Krunker",            url: "https://krunker.io/",                                           tag: "action",  category: "action",  desc: "Fast-paced browser FPS"                               },
+  { name: "Shell Shockers",     url: "https://shellshock.io/",                                        tag: "action",  category: "action",  desc: "Egg-based FPS battle royale"                         },
+  { name: "Tunnel Rush",        url: "https://3kh0.github.io/projects/tunnel-rush/index.html",        tag: "action",  category: "action",  desc: "Race through colorful tunnels",        direct: true  },
+  { name: "MotoX3M",            url: "https://3kh0.github.io/projects/motox3m/index.html",            tag: "action",  category: "action",  desc: "Extreme motocross stunts",             direct: true  },
+  { name: "Vex 5",              url: "https://3kh0.github.io/projects/vex5/index.html",               tag: "action",  category: "action",  desc: "Stick figure platformer",              direct: true  },
+  { name: "Rooftop Snipers",    url: "https://3kh0.github.io/projects/rooftop-snipers/index.html",   tag: "action",  category: "action",  desc: "2-player rooftop battle",              direct: true  },
+  { name: "Temple Run 2",       url: "https://3kh0.github.io/projects/temple-run-2/index.html",       tag: "action",  category: "action",  desc: "Classic endless runner",               direct: true  },
+  { name: "Flappy Bird",        url: "https://3kh0.github.io/projects/flappy-bird/index.html",        tag: "action",  category: "action",  desc: "Tap to fly through pipes",             direct: true  },
+  { name: "Geometry Dash",      url: "https://3kh0.github.io/projects/geodash/index.html",            tag: "action",  category: "action",  desc: "Rhythm-based platformer",              direct: true  },
+  { name: "Doodle Jump",        url: "https://3kh0.github.io/projects/doodle-jump/index.html",        tag: "action",  category: "action",  desc: "Jump your way to the top",             direct: true  },
   // IO
-  { name: "Slither.io",         url: "https://slither.io/",                                           tag: "io",      category: "io",      desc: "Grow your snake, eat everything"     },
-  { name: "Agar.io",            url: "https://agar.io/",                                              tag: "io",      category: "io",      desc: "Eat cells, grow massive"             },
-  { name: "Skribbl.io",         url: "https://skribbl.io/",                                           tag: "io",      category: "io",      desc: "Draw and guess with friends"         },
-  { name: "Paper.io 2",         url: "https://3kh0.github.io/projects/paperio2/index.html",           tag: "io",      category: "io",      desc: "Claim territory on the map"          },
-  { name: "Smash Karts",        url: "https://smashkarts.io/",                                        tag: "io",      category: "io",      desc: "Kart battle royale"                  },
-  { name: "Doomz.io",           url: "https://doomz.io/",                                             tag: "io",      category: "io",      desc: "Multiplayer doom-style shooter"      },
-  { name: "JustFall.lol",       url: "https://justfall.lol/",                                         tag: "io",      category: "io",      desc: "Fall and survive"                    },
-  { name: "LOLBeans",           url: "https://lolbeans.io/",                                          tag: "io",      category: "io",      desc: "Bean battle royale"                  },
+  { name: "Slither.io",         url: "https://slither.io/",                                           tag: "io",      category: "io",      desc: "Grow your snake, eat everything"                      },
+  { name: "Agar.io",            url: "https://agar.io/",                                              tag: "io",      category: "io",      desc: "Eat cells, grow massive"                              },
+  { name: "Skribbl.io",         url: "https://skribbl.io/",                                           tag: "io",      category: "io",      desc: "Draw and guess with friends"                          },
+  { name: "Paper.io 2",         url: "https://3kh0.github.io/projects/paperio2/index.html",           tag: "io",      category: "io",      desc: "Claim territory on the map",           direct: true  },
+  { name: "Smash Karts",        url: "https://smashkarts.io/",                                        tag: "io",      category: "io",      desc: "Kart battle royale"                                   },
+  { name: "Doomz.io",           url: "https://doomz.io/",                                             tag: "io",      category: "io",      desc: "Multiplayer doom-style shooter"                       },
+  { name: "JustFall.lol",       url: "https://justfall.lol/",                                         tag: "io",      category: "io",      desc: "Fall and survive"                                     },
+  { name: "LOLBeans",           url: "https://lolbeans.io/",                                          tag: "io",      category: "io",      desc: "Bean battle royale"                                   },
   // Classic
-  { name: "Minecraft Classic",  url: "https://classic.minecraft.net/",                                tag: "classic", category: "classic", desc: "Classic Minecraft in browser"        },
-  { name: "Minecraft (Eaglercraft)", url: "https://3kh0.github.io/projects/minecraft/index.html",     tag: "classic", category: "classic", desc: "Full Minecraft browser edition"      },
-  { name: "Google Snake",       url: "https://3kh0.github.io/projects/google-snake/index.html",       tag: "classic", category: "classic", desc: "Classic snake game"                  },
-  { name: "Lichess",            url: "https://lichess.org/",                                          tag: "classic", category: "classic", desc: "Free open-source chess"              },
-  { name: "Tetris",             url: "https://jstris.jezevec10.com/",                                 tag: "classic", category: "classic", desc: "Competitive Tetris"                  },
+  { name: "Minecraft Classic",  url: "https://classic.minecraft.net/",                                tag: "classic", category: "classic", desc: "Classic Minecraft in browser"                         },
+  { name: "Minecraft (Eaglercraft)", url: "https://3kh0.github.io/projects/minecraft/index.html",     tag: "classic", category: "classic", desc: "Full Minecraft browser edition",       direct: true  },
+  { name: "Google Snake",       url: "https://3kh0.github.io/projects/google-snake/index.html",       tag: "classic", category: "classic", desc: "Classic snake game",                   direct: true  },
+  { name: "Lichess",            url: "https://lichess.org/",                                          tag: "classic", category: "classic", desc: "Free open-source chess"                               },
+  { name: "Tetris",             url: "https://jstris.jezevec10.com/",                                 tag: "classic", category: "classic", desc: "Competitive Tetris"                                   },
   // Puzzle
-  { name: "2048",               url: "https://play2048.co/",                                          tag: "puzzle",  category: "puzzle",  desc: "Slide tiles to reach 2048"           },
-  { name: "Little Alchemy 2",   url: "https://littlealchemy2.com/",                                   tag: "puzzle",  category: "puzzle",  desc: "Combine elements to make new things" },
-  { name: "Wordle",             url: "https://3kh0.github.io/projects/wordle/index.html",             tag: "puzzle",  category: "puzzle",  desc: "Guess the 5-letter word"             },
-  { name: "Minesweeper",        url: "https://3kh0.github.io/projects/minesweeper/index.html",        tag: "puzzle",  category: "puzzle",  desc: "Clear the minefield"                 },
-  { name: "Cut the Rope",       url: "https://3kh0.github.io/projects/ctr/index.html",                tag: "puzzle",  category: "puzzle",  desc: "Feed candy to the monster"           },
-  { name: "Connect Four",       url: "https://papergames.io/en/connect4",                             tag: "puzzle",  category: "puzzle",  desc: "Classic connect four"                },
+  { name: "2048",               url: "https://play2048.co/",                                          tag: "puzzle",  category: "puzzle",  desc: "Slide tiles to reach 2048"                            },
+  { name: "Little Alchemy 2",   url: "https://littlealchemy2.com/",                                   tag: "puzzle",  category: "puzzle",  desc: "Combine elements to make new things"                  },
+  { name: "Wordle",             url: "https://3kh0.github.io/projects/wordle/index.html",             tag: "puzzle",  category: "puzzle",  desc: "Guess the 5-letter word",              direct: true  },
+  { name: "Minesweeper",        url: "https://3kh0.github.io/projects/minesweeper/index.html",        tag: "puzzle",  category: "puzzle",  desc: "Clear the minefield",                  direct: true  },
+  { name: "Cut the Rope",       url: "https://3kh0.github.io/projects/ctr/index.html",                tag: "puzzle",  category: "puzzle",  desc: "Feed candy to the monster",            direct: true  },
+  { name: "Connect Four",       url: "https://papergames.io/en/connect4",                             tag: "puzzle",  category: "puzzle",  desc: "Classic connect four"                                 },
   // Casual
-  { name: "Cookie Clicker",     url: "https://orteil.dashnet.org/cookieclicker/",                     tag: "casual",  category: "casual",  desc: "Click cookies, build an empire"      },
-  { name: "Retro Bowl",         url: "https://3kh0.github.io/projects/retro-bowl/index.html",         tag: "casual",  category: "casual",  desc: "Lead your team to the championship"  },
-  { name: "Idle Breakout",      url: "https://3kh0.github.io/projects/idle-breakout/index.html",      tag: "casual",  category: "casual",  desc: "Idle ball-breaking fun"              },
-  { name: "Gartic Phone",       url: "https://garticphone.com/",                                      tag: "casual",  category: "casual",  desc: "Telephone with drawings"             },
-  { name: "Monkeytype",         url: "https://monkeytype.com/",                                       tag: "casual",  category: "casual",  desc: "Clean typing speed test"             },
-  { name: "GeoGuessr",          url: "https://www.geoguessr.com/",                                    tag: "casual",  category: "casual",  desc: "Guess where you are in the world"    },
+  { name: "Cookie Clicker",     url: "https://orteil.dashnet.org/cookieclicker/",                     tag: "casual",  category: "casual",  desc: "Click cookies, build an empire"                       },
+  { name: "Retro Bowl",         url: "https://3kh0.github.io/projects/retro-bowl/index.html",         tag: "casual",  category: "casual",  desc: "Lead your team to the championship",   direct: true  },
+  { name: "Idle Breakout",      url: "https://3kh0.github.io/projects/idle-breakout/index.html",      tag: "casual",  category: "casual",  desc: "Idle ball-breaking fun",               direct: true  },
+  { name: "Gartic Phone",       url: "https://garticphone.com/",                                      tag: "casual",  category: "casual",  desc: "Telephone with drawings"                              },
+  { name: "Monkeytype",         url: "https://monkeytype.com/",                                       tag: "casual",  category: "casual",  desc: "Clean typing speed test"                              },
+  { name: "GeoGuessr",          url: "https://www.geoguessr.com/",                                    tag: "casual",  category: "casual",  desc: "Guess where you are in the world"                     },
 ];
 
 const APPS = [
@@ -152,7 +152,7 @@ function renderRecent() {
 
 // ── Card renderers ───────────────────────
 function quickCard(item) {
-  return `<div class="card" data-url="${escHtml(item.url)}">
+  return `<div class="card" data-url="${escHtml(item.url)}" data-name="${escHtml(item.name)}" data-direct="${item.direct ? "1" : ""}">
     <div class="card-favicon"><img src="${escHtml(faviconUrl(item.url))}" alt="${escHtml(item.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
     <div class="card-name">${escHtml(item.name)}</div>
     <div class="card-desc">${escHtml(item.desc)}</div>
@@ -164,7 +164,10 @@ function renderQuickGames() {
   const el = document.getElementById("quick-games");
   if (!el) return;
   el.innerHTML = QUICK_GAMES.map(quickCard).join("");
-  el.querySelectorAll(".card").forEach(c => c.addEventListener("click", () => navigate(c.dataset.url)));
+  el.querySelectorAll(".card").forEach(c => c.addEventListener("click", () => {
+    if (c.dataset.direct) window.location.href = `/game-frame.html?url=${encodeURIComponent(c.dataset.url)}&name=${encodeURIComponent(c.dataset.name)}`;
+    else navigate(c.dataset.url);
+  }));
 }
 
 function renderQuickApps() {
@@ -179,20 +182,27 @@ function renderGames(filter = "all") {
   if (!grid) return;
   const list = filter === "all" ? GAMES : GAMES.filter(g => g.category === filter);
   grid.innerHTML = list.map(g => `
-    <div class="game-card" data-url="${escHtml(g.url)}">
+    <div class="game-card" data-url="${escHtml(g.url)}" data-name="${escHtml(g.name)}" data-direct="${g.direct ? "1" : ""}">
       <div class="game-thumb"><img src="${escHtml(faviconUrl(g.url))}" alt="${escHtml(g.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
       <div class="game-info">
         <div class="game-name">${escHtml(g.name)}</div>
         <div class="game-desc">${escHtml(g.desc)}</div>
         <div class="game-footer">
           <div class="card-tag tag-${g.tag}">${g.tag}</div>
-          <button class="play-btn" ${proxyReady ? "" : "disabled"}>play</button>
+          <button class="play-btn" ${(proxyReady || g.direct) ? "" : "disabled"}>play</button>
         </div>
       </div>
     </div>`).join("");
   grid.querySelectorAll(".game-card").forEach(card => {
-    card.querySelector(".play-btn")?.addEventListener("click", e => { e.stopPropagation(); navigate(card.dataset.url); });
-    card.addEventListener("click", () => navigate(card.dataset.url));
+    function openGame() {
+      if (card.dataset.direct) {
+        window.location.href = `/game-frame.html?url=${encodeURIComponent(card.dataset.url)}&name=${encodeURIComponent(card.dataset.name)}`;
+      } else {
+        navigate(card.dataset.url);
+      }
+    }
+    card.querySelector(".play-btn")?.addEventListener("click", e => { e.stopPropagation(); openGame(); });
+    card.addEventListener("click", openGame);
   });
 }
 
@@ -576,8 +586,8 @@ function initChat() {
     }
   }
 
-  // Subscribe via SSE
-  const es = new EventSource(`https://ntfy.sh/${CHAT_CHANNEL}/sse`);
+  // Subscribe via SSE relay
+  const es = new EventSource(`/api/chat/stream`);
   es.addEventListener("message", e => {
     try {
       const data = JSON.parse(e.data);
@@ -591,9 +601,9 @@ function initChat() {
     if (!text) return;
     inp.value = "";
     try {
-      await fetch(`https://ntfy.sh/${CHAT_CHANNEL}`, {
+      await fetch("/api/chat/send", {
         method: "POST",
-        headers: { "Title": session.user },
+        headers: { "x-chat-user": session.user },
         body: text,
       });
     } catch { toast("couldn't send message", "error"); }
@@ -653,6 +663,26 @@ function playAnnounceTone() {
   } catch {}
 }
 
+// ── Presence heartbeat ───────────────────
+function initPresence() {
+  const session = JSON.parse(localStorage.getItem("uwu_session") || "{}");
+  if (!session.user || !session.channel) return;
+  const code = session.channel.replace("uwuprx-", "");
+
+  async function ping() {
+    try {
+      await fetch("/api/presence", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+    } catch {}
+  }
+
+  ping();
+  setInterval(ping, 60000);
+}
+
 // ── Boot ─────────────────────────────────
 (async () => {
   loadTheme();
@@ -672,6 +702,7 @@ function playAnnounceTone() {
   await initProxy();
   renderGames(document.querySelector("#game-filters .filter-btn.active")?.dataset.filter || "all");
   initWhipListener();
+  initPresence();
   initChat();
   initAnnounceListener();
 })();
