@@ -500,7 +500,7 @@ const MAX_CHAT_MESSAGE_LENGTH  = 200;
 const ANNOUNCEMENT_AUTO_HIDE_MS = 30000;
 
 function initChat() {
-  if (window.location.pathname === "/proxy.html") return;
+  if (window.location.pathname === "/proxy.html" || window.location.pathname === "/chat.html") return;
   const session = JSON.parse(localStorage.getItem("uwu_session") || "{}");
   if (!session.user) return;
 

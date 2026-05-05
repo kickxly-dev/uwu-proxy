@@ -59,17 +59,10 @@
     .announce-send-btn:hover{opacity:.85;}
     .announce-send-btn:disabled{opacity:.35;pointer-events:none;}
     .announce-status{font-size:.75rem;color:var(--mint);margin-top:8px;min-height:18px;}
-    /* Chat section */
-    .chat-preview-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:36px;}
-    .chat-msgs-admin{max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
-    .chat-msg-admin{font-size:.82rem;padding:6px 10px;background:var(--bg3);border-radius:6px;}
-    .chat-msg-admin strong{color:var(--pink);}
-    .chat-send-row{display:flex;gap:8px;}
-    .chat-inp-admin{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.82rem;outline:none;transition:border-color .2s;}
-    .chat-inp-admin:focus{border-color:rgba(255,121,198,.4);}
-    .chat-inp-admin::placeholder{color:var(--muted);}
-    .chat-btn-admin{padding:8px 16px;background:var(--pink);border:none;border-radius:8px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap;}
-    .chat-btn-admin:hover{opacity:.85;}
+    .chat-redirect-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:36px;}
+    .chat-redirect-copy{color:var(--dim);font-size:.85rem;line-height:1.6;margin-bottom:14px;}
+    .chat-open-btn{padding:10px 18px;background:linear-gradient(135deg,var(--pink),var(--purple));border:none;border-radius:8px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+    .chat-open-btn:hover{opacity:.88;text-decoration:none;}
   </style>
 </head>
 <body>
@@ -115,16 +108,10 @@
     </div>
   </div>
 
-  <!-- Global Chat -->
   <h2>💬 Global Chat</h2>
-  <div class="chat-preview-box">
-    <div class="chat-msgs-admin" id="admin-chat-msgs">
-      <div style="color:var(--muted);font-size:.78rem;padding:8px">connecting to chat…</div>
-    </div>
-    <div class="chat-send-row">
-      <input class="chat-inp-admin" id="admin-chat-inp" placeholder="send a message to everyone…" maxlength="200"/>
-      <button class="chat-btn-admin" id="admin-chat-send">Send</button>
-    </div>
+  <div class="chat-redirect-box">
+    <div class="chat-redirect-copy">Global chat has been moved out of the admin panel. Open the shared chat tab so everyone can talk in one place.</div>
+    <a class="chat-open-btn" href="/chat.html">Open Chat Tab</a>
   </div>
 
   <h2>User Codes</h2>
@@ -205,47 +192,6 @@
       setTimeout(() => { status.textContent = ""; }, 4000);
     });
   }
-
-  // Admin global chat
-  const CHAT_CHANNEL = "uwuprx-chat";
-  const adminChatMsgs = document.getElementById("admin-chat-msgs");
-
-  function addAdminChatMsg(from, text) {
-    const placeholder = adminChatMsgs.querySelector("[style*='connecting']");
-    if (placeholder) placeholder.remove();
-    const el = document.createElement("div");
-    el.className = "chat-msg-admin";
-    el.innerHTML = `<strong>${escHtml(from)}</strong>: ${escHtml(text)}`;
-    adminChatMsgs.appendChild(el);
-    adminChatMsgs.scrollTop = adminChatMsgs.scrollHeight;
-  }
-
-  const chatEs = new EventSource(`https://ntfy.sh/${CHAT_CHANNEL}/sse`);
-  chatEs.addEventListener("message", e => {
-    try {
-      const data = JSON.parse(e.data);
-      if (data.event === "message") addAdminChatMsg(data.title || "?", data.message || "");
-    } catch {}
-  });
-  chatEs.addEventListener("open", () => {
-    const placeholder = adminChatMsgs.querySelector("[style*='connecting']");
-    if (placeholder) placeholder.textContent = "chat connected — live messages will appear here";
-  });
-
-  const adminChatInp = document.getElementById("admin-chat-inp");
-  document.getElementById("admin-chat-send").addEventListener("click", async () => {
-    const text = adminChatInp.value.trim();
-    if (!text) return;
-    adminChatInp.value = "";
-    try {
-      await fetch(`https://ntfy.sh/${CHAT_CHANNEL}`, {
-        method: "POST",
-        headers: { "Title": session.user },
-        body: text,
-      });
-    } catch { showToast("couldn't send message"); }
-  });
-  adminChatInp.addEventListener("keydown", e => { if (e.key === "Enter") document.getElementById("admin-chat-send").click(); });
 
   async function whip(name, code, btn) {
     btn.disabled = true;
