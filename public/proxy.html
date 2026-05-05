@@ -91,17 +91,8 @@
   </div>
 
 <script type="module">
-  import { ScramjetController } from "/scram/scramjet.bundle.js";
-  import { BareMuxConnection } from "/baremux/index.mjs";
-  import { SCRAMJET_CONFIG, SCRAMJET_DB_NAME, isRecoverableScramjetError } from "/js/scramjet-config.js";
-
-  const WISP_SERVERS = [
-    "wss://wisp.mercuryworkshop.dev/",
-    "wss://anura.pro/wisp/",
-    "wss://wisp.dyn.nu/",
-    "wss://wisp.9animetv.to/",
-    "wss://wisp.asteroid.gg/",
-  ];
+  import "/uv/uv.bundle.js";
+  import "/uv/uv.config.js";
 
   const status = document.getElementById("boot-status");
   const statusText = document.getElementById("boot-status-text");
@@ -124,84 +115,23 @@
     return value;
   }
 
-  async function deleteScramjetDb() {
-    await new Promise(resolve => {
-      const request = indexedDB.deleteDatabase(SCRAMJET_DB_NAME);
-      request.onsuccess = () => resolve();
-      request.onerror = () => resolve();
-      request.onblocked = () => resolve();
+  async function initUv() {
+    const registration = await navigator.serviceWorker.register("/uv/sw.js", {
+      scope: __uv$config.prefix,
+      updateViaCache: "none",
     });
-  }
 
-  async function resetScramjetState() {
-    try {
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(
-        registrations
-          .filter(registration => registration.active?.scriptURL?.includes("/sw.js") || registration.installing?.scriptURL?.includes("/sw.js") || registration.waiting?.scriptURL?.includes("/sw.js"))
-          .map(registration => registration.unregister().catch(() => false))
-      );
-    } catch {}
-
-    await deleteScramjetDb();
-  }
-
-  async function ensureServiceWorkerControl() {
-    if (navigator.serviceWorker.controller) return;
-
-    await Promise.race([
-      new Promise(resolve => navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true })),
-      new Promise(resolve => setTimeout(resolve, 2500)),
-    ]);
-
-    if (navigator.serviceWorker.controller) return;
-
-    if (params.get("swReload") !== "1") {
-      setStatus("syncing service worker...");
-      copy.textContent = "The proxy worker is installed but not controlling this tab yet. Reloading this page once so the proxy can attach cleanly.";
-      params.set("swReload", "1");
-      location.replace(`${location.pathname}?${params.toString()}`);
-      return new Promise(() => {});
+    if (registration.installing) {
+      await new Promise(resolve => {
+        registration.installing.addEventListener("statechange", () => {
+          if (registration.active) resolve();
+        });
+      });
+    } else if (!registration.active) {
+      await navigator.serviceWorker.ready;
     }
 
-    throw new Error("Service worker did not take control of the proxy bootstrap page.");
-  }
-
-  async function initScramjet(recoveryAttempted = false) {
-    try {
-      await navigator.serviceWorker.register("/sw.js", { scope: "/", type: "module" });
-    } catch {}
-
-    const conn = new BareMuxConnection("/baremux/worker.js");
-    let transportReady = false;
-    for (const wisp of WISP_SERVERS) {
-      try {
-        await conn.setTransport("/epoxy/index.mjs", [{ wisp }]);
-        transportReady = true;
-        break;
-      } catch (err) {
-        console.warn("wisp transport failed:", wisp, err);
-      }
-    }
-
-    const controller = new ScramjetController(SCRAMJET_CONFIG);
-
-    try {
-      await controller.init("/sw.js");
-    } catch (error) {
-      if (!recoveryAttempted && isRecoverableScramjetError(error)) {
-        console.warn("scramjet init hit stale state, resetting once...", error);
-        setStatus("repairing proxy storage...");
-        copy.textContent = "An older broken Scramjet install was detected. Resetting the proxy cache once, then trying again.";
-        await resetScramjetState();
-        return initScramjet(true);
-      }
-      throw error;
-    }
-
-    await ensureServiceWorkerControl();
-
-    return { controller, transportReady };
+    return registration;
   }
 
   const target = normalizeTarget(params.get("url"));
@@ -211,20 +141,15 @@
     copy.textContent = "No destination URL was provided. Go back home and try another search.";
   } else {
     try {
-      setStatus("connecting transport...");
-      const { controller, transportReady } = await initScramjet();
-      if (transportReady) {
-        setStatus("redirecting...", "ready");
-      } else {
-        setStatus("transport fallback...", "ready");
-        copy.textContent = "A live transport did not answer immediately, but the proxy is still trying the existing setup and will continue into the rewritten page.";
-      }
-      params.delete("swReload");
-      location.replace(controller.encodeUrl(target));
+      setStatus("starting proxy...");
+      copy.textContent = "Preparing the Ultraviolet worker and sending you into the proxied page.";
+      await initUv();
+      setStatus("redirecting...", "ready");
+      location.replace(__uv$config.prefix + __uv$config.encodeUrl(target));
     } catch (err) {
       console.error("proxy bootstrap failed:", err);
       setStatus("proxy failed to start", "error");
-      copy.textContent = "The proxy bootstrap hit a real startup error before handoff. If it keeps happening after one retry, the browser may still have an old service worker cached and should be hard-refreshed once.";
+      copy.textContent = "The proxy bootstrap hit a real startup error before handoff. If this keeps failing, the deploy may still be serving an older worker or the bare endpoint may be blocked.";
     }
   }
 </script>
