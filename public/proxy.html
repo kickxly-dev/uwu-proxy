@@ -106,6 +106,7 @@
   const status = document.getElementById("boot-status");
   const statusText = document.getElementById("boot-status-text");
   const copy = document.getElementById("boot-copy");
+  const params = new URLSearchParams(location.search);
 
   function setStatus(text, state = "") {
     statusText.textContent = text;
@@ -145,6 +146,27 @@
     await deleteScramjetDb();
   }
 
+  async function ensureServiceWorkerControl() {
+    if (navigator.serviceWorker.controller) return;
+
+    await Promise.race([
+      new Promise(resolve => navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true })),
+      new Promise(resolve => setTimeout(resolve, 2500)),
+    ]);
+
+    if (navigator.serviceWorker.controller) return;
+
+    if (params.get("swReload") !== "1") {
+      setStatus("syncing service worker...");
+      copy.textContent = "The proxy worker is installed but not controlling this tab yet. Reloading this page once so the proxy can attach cleanly.";
+      params.set("swReload", "1");
+      location.replace(`${location.pathname}?${params.toString()}`);
+      return new Promise(() => {});
+    }
+
+    throw new Error("Service worker did not take control of the proxy bootstrap page.");
+  }
+
   async function initScramjet(recoveryAttempted = false) {
     try {
       await navigator.serviceWorker.register("/sw.js", { scope: "/", type: "module" });
@@ -177,17 +199,11 @@
       throw error;
     }
 
-    if (!navigator.serviceWorker.controller) {
-      await Promise.race([
-        new Promise(resolve => navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true })),
-        new Promise(resolve => setTimeout(resolve, 5000)),
-      ]);
-    }
+    await ensureServiceWorkerControl();
 
     return { controller, transportReady };
   }
 
-  const params = new URLSearchParams(location.search);
   const target = normalizeTarget(params.get("url"));
 
   if (!target) {
@@ -203,6 +219,7 @@
         setStatus("transport fallback...", "ready");
         copy.textContent = "A live transport did not answer immediately, but the proxy is still trying the existing setup and will continue into the rewritten page.";
       }
+      params.delete("swReload");
       location.replace(controller.encodeUrl(target));
     } catch (err) {
       console.error("proxy bootstrap failed:", err);
