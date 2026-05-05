@@ -98,7 +98,7 @@ function navigate(rawUrl) {
   let url = rawUrl.trim();
   if (!/^https?:\/\//i.test(url)) url = "https://" + url;
   try { new URL(url); } catch {
-    url = `https://www.google.com/search?q=${encodeURIComponent(rawUrl)}`;
+    url = `https://duckduckgo.com/?q=${encodeURIComponent(rawUrl)}`;
   }
   if (!proxyReady) { toast("proxy still loading.", "error"); return; }
   addRecent(url);
@@ -110,7 +110,7 @@ function handleSearch(raw) {
   const input = raw.trim();
   if (!input) return;
   const looksLikeUrl = /^(https?:\/\/)?[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(input);
-  navigate(looksLikeUrl ? input : `https://www.google.com/search?q=${encodeURIComponent(input)}`);
+  navigate(looksLikeUrl ? input : `https://duckduckgo.com/?q=${encodeURIComponent(input)}`);
 }
 
 // ── Favicon helper ───────────────────────
