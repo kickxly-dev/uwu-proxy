@@ -1,7 +1,7 @@
 /* uwu proxy — main.js */
 
 /* globals loaded via <script> tags: Ultraviolet, __uv$config */
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 
 // ── Data ────────────────────────────────
 const GAMES = [
