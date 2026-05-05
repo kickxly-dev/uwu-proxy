@@ -69,10 +69,10 @@ app.all("/bare/*", async (req, res) => {
   }
 });
 
-// SW at root needs scope "/" — serve with the required header
-app.get("/sw.js", (req, res) => {
+// SW at root and UV SW need scope "/" — serve both with the required header
+app.get(["/sw.js", "/uv/sw.js"], (req, res) => {
   res.setHeader("Service-Worker-Allowed", "/");
-  res.sendFile(join(__dirname, "public/sw.js"));
+  res.sendFile(join(__dirname, "public" + req.path));
 });
 
 app.use(express.static(join(__dirname, "public")));

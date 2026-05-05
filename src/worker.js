@@ -153,8 +153,8 @@ export default {
     if (p.startsWith("/bare/"))     return handleBare(request, env);
     if (p === "/bare")              return handleBare(request, env);
 
-    // Serve sw.js with correct scope header
-    if (p === "/sw.js") {
+    // Serve service workers with correct scope header
+    if (p === "/sw.js" || p === "/uv/sw.js") {
       const res = await env.ASSETS.fetch(request);
       const headers = new Headers(res.headers);
       headers.set("Service-Worker-Allowed", "/");
