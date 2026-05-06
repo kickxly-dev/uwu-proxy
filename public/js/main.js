@@ -255,7 +255,7 @@ function renderQuickGames() {
   el.innerHTML = QUICK_GAMES.map(quickCard).join("");
   el.querySelectorAll(".card").forEach(c => c.addEventListener("click", () => {
     if (c.dataset.local) window.location.href = c.dataset.url;
-    else if (c.dataset.direct) window.location.href = `/game-frame.html?url=${encodeURIComponent(c.dataset.url)}&name=${encodeURIComponent(c.dataset.name)}`;
+    else if (c.dataset.direct) window.location.href = `/game-frame.html?url=${encodeURIComponent(c.dataset.url)}&name=${encodeURIComponent(c.dataset.name)}&direct=1`;
     else navigate(c.dataset.url);
   }));
 }
@@ -288,7 +288,7 @@ function renderGames(filter = "all") {
       if (card.dataset.local) {
         window.location.href = card.dataset.url;
       } else if (card.dataset.direct) {
-        window.location.href = `/game-frame.html?url=${encodeURIComponent(card.dataset.url)}&name=${encodeURIComponent(card.dataset.name)}`;
+        window.location.href = `/game-frame.html?url=${encodeURIComponent(card.dataset.url)}&name=${encodeURIComponent(card.dataset.name)}&direct=1`;
       } else {
         navigate(card.dataset.url);
       }
