@@ -24,12 +24,25 @@ const GAMES = [
   { name: "Drift Boss",         url: "https://3kh0.github.io/projects/drift-boss/index.html",         tag: "action",  category: "action",  desc: "Master the drift around corners",      direct: true  },
   { name: "Friday Night Funkin", url: "https://3kh0.github.io/projects/fnf/index.html",               tag: "action",  category: "action",  desc: "Rhythm battle game",                   direct: true  },
   { name: "Gun Mayhem 2",       url: "https://3kh0.github.io/projects/gun-mayhem-2/index.html",       tag: "action",  category: "action",  desc: "Platform shooter chaos",               direct: true  },
+  { name: "Snow Rider 3D",       url: "https://3kh0.github.io/projects/snow-rider-3d/index.html",      tag: "action",  category: "action",  desc: "Snowboard down endless slopes",        direct: true  },
+  { name: "OvO",                 url: "https://3kh0.github.io/projects/ovo/index.html",                tag: "action",  category: "action",  desc: "Fast precision platformer",            direct: true  },
+  { name: "Drive Mad",           url: "https://3kh0.github.io/projects/drive-mad/index.html",          tag: "action",  category: "action",  desc: "Crazy physics driving obstacles",       direct: true  },
+  { name: "Drift Hunters",       url: "https://3kh0.github.io/projects/drift-hunters/index.html",      tag: "action",  category: "action",  desc: "Tune cars and drift for points",        direct: true  },
+  { name: "Toss the Turtle",     url: "https://3kh0.github.io/projects/toss-the-turtle/index.html",    tag: "action",  category: "action",  desc: "Launch a turtle as far as possible",    direct: true  },
+  { name: "Learn to Fly 3",      url: "https://3kh0.github.io/projects/learn-to-fly-3/index.html",     tag: "action",  category: "action",  desc: "Launch a penguin into the sky",         direct: true  },
+  { name: "Rolling Sky",         url: "/games/Rolling-sky.html",                                       tag: "action",  category: "action",  desc: "Roll a ball across sky platforms",      local: true   },
+  { name: "The Backrooms",       url: "/games/backrooms.html",                                         tag: "action",  category: "action",  desc: "Escape the endless liminal rooms",      local: true   },
+  { name: "Bullet Force",        url: "/games/bullet-force.html",                                      tag: "action",  category: "action",  desc: "3D multiplayer FPS shooter",            local: true   },
   { name: "1v1 LOL",            url: "https://1v1.lol/",                                              tag: "action",  category: "action",  desc: "Build and battle in real-time"                       },
   { name: "Krunker",            url: "https://krunker.io/",                                           tag: "action",  category: "action",  desc: "Fast-paced browser FPS"                               },
   { name: "Shell Shockers",     url: "https://shellshock.io/",                                        tag: "action",  category: "action",  desc: "Egg-based FPS battle royale"                         },
   // IO
   { name: "Paper.io 2",         url: "https://3kh0.github.io/projects/paperio2/index.html",           tag: "io",      category: "io",      desc: "Claim territory on the map",           direct: true  },
   { name: "Boxing Random",      url: "https://3kh0.github.io/projects/boxing-random/index.html",      tag: "io",      category: "io",      desc: "Random boxing mayhem",                 direct: true  },
+  { name: "Narrow One",         url: "/games/narrow-one.html",                                        tag: "io",      category: "io",      desc: "Multiplayer archery capture the flag",  local: true   },
+  { name: "Bloxd.io",           url: "/games/bloxd-io.html",                                          tag: "io",      category: "io",      desc: "Multiplayer Minecraft-style building",   local: true   },
+  { name: "Venge.io",           url: "/games/venge-io.html",                                          tag: "io",      category: "io",      desc: "Multiplayer FPS battle arena",          local: true   },
+  { name: "Merc Zone",          url: "/games/Merc-zone.html",                                         tag: "io",      category: "io",      desc: "Top-down multiplayer shooter",          local: true   },
   { name: "Slither.io",         url: "https://slither.io/",                                           tag: "io",      category: "io",      desc: "Grow your snake, eat everything"                      },
   { name: "Agar.io",            url: "https://agar.io/",                                              tag: "io",      category: "io",      desc: "Eat cells, grow massive"                              },
   { name: "Skribbl.io",         url: "https://skribbl.io/",                                           tag: "io",      category: "io",      desc: "Draw and guess with friends"                          },
@@ -44,6 +57,13 @@ const GAMES = [
   { name: "Duck Life",          url: "https://3kh0.github.io/projects/duck-life/index.html",           tag: "classic", category: "classic", desc: "Train your duck to race",              direct: true  },
   { name: "Tank Trouble",       url: "https://3kh0.github.io/projects/tank-trouble/index.html",       tag: "classic", category: "classic", desc: "Tank maze battle",                     direct: true  },
   { name: "Fireboy & Watergirl",url: "https://3kh0.github.io/projects/fireboy-and-watergirl/index.html", tag: "classic", category: "classic", desc: "Elemental puzzle platformer",      direct: true  },
+  { name: "FNAF 1",             url: "/games/fnaf1.html",                                             tag: "classic", category: "classic", desc: "Five Nights at Freddy's original",      local: true   },
+  { name: "FNAF 2",             url: "/games/fnaf2.html",                                             tag: "classic", category: "classic", desc: "Five Nights at Freddy's 2",             local: true   },
+  { name: "FNAF 3",             url: "/games/fnaf3.html",                                             tag: "classic", category: "classic", desc: "Five Nights at Freddy's 3",             local: true   },
+  { name: "FNAF 4",             url: "/games/fnaf4.html",                                             tag: "classic", category: "classic", desc: "Five Nights at Freddy's 4",             local: true   },
+  { name: "FNAF Sister Location", url: "/games/sister-location.html",                                 tag: "classic", category: "classic", desc: "Five Nights at Freddy's Sister Location", local: true },
+  { name: "Minecraft Tower Defense", url: "/games/Minecraft-tower-defense.html",                      tag: "classic", category: "classic", desc: "Defend your Minecraft base",            local: true   },
+  { name: "Survival Craft",     url: "/games/Survival-craft.html",                                    tag: "classic", category: "classic", desc: "Eaglercraft multiplayer survival",       local: true   },
   { name: "Minecraft Classic",  url: "https://classic.minecraft.net/",                                tag: "classic", category: "classic", desc: "Classic Minecraft in browser"                         },
   { name: "Lichess",            url: "https://lichess.org/",                                          tag: "classic", category: "classic", desc: "Free open-source chess"                               },
   { name: "Tetris",             url: "https://jstris.jezevec10.com/",                                 tag: "classic", category: "classic", desc: "Competitive Tetris"                                   },
@@ -54,6 +74,8 @@ const GAMES = [
   { name: "Helix Jump",         url: "https://3kh0.github.io/projects/helix-jump/index.html",         tag: "puzzle",  category: "puzzle",  desc: "Drop through the spinning helix",      direct: true  },
   { name: "Bob the Robber",     url: "https://3kh0.github.io/projects/bob-the-robber/index.html",     tag: "puzzle",  category: "puzzle",  desc: "Sneak and steal through levels",       direct: true  },
   { name: "Crossy Road",        url: "https://3kh0.github.io/projects/crossy-road/index.html",        tag: "puzzle",  category: "puzzle",  desc: "Hop across endless roads",             direct: true  },
+  { name: "Bloxorz",            url: "https://3kh0.github.io/projects/bloxorz/index.html",            tag: "puzzle",  category: "puzzle",  desc: "Roll a block to the goal",             direct: true  },
+  { name: "Tower Defense",      url: "/games/Tower-defense.html",                                     tag: "puzzle",  category: "puzzle",  desc: "Build towers, stop the enemies",        local: true   },
   { name: "2048",               url: "https://play2048.co/",                                          tag: "puzzle",  category: "puzzle",  desc: "Slide tiles to reach 2048"                            },
   { name: "Little Alchemy 2",   url: "https://littlealchemy2.com/",                                   tag: "puzzle",  category: "puzzle",  desc: "Combine elements to make new things"                  },
   { name: "Connect Four",       url: "https://papergames.io/en/connect4",                             tag: "puzzle",  category: "puzzle",  desc: "Classic connect four"                                 },
@@ -172,7 +194,7 @@ function renderRecent() {
 
 // ── Card renderers ───────────────────────
 function quickCard(item) {
-  return `<div class="card" data-url="${escHtml(item.url)}" data-name="${escHtml(item.name)}" data-direct="${item.direct ? "1" : ""}">
+  return `<div class="card" data-url="${escHtml(item.url)}" data-name="${escHtml(item.name)}" data-direct="${item.direct ? "1" : ""}" data-local="${item.local ? "1" : ""}">
     <div class="card-favicon"><img src="${escHtml(faviconUrl(item.url))}" alt="${escHtml(item.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
     <div class="card-name">${escHtml(item.name)}</div>
     <div class="card-desc">${escHtml(item.desc)}</div>
@@ -185,7 +207,8 @@ function renderQuickGames() {
   if (!el) return;
   el.innerHTML = QUICK_GAMES.map(quickCard).join("");
   el.querySelectorAll(".card").forEach(c => c.addEventListener("click", () => {
-    if (c.dataset.direct) window.location.href = `/game-frame.html?url=${encodeURIComponent(c.dataset.url)}&name=${encodeURIComponent(c.dataset.name)}`;
+    if (c.dataset.local) window.location.href = c.dataset.url;
+    else if (c.dataset.direct) window.location.href = `/game-frame.html?url=${encodeURIComponent(c.dataset.url)}&name=${encodeURIComponent(c.dataset.name)}`;
     else navigate(c.dataset.url);
   }));
 }
@@ -202,20 +225,22 @@ function renderGames(filter = "all") {
   if (!grid) return;
   const list = filter === "all" ? GAMES : GAMES.filter(g => g.category === filter);
   grid.innerHTML = list.map(g => `
-    <div class="game-card" data-url="${escHtml(g.url)}" data-name="${escHtml(g.name)}" data-direct="${g.direct ? "1" : ""}">
+    <div class="game-card" data-url="${escHtml(g.url)}" data-name="${escHtml(g.name)}" data-direct="${g.direct ? "1" : ""}" data-local="${g.local ? "1" : ""}">
       <div class="game-thumb"><img src="${escHtml(faviconUrl(g.url))}" alt="${escHtml(g.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
       <div class="game-info">
         <div class="game-name">${escHtml(g.name)}</div>
         <div class="game-desc">${escHtml(g.desc)}</div>
         <div class="game-footer">
           <div class="card-tag tag-${g.tag}">${g.tag}</div>
-          <button class="play-btn" ${(proxyReady || g.direct) ? "" : "disabled"}>play</button>
+          <button class="play-btn" ${(proxyReady || g.direct || g.local) ? "" : "disabled"}>play</button>
         </div>
       </div>
     </div>`).join("");
   grid.querySelectorAll(".game-card").forEach(card => {
     function openGame() {
-      if (card.dataset.direct) {
+      if (card.dataset.local) {
+        window.location.href = card.dataset.url;
+      } else if (card.dataset.direct) {
         window.location.href = `/game-frame.html?url=${encodeURIComponent(card.dataset.url)}&name=${encodeURIComponent(card.dataset.name)}`;
       } else {
         navigate(card.dataset.url);
