@@ -162,7 +162,7 @@ const APPS = [
 ];
 
 const GAMES_PATH_PREFIX = "/games/";
-const LOCAL_GAMES = GAMES.filter(g => typeof g.url === "string" && g.url.startsWith(GAMES_PATH_PREFIX));
+const LOCAL_GAMES = GAMES.filter(g => typeof g.url === "string" && g.url && g.url.startsWith(GAMES_PATH_PREFIX));
 const QUICK_GAMES = LOCAL_GAMES.slice(0, 6);
 const QUICK_APPS  = APPS.slice(0, 6);
 const ALLOWED_LOCAL_GAME_PATHS = new Set(
@@ -257,9 +257,14 @@ function quickCard(item) {
 function openGameUrl(rawUrl) {
   const url = (rawUrl || "").trim();
   if (!url) return toast("Game URL is missing", "error");
-  if (ALLOWED_LOCAL_GAME_PATHS.has(url)) {
-    window.location.href = url;
-    return;
+  if (ALLOWED_LOCAL_GAME_PATHS.has(url) && url.startsWith(GAMES_PATH_PREFIX)) {
+    try {
+      const localTarget = new URL(url, location.origin);
+      if (localTarget.origin === location.origin && localTarget.pathname.startsWith(GAMES_PATH_PREFIX)) {
+        window.location.href = localTarget.pathname + localTarget.search + localTarget.hash;
+        return;
+      }
+    } catch {}
   }
   toast("Games are restricted to this site only", "error");
 }
