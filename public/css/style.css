@@ -72,7 +72,7 @@ input { font-family: inherit; }
   50%       { transform: translate(30px, -40px); }
 }
 #stars-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.4; }
-/* Clean mode: disable airy animated background effects. */
+/* Disabled airy animated background effects for cleaner UI. */
 .bg-canvas, #stars-canvas { display: none; }
 
 /* ═══════════════════════════

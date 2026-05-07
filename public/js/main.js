@@ -256,7 +256,7 @@ function renderQuickGames() {
   // Game URLs are final launch URLs (local HTML files or direct hosted game pages).
   el.querySelectorAll(".card").forEach(c => c.addEventListener("click", () => {
     const target = (c.dataset.url || "").trim();
-    if (!target) return toast("game url missing", "error");
+    if (!target) return toast("Game URL is missing", "error");
     window.location.href = target;
   }));
 }
@@ -288,7 +288,7 @@ function renderGames(filter = "all") {
     function openGame() {
       // Games no longer depend on proxy readiness; launch directly.
       const target = (card.dataset.url || "").trim();
-      if (!target) return toast("game url missing", "error");
+      if (!target) return toast("Game URL is missing", "error");
       window.location.href = target;
     }
     card.querySelector(".play-btn")?.addEventListener("click", e => { e.stopPropagation(); openGame(); });
