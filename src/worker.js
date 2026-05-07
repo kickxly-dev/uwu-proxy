@@ -7,6 +7,17 @@ const CORS = {
 
 const CHAT_CHANNEL     = "uwuprx-chat";
 const PRESENCE_CHANNEL = "uwuprx-presence";
+const DEFAULT_USERS = [
+  { user: "Ryder",   role: "owner",       code: "82047", envKey: "CODE_RYDER" },
+  { user: "Logan",   role: "slave owner", code: "63914", envKey: "CODE_LOGAN" },
+  { user: "Beckham", role: "slave",       code: "39571", envKey: "CODE_BECKHAM" },
+  { user: "Kolby",   role: "slave",       code: "74286", envKey: "CODE_KOLBY" },
+  { user: "Levi",    role: "slave",       code: "51839", envKey: "CODE_LEVI" },
+  { user: "Liam",    role: "slave",       code: "26473", envKey: "CODE_LIAM" },
+  { user: "Gibson",  role: "slave",       code: "98132", envKey: "CODE_GIBSON" },
+];
+
+globalThis.__uwuCodeOverrides = globalThis.__uwuCodeOverrides || {};
 
 function cors(body, status = 200, extra = {}) {
   return new Response(body, { status, headers: { ...CORS, ...extra } });
@@ -21,21 +32,12 @@ async function handleAuth(request, env) {
   if (request.method === "OPTIONS") return cors(null);
   if (request.method !== "POST") return json({ error: "method not allowed" }, 405);
 
-  const USERS = {
-    [env.CODE_RYDER   || "82047"]: { user: "Ryder",   role: "owner"       },
-    [env.CODE_LOGAN   || "63914"]: { user: "Logan",   role: "slave owner" },
-    [env.CODE_BECKHAM || "39571"]: { user: "Beckham", role: "slave"       },
-    [env.CODE_KOLBY   || "74286"]: { user: "Kolby",   role: "slave"       },
-    [env.CODE_LEVI    || "51839"]: { user: "Levi",    role: "slave"       },
-    [env.CODE_LIAM    || "26473"]: { user: "Liam",    role: "slave"       },
-    [env.CODE_GIBSON  || "98132"]: { user: "Gibson",  role: "slave"       },
-  };
-
   try {
     const { code } = await request.json();
-    const match = USERS[String(code || "")];
+    const value = String(code || "");
+    const match = getEffectiveUsers(env).find(u => u.code === value);
     if (!match) return json({ error: "wrong code" }, 401);
-    return json({ ...match, channel: `uwuprx-${String(code)}` });
+    return json({ user: match.user, role: match.role, channel: `uwuprx-${value}` });
   } catch {
     return json({ error: "bad request" }, 400);
   }
@@ -121,16 +123,13 @@ async function handleChatStream() {
 }
 
 // ── Presence relay ───────────────────────────
-function makeUsers(env) {
-  return {
-    [env.CODE_RYDER   || "82047"]: { user: "Ryder",   role: "owner"       },
-    [env.CODE_LOGAN   || "63914"]: { user: "Logan",   role: "slave owner" },
-    [env.CODE_BECKHAM || "39571"]: { user: "Beckham", role: "slave"       },
-    [env.CODE_KOLBY   || "74286"]: { user: "Kolby",   role: "slave"       },
-    [env.CODE_LEVI    || "51839"]: { user: "Levi",    role: "slave"       },
-    [env.CODE_LIAM    || "26473"]: { user: "Liam",    role: "slave"       },
-    [env.CODE_GIBSON  || "98132"]: { user: "Gibson",  role: "slave"       },
-  };
+function getEffectiveUsers(env) {
+  const overrides = globalThis.__uwuCodeOverrides || {};
+  return DEFAULT_USERS.map(u => ({
+    user: u.user,
+    role: u.role,
+    code: String(overrides[u.user] || env[u.envKey] || u.code),
+  }));
 }
 
 async function handlePresenceSend(request, env) {
@@ -138,8 +137,7 @@ async function handlePresenceSend(request, env) {
   if (request.method !== "POST") return json({ error: "method not allowed" }, 405);
   try {
     const { code } = await request.json();
-    const USERS = makeUsers(env);
-    const match = USERS[String(code || "")];
+    const match = getEffectiveUsers(env).find(u => u.code === String(code || ""));
     if (!match) return json({ error: "unauthorized" }, 401);
     await fetch(`https://ntfy.sh/${PRESENCE_CHANNEL}`, {
       method: "POST",
@@ -149,6 +147,36 @@ async function handlePresenceSend(request, env) {
     return cors(null, 200);
   } catch (e) {
     return json({ error: e.message }, 500);
+  }
+}
+
+async function handleAuthCodes(request, env) {
+  if (request.method === "OPTIONS") return cors(null);
+  if (request.method === "GET") return json({ users: getEffectiveUsers(env) });
+  if (request.method !== "POST") return json({ error: "method not allowed" }, 405);
+
+  try {
+    const body = await request.json();
+    const actorCode = String(body?.actorCode || "");
+    const user = String(body?.user || "");
+    const code = String(body?.code || "").trim();
+    if (!actorCode || !user || !/^\d{5}$/.test(code)) return json({ error: "invalid payload" }, 400);
+
+    const users = getEffectiveUsers(env);
+    const actor = users.find(u => u.code === actorCode);
+    if (!actor || actor.role !== "owner" || actor.user !== "Ryder") return json({ error: "owner access required" }, 403);
+
+    const target = users.find(u => u.user === user);
+    if (!target) return json({ error: "user not found" }, 404);
+    if (users.some(u => u.user !== user && u.code === code)) return json({ error: "code already in use" }, 409);
+
+    const defaults = Object.fromEntries(DEFAULT_USERS.map(u => [u.user, env[u.envKey] || u.code]));
+    if (code === defaults[user]) delete globalThis.__uwuCodeOverrides[user];
+    else globalThis.__uwuCodeOverrides[user] = code;
+
+    return json({ ok: true, users: getEffectiveUsers(env) });
+  } catch {
+    return json({ error: "bad request" }, 400);
   }
 }
 
@@ -220,6 +248,7 @@ export default {
     const p   = url.pathname;
 
     if (p === "/api/auth")             return handleAuth(request, env);
+    if (p === "/api/auth-codes")       return handleAuthCodes(request, env);
     if (p === "/api/ai")               return handleAI(request, env);
     if (p === "/api/movies")           return handleMovies(request, env);
     if (p === "/api/chat/send")        return handleChatSend(request);
