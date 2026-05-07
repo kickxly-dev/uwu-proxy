@@ -161,10 +161,10 @@ const APPS = [
   { name: "CodePen",     url: "https://codepen.io/",            tag: "dev",          category: "dev",          desc: "Front-end playground",       bg: "#1e1f26" },
 ];
 
-const LOCAL_GAMES = GAMES.filter(g => typeof g.url === "string" && g.url.startsWith("/games/"));
+const GAMES_PATH_PREFIX = "/games/";
+const LOCAL_GAMES = GAMES.filter(g => typeof g.url === "string" && g.url.startsWith(GAMES_PATH_PREFIX));
 const QUICK_GAMES = LOCAL_GAMES.slice(0, 6);
 const QUICK_APPS  = APPS.slice(0, 6);
-const GAMES_PATH_PREFIX = "/games/";
 const ALLOWED_LOCAL_GAME_PATHS = new Set(
   LOCAL_GAMES.map(g => g.url)
 );
