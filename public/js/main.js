@@ -161,22 +161,14 @@ const APPS = [
   { name: "CodePen",     url: "https://codepen.io/",            tag: "dev",          category: "dev",          desc: "Front-end playground",       bg: "#1e1f26" },
 ];
 
-const QUICK_GAMES = GAMES.slice(0, 6);
+const LOCAL_GAMES = GAMES.filter(g => typeof g.url === "string" && g.url.startsWith("/games/"));
+const QUICK_GAMES = LOCAL_GAMES.slice(0, 6);
 const QUICK_APPS  = APPS.slice(0, 6);
 const GAMES_PATH_PREFIX = "/games/";
 const ALLOWED_LOCAL_GAME_PATHS = new Set(
-  GAMES
+  LOCAL_GAMES
     .map(g => g.url)
     .filter(url => typeof url === "string" && url.startsWith(GAMES_PATH_PREFIX))
-);
-const ALLOWED_EXTERNAL_GAME_URLS = new Set(
-  GAMES
-    .map(g => g.url)
-    .filter(url => typeof url === "string" && /^https?:\/\//i.test(url))
-    .map(url => {
-      try { return new URL(url).href; } catch { return null; }
-    })
-    .filter(Boolean)
 );
 
 let proxyReady = false;
@@ -271,23 +263,7 @@ function openGameUrl(rawUrl) {
     window.location.href = url;
     return;
   }
-  if (url.startsWith("/")) return toast("Unsupported local game path", "error");
-  let parsed;
-  try {
-    parsed = new URL(url);
-  } catch {
-    toast("Invalid game URL format", "error");
-    return;
-  }
-  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-    toast("Game URL must use http or https", "error");
-    return;
-  }
-  if (!ALLOWED_EXTERNAL_GAME_URLS.has(parsed.href)) {
-    toast("Blocked unknown game URL", "error");
-    return;
-  }
-  window.location.href = parsed.href;
+  toast("Games are restricted to this site only", "error");
 }
 
 function renderQuickGames() {
@@ -309,7 +285,7 @@ function renderQuickApps() {
 function renderGames(filter = "all") {
   const grid = document.getElementById("games-grid");
   if (!grid) return;
-  const list = filter === "all" ? GAMES : GAMES.filter(g => g.category === filter);
+  const list = filter === "all" ? LOCAL_GAMES : LOCAL_GAMES.filter(g => g.category === filter);
   grid.innerHTML = list.map(g => `
     <div class="game-card" data-url="${escHtml(g.url)}" data-name="${escHtml(g.name)}" data-direct="${g.direct ? "1" : ""}" data-local="${g.local ? "1" : ""}">
       <div class="game-thumb"><img src="${escHtml(faviconUrl(g.url))}" alt="${escHtml(g.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
