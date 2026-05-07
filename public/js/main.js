@@ -265,13 +265,18 @@ function openGameUrl(rawUrl) {
     window.location.href = url;
     return;
   }
+  let parsed;
   try {
-    const parsed = new URL(url);
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error("bad protocol");
-    window.location.href = parsed.href;
+    parsed = new URL(url);
+  } catch {
+    toast("Unsupported game URL", "error");
     return;
-  } catch {}
-  toast("Unsupported game URL", "error");
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    toast("Unsupported game URL", "error");
+    return;
+  }
+  window.location.href = parsed.href;
 }
 
 function renderQuickGames() {
