@@ -249,8 +249,18 @@ function quickCard(item) {
   </div>`;
 }
 
-function gameFrameUrl(url, name) {
-  return `/game-frame.html?url=${encodeURIComponent(url)}&name=${encodeURIComponent(name || "")}`;
+function openGameUrl(rawUrl) {
+  const url = (rawUrl || "").trim();
+  if (!url) return toast("Game URL is missing", "error");
+  if (url.startsWith("/")) {
+    window.location.href = url;
+    return;
+  }
+  if (/^https?:\/\//i.test(url)) {
+    window.location.href = url;
+    return;
+  }
+  toast("Unsupported game URL", "error");
 }
 
 function renderQuickGames() {
@@ -258,10 +268,7 @@ function renderQuickGames() {
   if (!el) return;
   el.innerHTML = QUICK_GAMES.map(quickCard).join("");
   el.querySelectorAll(".card").forEach(c => c.addEventListener("click", () => {
-    const target = (c.dataset.url || "").trim();
-    const name = (c.dataset.name || "").trim();
-    if (!target) return toast("Game URL is missing", "error");
-    window.location.href = gameFrameUrl(target, name);
+    openGameUrl(c.dataset.url);
   }));
 }
 
@@ -290,10 +297,7 @@ function renderGames(filter = "all") {
     </div>`).join("");
   grid.querySelectorAll(".game-card").forEach(card => {
     function openGame() {
-      const target = (card.dataset.url || "").trim();
-      const name = (card.dataset.name || "").trim();
-      if (!target) return toast("Game URL is missing", "error");
-      window.location.href = gameFrameUrl(target, name);
+      openGameUrl(card.dataset.url);
     }
     card.querySelector(".play-btn")?.addEventListener("click", e => { e.stopPropagation(); openGame(); });
     card.addEventListener("click", openGame);
