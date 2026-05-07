@@ -302,7 +302,7 @@
 <div class="toast-stack" id="toast-stack"></div>
 
 <script>
-  const USERS = [
+  const DEFAULT_USERS = [
     { user:"Ryder",   code:"82047", role:"owner"       },
     { user:"Logan",   code:"63914", role:"slave owner" },
     { user:"Beckham", code:"39571", role:"slave"       },
@@ -311,16 +311,16 @@
     { user:"Liam",    code:"26473", role:"slave"       },
     { user:"Gibson",  code:"98132", role:"slave"       },
   ];
+  let USERS = DEFAULT_USERS.slice();
 
   const CHAT_CHANNEL     = "uwuprx-chat";
   const ANNOUNCE_CHANNEL = "uwuprx-announce";
   const ANNOUNCE_KEY     = "uwu_announces";
-  const CODE_OVERRIDES_KEY = "uwu_custom_codes";
 
   const session  = JSON.parse(localStorage.getItem("uwu_session") || "{}");
   const isOwner  = session.role === "owner";
   const canWhip  = session.role === "owner" || session.role === "slave owner";
-  const canManageCodes = canWhip;
+  const canManageCodes = isOwner;
 
   function escHtml(s) {
     return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
@@ -332,28 +332,27 @@
   function proxyOpen(url) { window.location.href = `/proxy.html?url=${encodeURIComponent(url)}`; }
   function doLogout()     { localStorage.removeItem("uwu_session"); location.replace("/login.html"); }
 
-  // ── Role badge ──
-  document.getElementById("role-badge").textContent = session.role || "";
-  document.getElementById("stat-users").textContent  = USERS.length;
-  if (canWhip) document.getElementById("whip-col").textContent = "WHIP";
+  function getSessionCode() {
+    const channel = String(session.channel || "");
+    return channel.startsWith("uwuprx-") ? channel.slice("uwuprx-".length) : "";
+  }
 
-  function getCodeOverrides() {
+  async function fetchUsersFromServer() {
     try {
-      const parsed = JSON.parse(localStorage.getItem(CODE_OVERRIDES_KEY) || "{}");
-      return parsed && typeof parsed === "object" ? parsed : {};
+      const res = await fetch("/api/auth-codes");
+      if (!res.ok) throw new Error("load failed");
+      const data = await res.json();
+      if (Array.isArray(data?.users) && data.users.length) USERS = data.users;
     } catch {
-      return {};
+      USERS = DEFAULT_USERS.slice();
+      showToast("using fallback codes (server unavailable)", "error");
     }
   }
 
-  function setCodeOverrides(next) {
-    localStorage.setItem(CODE_OVERRIDES_KEY, JSON.stringify(next));
-  }
-
-  function effectiveUsers() {
-    const overrides = getCodeOverrides();
-    return USERS.map(u => ({ ...u, code: String(overrides[u.user] || u.code) }));
-  }
+  // ── Role badge ──
+  document.getElementById("role-badge").textContent = session.role || "";
+  document.getElementById("stat-users").textContent  = DEFAULT_USERS.length;
+  if (canWhip) document.getElementById("whip-col").textContent = "WHIP";
 
   // ── Toast ──
   function showToast(msg, type = "default") {
@@ -415,7 +414,7 @@
   })();
 
   function renderUsersTable() {
-    const rows = effectiveUsers();
+    const rows = USERS;
     document.getElementById("users-tbody").innerHTML = rows.map(u => {
       const rc = u.role === "owner" ? "role-owner" : u.role === "slave owner" ? "role-slave-owner" : "role-slave";
       const showWhip = canWhip && u.role === "slave" && u.user !== session.user;
@@ -455,7 +454,7 @@
     document.querySelectorAll(".save-code-btn").forEach(btn => btn.addEventListener("click", () => saveCustomCode(btn.dataset.user)));
   }
 
-  function saveCustomCode(user) {
+  async function saveCustomCode(user) {
     if (!canManageCodes || !user) return;
     const input = document.querySelector(`.code-input[data-user="${user}"]`);
     if (!input) return;
@@ -465,26 +464,41 @@
       return;
     }
 
-    const rows = effectiveUsers();
+    const rows = USERS;
     if (rows.some(u => u.user !== user && u.code === newCode)) {
       showToast("that code is already used", "error");
       return;
     }
-
-    const defaultsByUser = Object.fromEntries(USERS.map(u => [u.user, u.code]));
-    const overrides = getCodeOverrides();
-    if (newCode === defaultsByUser[user]) {
-      delete overrides[user];
-    } else {
-      overrides[user] = newCode;
+    const actorCode = getSessionCode();
+    if (!actorCode) {
+      showToast("missing session code — relogin required", "error");
+      return;
     }
-    setCodeOverrides(overrides);
-    renderUsersTable();
-    showToast(`saved new code for ${user}`, "success");
-    addLog("🔐", `updated ${user}'s login code`, "yellow");
+    try {
+      const res = await fetch("/api/auth-codes", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ actorCode, user, code: newCode }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data?.error || "failed to save code", "error");
+        return;
+      }
+      if (Array.isArray(data?.users) && data.users.length) USERS = data.users;
+      renderUsersTable();
+      showToast(`saved new code for ${user}`, "success");
+      addLog("🔐", `updated ${user}'s login code`, "yellow");
+    } catch {
+      showToast("failed to save code", "error");
+    }
   }
 
-  renderUsersTable();
+  (async function initUsers() {
+    await fetchUsersFromServer();
+    document.getElementById("stat-users").textContent = USERS.length;
+    renderUsersTable();
+  })();
 
   async function whip(name, code, btn) {
     btn.disabled = true;
