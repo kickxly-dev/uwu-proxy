@@ -163,6 +163,7 @@ const APPS = [
 
 const QUICK_GAMES = GAMES.slice(0, 6);
 const QUICK_APPS  = APPS.slice(0, 6);
+const ALLOWED_GAME_URLS = new Set(GAMES.map(g => g.url));
 
 let proxyReady = false;
 
@@ -252,6 +253,10 @@ function quickCard(item) {
 function openGameUrl(rawUrl) {
   const url = (rawUrl || "").trim();
   if (!url) return toast("Game URL is missing", "error");
+  if (!ALLOWED_GAME_URLS.has(url)) {
+    toast("Blocked unknown game URL", "error");
+    return;
+  }
   if (url.startsWith("/")) {
     if (!url.startsWith("/games/")) {
       toast("Unsupported local game path", "error");
@@ -260,10 +265,12 @@ function openGameUrl(rawUrl) {
     window.location.href = url;
     return;
   }
-  if (/^https?:\/\//i.test(url)) {
-    window.location.href = url;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error("bad protocol");
+    window.location.href = parsed.href;
     return;
-  }
+  } catch {}
   toast("Unsupported game URL", "error");
 }
 
