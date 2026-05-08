@@ -8,6 +8,8 @@ const GAMES = [];
 const EXTERNAL_GAMES_REPO_API = "https://api.github.com/repos/tw31122007/HTML-Games-V2/contents";
 const EXTERNAL_GAMES_BASE_URL = "https://tw31122007.github.io/HTML-Games-V2";
 const EXTERNAL_GAMES_IGNORED_DIRS = new Set([".github", ".git", "assets", "static", "css", "js", "images", "img"]);
+const EXTERNAL_GAMES_CACHE_KEY = "uwu_external_games_v2_cache";
+const EXTERNAL_GAMES_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
 function formatExternalGameName(slug) {
   return String(slug || "")
@@ -17,25 +19,52 @@ function formatExternalGameName(slug) {
     .replace(/\b\w/g, (m) => m.toUpperCase());
 }
 
+function readExternalGamesCache() {
+  try {
+    const raw = localStorage.getItem(EXTERNAL_GAMES_CACHE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!parsed || !Array.isArray(parsed.slugs) || !parsed.savedAt) return [];
+    if (Date.now() - Number(parsed.savedAt) > EXTERNAL_GAMES_CACHE_TTL_MS) return [];
+    return parsed.slugs.filter((s) => typeof s === "string" && s.trim());
+  } catch {
+    return [];
+  }
+}
+
+function writeExternalGamesCache(slugs) {
+  try {
+    localStorage.setItem(EXTERNAL_GAMES_CACHE_KEY, JSON.stringify({
+      savedAt: Date.now(),
+      slugs,
+    }));
+  } catch {}
+}
+
 async function loadExternalRepoGames() {
   const retainedCustom = GAMES.filter((g) => g?.custom === true);
   try {
-    const res = await fetch(EXTERNAL_GAMES_REPO_API, { cache: "no-store" });
-    if (!res.ok) throw new Error(`games source request failed (${res.status})`);
-    const data = await res.json();
-    if (!Array.isArray(data)) throw new Error("invalid games source response");
+    let slugs = readExternalGamesCache();
+    if (!slugs.length) {
+      const res = await fetch(EXTERNAL_GAMES_REPO_API);
+      if (!res.ok) throw new Error(`games source request failed (${res.status})`);
+      const data = await res.json();
+      if (!Array.isArray(data)) throw new Error("invalid games source response");
+      slugs = data
+        .filter((item) => item?.type === "dir")
+        .map((item) => String(item?.name || "").trim())
+        .filter((name) => name && !EXTERNAL_GAMES_IGNORED_DIRS.has(name.toLowerCase()))
+        .sort((a, b) => a.localeCompare(b));
+      writeExternalGamesCache(slugs);
+    }
 
-    const externalGames = data
-      .filter((item) => item?.type === "dir")
-      .map((item) => String(item?.name || "").trim())
-      .filter((name) => name && !EXTERNAL_GAMES_IGNORED_DIRS.has(name.toLowerCase()))
-      .sort((a, b) => a.localeCompare(b))
+    const externalGames = slugs
       .map((slug) => ({
         name: formatExternalGameName(slug),
         url: `${EXTERNAL_GAMES_BASE_URL}/${encodeURIComponent(slug)}/`,
         tag: "casual",
         category: "casual",
-        desc: "from HTML-Games-V2",
+        desc: `Play ${formatExternalGameName(slug)} from HTML-Games-V2`,
         local: false,
       }));
 
