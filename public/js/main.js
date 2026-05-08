@@ -47,7 +47,7 @@ async function loadExternalRepoGames() {
     let slugs = readExternalGamesCache();
     if (!slugs.length) {
       const res = await fetch(EXTERNAL_GAMES_REPO_API);
-      if (!res.ok) throw new Error(`games source request failed (${res.status})`);
+      if (!res.ok) throw new Error(`games source request failed for ${EXTERNAL_GAMES_REPO_API} (${res.status})`);
       const data = await res.json();
       if (!Array.isArray(data)) throw new Error("invalid games source response");
       slugs = data
