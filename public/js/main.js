@@ -163,11 +163,12 @@ const APPS = [
 
 const GAMES_PATH_PREFIX = "/games/";
 const LOCAL_GAMES = GAMES.filter(g => typeof g.url === "string" && g.url && g.url.startsWith(GAMES_PATH_PREFIX));
-const QUICK_GAMES = LOCAL_GAMES.slice(0, 6);
+const QUICK_GAMES = GAMES.slice(0, 6);
 const QUICK_APPS  = APPS.slice(0, 6);
 const ALLOWED_LOCAL_GAME_PATHS = new Set(
   LOCAL_GAMES.map(g => g.url)
 );
+const ALLOWED_GAME_URLS = new Set(GAMES.map(g => g.url));
 
 let proxyReady = false;
 
@@ -254,14 +255,24 @@ function quickCard(item) {
   </div>`;
 }
 
-function openGameUrl(rawUrl) {
+function openGameUrl(rawUrl, name) {
   const url = (rawUrl || "").trim();
   if (!url) return toast("Game URL is missing", "error");
-  if (ALLOWED_LOCAL_GAME_PATHS.has(url) && url.startsWith(GAMES_PATH_PREFIX)) {
+  if (url.startsWith(GAMES_PATH_PREFIX) && ALLOWED_LOCAL_GAME_PATHS.has(url)) {
     try {
       const localTarget = new URL(url, location.origin);
       if (localTarget.origin === location.origin && localTarget.pathname.startsWith(GAMES_PATH_PREFIX)) {
         window.location.href = localTarget.pathname + localTarget.search + localTarget.hash;
+        return;
+      }
+    } catch {}
+  } else if (ALLOWED_GAME_URLS.has(url)) {
+    try {
+      const ext = new URL(url);
+      if (ext.protocol === "https:" || ext.protocol === "http:") {
+        const params = new URLSearchParams({ url });
+        if (name) params.set("name", name);
+        window.location.href = `/game-frame.html?${params}`;
         return;
       }
     } catch {}
@@ -274,7 +285,7 @@ function renderQuickGames() {
   if (!el) return;
   el.innerHTML = QUICK_GAMES.map(quickCard).join("");
   el.querySelectorAll(".card").forEach(c => c.addEventListener("click", () => {
-    openGameUrl(c.dataset.url);
+    openGameUrl(c.dataset.url, c.dataset.name);
   }));
 }
 
@@ -288,7 +299,7 @@ function renderQuickApps() {
 function renderGames(filter = "all") {
   const grid = document.getElementById("games-grid");
   if (!grid) return;
-  const list = filter === "all" ? LOCAL_GAMES : LOCAL_GAMES.filter(g => g.category === filter);
+  const list = filter === "all" ? GAMES : GAMES.filter(g => g.category === filter);
   grid.innerHTML = list.map(g => `
     <div class="game-card" data-url="${escHtml(g.url)}" data-name="${escHtml(g.name)}">
       <div class="game-thumb"><img src="${escHtml(faviconUrl(g.url))}" alt="${escHtml(g.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
@@ -302,11 +313,8 @@ function renderGames(filter = "all") {
       </div>
     </div>`).join("");
   grid.querySelectorAll(".game-card").forEach(card => {
-    function openGame() {
-      openGameUrl(card.dataset.url);
-    }
-    card.querySelector(".play-btn")?.addEventListener("click", e => { e.stopPropagation(); openGame(); });
-    card.addEventListener("click", openGame);
+    card.querySelector(".play-btn")?.addEventListener("click", e => { e.stopPropagation(); openGameUrl(card.dataset.url, card.dataset.name); });
+    card.addEventListener("click", () => openGameUrl(card.dataset.url, card.dataset.name));
   });
 }
 
