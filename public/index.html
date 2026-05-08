@@ -5,62 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>uwu proxy</title>
   <meta name="description" content="browse freely." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23ff79c6'/><circle cx='11' cy='14' r='3' fill='white'/><circle cx='21' cy='14' r='3' fill='white'/><path d='M10 20 Q16 24 22 20' stroke='white' stroke-width='2' fill='none' stroke-linecap='round'/></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23e9198c'/><circle cx='11' cy='13' r='3' fill='white'/><circle cx='21' cy='13' r='3' fill='white'/><path d='M10 20 Q16 24 22 20' stroke='white' stroke-width='2' fill='none' stroke-linecap='round'/></svg>" />
   <link rel="stylesheet" href="/css/style.css" />
   <script>(function(){var s=localStorage.getItem("uwu_session");if(!s)return location.replace("/login.html");try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem("uwu_session");location.replace("/login.html");}}catch{location.replace("/login.html");}})()</script>
 </head>
 <body>
 
-<div class="bg-canvas">
-  <div class="bg-orb"></div>
-  <div class="bg-orb"></div>
-  <div class="bg-orb"></div>
-</div>
+<!-- Legacy compat elements -->
 <canvas id="stars-canvas"></canvas>
+<span id="nav-user" style="display:none"></span>
+<span id="version-tag" style="display:none"></span>
 
-<nav class="nav">
-  <span class="nav-credit">Made By Ryder</span>
-  <a class="nav-logo" href="/">
-    <div class="nav-logo-icon">
-      <svg width="20" height="16" viewBox="0 0 20 16" fill="none">
-        <circle cx="6"  cy="7" r="3" fill="white"/>
-        <circle cx="14" cy="7" r="3" fill="white"/>
-        <path d="M5 12 Q10 15.5 15 12" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-    </div>
-    <span>uwu proxy</span>
-    <span class="nav-version" id="version-tag">v1.1.0</span>
+<!-- Sidebar -->
+<nav class="sidebar">
+  <a href="/" class="sb-logo" title="uwu proxy">
+    <svg width="20" height="16" viewBox="0 0 20 16" fill="none">
+      <circle cx="6"  cy="7" r="3" fill="white"/>
+      <circle cx="14" cy="7" r="3" fill="white"/>
+      <path d="M5 12 Q10 15.5 15 12" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
   </a>
-
-  <div class="nav-links">
-    <a class="nav-link active" href="/"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a>
-    <a class="nav-link" href="/games.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4m-2-2v4"/><circle cx="17" cy="11" r="1" fill="currentColor"/><circle cx="15" cy="13" r="1" fill="currentColor"/></svg><span>Games</span></a>
-    <a class="nav-link" href="/apps.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Apps</span></a>
-    <a class="nav-link" href="/chat.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Chat</span></a>
-    <a class="nav-link" href="/ai.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M22 2 12 12"/><path d="m17 7 5-5"/></svg><span>AI</span></a>
-    <a class="nav-link" href="/music.html"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>Music</span></a>
-    
-  </div>
-
-  <div class="nav-right">
-    <span class="nav-user-badge" id="nav-user"></span>
-    <button class="btn-icon" id="logout-btn" title="Logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
-    <div class="proxy-badge loading" id="proxy-status">
-      <div class="proxy-dot"></div>
-      <span id="proxy-status-text">loading</span>
-    </div>
-    <button class="btn-icon" id="settings-btn" title="Settings">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-      </svg>
-    </button>
-  </div>
+  <a href="/" class="sb-btn active" title="Home">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  </a>
+  <a href="/games.html" class="sb-btn" title="Games">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4m-2-2v4"/><circle cx="17" cy="11" r="1" fill="currentColor"/><circle cx="15" cy="13" r="1" fill="currentColor"/></svg>
+  </a>
+  <a href="/apps.html" class="sb-btn" title="Apps">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+  </a>
+  <a href="/chat.html" class="sb-btn" title="Chat">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </a>
+  <a href="/ai.html" class="sb-btn" title="AI">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M22 2 12 12"/><path d="m17 7 5-5"/></svg>
+  </a>
+  <a href="/music.html" class="sb-btn" title="Music">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  </a>
+  <div class="sb-spacer"></div>
+  <div class="sb-user" id="sb-user">?</div>
+  <button class="sb-logout" id="logout-btn" title="Logout">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+  </button>
 </nav>
 
 <main class="page">
 
   <section class="hero">
-    <h1 class="hero-title">uwu proxy</h1>
+    <div class="logo-bloom"></div>
+    <h1 class="hero-title">uwu</h1>
     <p class="hero-sub" id="hero-welcome">browse freely.</p>
 
     <div class="search-wrap">
@@ -78,12 +72,50 @@
         />
         <button type="submit" class="search-btn" id="search-btn" disabled>go</button>
       </form>
-
       <div class="search-hints">
         <span class="search-hint"><kbd class="hint-key">Enter</kbd> to browse</span>
         <span class="search-hint"><kbd class="hint-key">Alt+P</kbd> panic</span>
         <span class="search-hint"><kbd class="hint-key">Alt+S</kbd> settings</span>
       </div>
+    </div>
+
+    <div class="quick-links">
+      <button class="quick-link" data-url="youtube.com" title="YouTube">
+        <div class="quick-link-icon" style="background:#ff000022;border:1px solid #ff000035">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#ff0000"><path d="M23 7s-.3-2-1.2-2.8c-1.1-1.2-2.4-1.2-3-1.3C16.2 2.8 12 2.8 12 2.8s-4.2 0-6.8.1c-.6.1-1.9.1-3 1.3C1.3 5 1 7 1 7S.7 9.2.7 11.3v2c0 2.1.3 4.3.3 4.3s.3 2 1.2 2.8c1.1 1.2 2.6 1.1 3.3 1.2C7.2 21.9 12 22 12 22s4.2 0 6.8-.2c.6-.1 1.9-.1 3-1.3.9-.8 1.2-2.8 1.2-2.8s.3-2.2.3-4.3v-2C23.3 9.2 23 7 23 7zm-13.5 8.7V8.3l8.1 3.7-8.1 3.7z"/></svg>
+        </div>
+        <span class="quick-link-label">YouTube</span>
+      </button>
+      <a href="/games.html" class="quick-link" title="Games">
+        <div class="quick-link-icon" style="background:rgba(233,25,140,0.15);border:1px solid rgba(233,25,140,0.25)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9198c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4m-2-2v4"/><circle cx="17" cy="11" r="1" fill="#e9198c"/><circle cx="15" cy="13" r="1" fill="#e9198c"/></svg>
+        </div>
+        <span class="quick-link-label">Games</span>
+      </a>
+      <button class="quick-link" data-url="discord.com/app" title="Discord">
+        <div class="quick-link-icon" style="background:#5865f222;border:1px solid #5865f235">
+          <svg width="20" height="15" viewBox="0 0 71 55" fill="#5865f2"><path d="M60.1 4.9A58.5 58.5 0 0 0 45.4.4a40.4 40.4 0 0 0-1.8 3.7 54.1 54.1 0 0 0-16.3 0A39.4 39.4 0 0 0 25.5.4 58.4 58.4 0 0 0 10.9 4.9C1.6 18.7-1 32.2.3 45.5a59 59 0 0 0 18 9.1 44.4 44.4 0 0 0 3.8-6.2 38.4 38.4 0 0 1-6-2.9c.5-.4 1-.7 1.5-1.1a41.9 41.9 0 0 0 35.8 0c.5.4 1 .7 1.5 1.1a38.5 38.5 0 0 1-6 2.9 44.3 44.3 0 0 0 3.8 6.2 58.8 58.8 0 0 0 18-9.1C72.2 30.1 68.3 16.8 60.1 4.9zM23.8 37.3c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2c3.5 0 6.4 3.2 6.4 7.2 0 4-2.9 7.2-6.4 7.2zm23.4 0c-3.5 0-6.4-3.2-6.4-7.2s2.8-7.2 6.4-7.2c3.5 0 6.4 3.2 6.4 7.2 0 4-2.9 7.2-6.4 7.2z"/></svg>
+        </div>
+        <span class="quick-link-label">Discord</span>
+      </button>
+      <button class="quick-link" data-url="open.spotify.com" title="Spotify">
+        <div class="quick-link-icon" style="background:#1db95422;border:1px solid #1db95435">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#1db954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.52 17.28c-.24.36-.66.48-1.02.24-2.82-1.74-6.36-2.1-10.56-1.14-.42.12-.78-.18-.9-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.48.66.3 1.02zm1.44-3.3c-.3.42-.84.6-1.26.3-3.24-1.98-8.16-2.58-11.94-1.38-.48.12-.99-.12-1.14-.6-.12-.48.12-.99.6-1.14 4.38-1.32 9.78-.66 13.5 1.62.36.18.54.78.24 1.2zm.12-3.36C15.24 8.4 8.82 8.22 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.72 1.62.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3z"/></svg>
+        </div>
+        <span class="quick-link-label">Spotify</span>
+      </button>
+      <button class="quick-link" data-url="x.com" title="X / Twitter">
+        <div class="quick-link-icon" style="background:#ffffff10;border:1px solid #ffffff18">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#f0f0f0"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.844L1.255 2.25H8.08l4.261 5.634L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </div>
+        <span class="quick-link-label">X</span>
+      </button>
+      <button class="quick-link" data-url="chatgpt.com" title="ChatGPT">
+        <div class="quick-link-icon" style="background:#10a37f22;border:1px solid #10a37f35">
+          <svg width="18" height="18" viewBox="0 0 41 41" fill="#10a37f"><path d="M37.532 16.87a9.963 9.963 0 0 0-.856-8.184 10.078 10.078 0 0 0-10.855-4.835 9.964 9.964 0 0 0-6.505-2.661 10.079 10.079 0 0 0-9.626 6.977 9.967 9.967 0 0 0-6.69 4.839 10.081 10.081 0 0 0 1.24 11.817 9.965 9.965 0 0 0 .856 8.185 10.079 10.079 0 0 0 10.855 4.835 9.965 9.965 0 0 0 6.504 2.662 10.079 10.079 0 0 0 9.626-6.977 9.967 9.967 0 0 0 6.689-4.839 10.079 10.079 0 0 0-1.238-11.818zM22.498 37.886a7.474 7.474 0 0 1-4.799-1.735c.061-.033.168-.091.237-.134l7.964-4.6a1.294 1.294 0 0 0 .655-1.134V19.054l3.366 1.944a.12.12 0 0 1 .066.092v9.299a7.505 7.505 0 0 1-7.49 7.496zM6.392 31.006a7.471 7.471 0 0 1-.894-5.023c.06.036.162.099.237.141l7.964 4.6a1.297 1.297 0 0 0 1.308 0l9.724-5.614v3.888a.12.12 0 0 1-.048.103l-8.051 4.649a7.504 7.504 0 0 1-10.24-2.744zM4.297 13.62A7.469 7.469 0 0 1 8.2 10.333c0 .068-.004.19-.004.274v9.201a1.294 1.294 0 0 0 .654 1.132l9.723 5.614-3.366 1.944a.12.12 0 0 1-.114.012L7.044 23.86a7.504 7.504 0 0 1-2.747-10.24zm27.658 6.437l-9.724-5.615 3.367-1.943a.121.121 0 0 1 .114-.012l8.048 4.648a7.498 7.498 0 0 1-1.158 13.528v-9.476a1.293 1.293 0 0 0-.647-1.13zm3.35-5.043c-.059-.037-.162-.099-.236-.141l-7.965-4.6a1.298 1.298 0 0 0-1.308 0l-9.723 5.614v-3.888a.12.12 0 0 1 .048-.103l8.05-4.645a7.497 7.497 0 0 1 11.135 7.763zm-21.063 6.929l-3.367-1.944a.12.12 0 0 1-.065-.092v-9.299a7.497 7.497 0 0 1 12.293-5.756 6.94 6.94 0 0 0-.236.134l-7.965 4.6a1.294 1.294 0 0 0-.654 1.132l-.006 11.225zm1.829-3.943l4.33-2.501 4.332 2.499v4.997l-4.331 2.5-4.331-2.5V18z"/></svg>
+        </div>
+        <span class="quick-link-label">ChatGPT</span>
+      </button>
     </div>
   </section>
 
@@ -92,7 +124,7 @@
       <div class="section-header">
         <h2 class="section-title">
           <div class="icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </div>
           Recent
         </h2>
@@ -109,7 +141,7 @@
       <div class="section-header">
         <h2 class="section-title">
           <div class="icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4m-2-2v4"/><circle cx="17" cy="11" r="1" fill="currentColor"/><circle cx="15" cy="13" r="1" fill="currentColor"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4m-2-2v4"/><circle cx="17" cy="11" r="1" fill="currentColor"/><circle cx="15" cy="13" r="1" fill="currentColor"/></svg>
           </div>
           Games
         </h2>
@@ -124,7 +156,7 @@
       <div class="section-header">
         <h2 class="section-title">
           <div class="icon">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
           </div>
           Apps
         </h2>
@@ -136,10 +168,22 @@
 
 </main>
 
-<footer class="footer">
-  <p>uwu proxy <span id="footer-version"></span> — stay low, browse free</p>
-</footer>
+<!-- Status bar -->
+<div class="statusbar">
+  <div id="proxy-status" class="proxy-badge loading">
+    <div class="proxy-dot"></div>
+    <span id="proxy-status-text">loading</span>
+  </div>
+  <div class="statusbar-spacer"></div>
+  <span class="statusbar-version" id="footer-version"></span>
+  <button class="statusbar-settings" id="settings-btn" title="Settings">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+  </button>
+</div>
 
+<!-- Settings modal -->
 <div class="modal-overlay" id="settings-modal">
   <div class="modal">
     <div class="modal-header">
@@ -149,7 +193,6 @@
       </button>
     </div>
     <div class="modal-body">
-
       <div class="setting-group">
         <div class="setting-label">Tab Cloak</div>
         <div class="cloak-presets">
@@ -186,7 +229,6 @@
         </div>
         <button class="btn-primary" id="apply-cloak-btn">Apply Cloak</button>
       </div>
-
       <div class="setting-group">
         <div class="setting-label">Keyboard Shortcuts</div>
         <div class="shortcut-box">
@@ -202,12 +244,10 @@
           <div class="shortcut-keys"><span class="key">Alt</span><span class="key">F</span></div>
         </div>
       </div>
-
       <div class="setting-group">
         <div class="setting-label">Data</div>
         <button class="btn-danger" id="clear-history-btn">Clear All History</button>
       </div>
-
     </div>
   </div>
 </div>
@@ -216,18 +256,43 @@
 
 <script src="/js/main.js" type="module"></script>
 <script>
-  const _s = JSON.parse(localStorage.getItem("uwu_session") || "{}");
-  const _nu = document.getElementById("nav-user");
-  if (_nu && _s.user) _nu.textContent = _s.user;
-  const _hw = document.getElementById("hero-welcome");
-  if (_hw && _s.user) _hw.textContent = `welcome back, ${_s.user.toLowerCase()}.`;
-  if (_s.role === "owner" || _s.role === "slave owner") {
-    const al = document.createElement("a");
-    al.href = "/admin.html"; al.className = "nav-link"; al.style.color = "var(--yellow)";
-    al.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>Admin</span>';
-    document.querySelector(".nav-links")?.appendChild(al);
-  }
-  document.getElementById("logout-btn")?.addEventListener("click", () => { localStorage.removeItem("uwu_session"); location.replace("/login.html"); });
+  (function() {
+    var _s = JSON.parse(localStorage.getItem("uwu_session") || "{}");
+    var _sbu = document.getElementById("sb-user");
+    var _nu  = document.getElementById("nav-user");
+    var _hw  = document.getElementById("hero-welcome");
+    if (_s.user) {
+      if (_sbu) _sbu.textContent = _s.user.charAt(0).toUpperCase();
+      if (_nu)  _nu.textContent  = _s.user;
+      if (_hw)  _hw.textContent  = "browse freely, " + _s.user.toLowerCase() + ".";
+    }
+    // Admin link in sidebar
+    if (_s.role === "owner" || _s.role === "slave owner") {
+      var al = document.createElement("a");
+      al.href = "/admin.html";
+      al.className = "sb-btn";
+      al.title = "Admin";
+      al.style.color = "#f1fa8c";
+      al.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>';
+      var spacer = document.querySelector(".sb-spacer");
+      if (spacer) spacer.parentNode.insertBefore(al, spacer);
+    }
+    document.getElementById("logout-btn")?.addEventListener("click", function() {
+      localStorage.removeItem("uwu_session");
+      location.replace("/login.html");
+    });
+    // Quick links -> proxy navigation
+    document.querySelectorAll(".quick-link[data-url]").forEach(function(el) {
+      el.addEventListener("click", function() {
+        var inp  = document.getElementById("search-input");
+        var form = document.getElementById("search-form");
+        if (inp && form) {
+          inp.value = el.dataset.url;
+          form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+        }
+      });
+    });
+  })();
 </script>
 
 </body>
