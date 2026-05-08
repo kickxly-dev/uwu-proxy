@@ -183,9 +183,9 @@ async function loadCustomGames() {
     if (!res.ok) return;
     const data = await res.json();
     if (!Array.isArray(data?.games)) return;
-    for (let i = GAMES.length - 1; i >= 0; i--) {
-      if (GAMES[i]?.custom === true) GAMES.splice(i, 1);
-    }
+    const retained = GAMES.filter(g => g?.custom !== true);
+    GAMES.length = 0;
+    GAMES.push(...retained);
     data.games.forEach((g) => {
       const slug = String(g?.slug || "").trim();
       const name = String(g?.name || "").trim();

@@ -674,10 +674,13 @@
     document.getElementById("games-section").style.display = "block";
     document.getElementById("save-game-btn")?.addEventListener("click", saveCustomGame);
     fetchCustomGames().then(renderCustomGames);
+    const slugEl = document.getElementById("game-slug");
+    slugEl?.addEventListener("input", () => { slugEl.dataset.manual = "1"; });
     document.getElementById("game-name")?.addEventListener("input", (e) => {
       const slugEl = document.getElementById("game-slug");
       if (!slugEl) return;
-      if (!slugEl.value.trim()) slugEl.value = slugify(e.target.value);
+      if (slugEl.dataset.manual === "1") return;
+      slugEl.value = slugify(e.target.value);
     });
     document.getElementById("announce-btn").addEventListener("click", async () => {
       const text = document.getElementById("announce-text").value.trim();

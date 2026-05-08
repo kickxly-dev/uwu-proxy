@@ -29,6 +29,7 @@ async function getBlobStore(event) {
     }
     return blobs.getStore(STORE_NAME);
   } catch {
+    // Fallback is intentional so local/dev still works without Netlify Blobs context.
     return null;
   }
 }
@@ -123,7 +124,7 @@ async function updateUserCode({ event, env, actorCode, user, code }) {
 
   const users = await getEffectiveUsers({ event, env });
   const actor = users.find((u) => u.code === String(actorCode));
-  if (!actor || actor.role !== "owner" || actor.user !== "Ryder") {
+  if (!actor || actor.role !== "owner") {
     return { ok: false, status: 403, error: "owner access required" };
   }
 
@@ -183,7 +184,8 @@ async function saveCustomGame({ event, actor, payload }) {
   if (!slug || !name || !html.trim()) {
     return { ok: false, status: 400, error: "slug, name, and html are required" };
   }
-  if (html.length > 500_000) {
+  const htmlBytes = Buffer.byteLength(html, "utf8");
+  if (htmlBytes > 500_000) {
     return { ok: false, status: 413, error: "html too large (max 500KB)" };
   }
 

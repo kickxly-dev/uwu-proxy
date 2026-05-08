@@ -14,7 +14,7 @@ const CORS = {
 async function requireOwner(event, actorCode) {
   const users = await getEffectiveUsers({ event, env: process.env });
   const actor = users.find((u) => u.code === String(actorCode || ""));
-  if (!actor || actor.role !== "owner" || actor.user !== "Ryder") return null;
+  if (!actor || actor.role !== "owner") return null;
   return actor;
 }
 
