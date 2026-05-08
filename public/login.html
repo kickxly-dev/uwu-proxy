@@ -4,59 +4,177 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>uwu proxy — login</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23ff79c6'/><circle cx='11' cy='14' r='3' fill='white'/><circle cx='21' cy='14' r='3' fill='white'/><path d='M10 20 Q16 24 22 20' stroke='white' stroke-width='2' fill='none' stroke-linecap='round'/></svg>"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23e9198c'/><circle cx='11' cy='13' r='3' fill='white'/><circle cx='21' cy='13' r='3' fill='white'/><path d='M10 20 Q16 24 22 20' stroke='white' stroke-width='2' fill='none' stroke-linecap='round'/></svg>"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
-    :root{--bg:#050510;--bg2:#0c0c1e;--bg3:#13132b;--border:rgba(255,255,255,0.07);--pink:#ff79c6;--purple:#bd93f9;--text:#f8f8f2;--dim:#6272a4;--muted:#3a3a5c;--r:16px;}
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{background:var(--bg);color:var(--text);font-family:'Comfortaa',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-    .bg-orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.18;pointer-events:none;}
-    .bg-orb:nth-child(2){width:500px;height:500px;background:radial-gradient(var(--pink),transparent);top:-100px;left:-100px;animation:orb 20s ease-in-out infinite;}
-    .bg-orb:nth-child(3){width:400px;height:400px;background:radial-gradient(var(--purple),transparent);bottom:-80px;right:-80px;animation:orb 20s ease-in-out infinite;animation-delay:-10s;}
-    @keyframes orb{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-30px)}}
-    .card{position:relative;z-index:1;background:rgba(12,12,30,0.9);border:1px solid var(--border);border-radius:24px;padding:48px 40px;width:100%;max-width:380px;text-align:center;backdrop-filter:blur(20px);box-shadow:0 32px 80px rgba(0,0,0,0.5);}
-    .logo{width:52px;height:52px;background:linear-gradient(135deg,var(--pink),var(--purple));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 0 24px rgba(255,121,198,0.4);}
-    .logo svg{width:28px;height:22px;}
-    h1{font-size:1.5rem;font-weight:700;margin-bottom:6px;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-    .sub{font-size:.85rem;color:var(--dim);margin-bottom:36px;}
-    .pin-row{display:flex;gap:10px;justify-content:center;margin-bottom:28px;}
-    .pin-box{width:52px;height:60px;background:var(--bg3);border:2px solid var(--border);border-radius:12px;font-size:1.5rem;font-family:'JetBrains Mono',monospace;font-weight:500;color:var(--text);text-align:center;outline:none;caret-color:transparent;transition:border-color .2s,box-shadow .2s;}
-    .pin-box:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(255,121,198,.15);}
-    .pin-box.filled{border-color:rgba(255,121,198,.4);}
-    .btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--pink),var(--purple));border:none;border-radius:var(--r);color:#fff;font-size:1rem;font-family:'Comfortaa',sans-serif;font-weight:700;cursor:pointer;transition:opacity .2s,transform .15s;box-shadow:0 4px 20px rgba(255,121,198,.3);}
-    .btn:hover{opacity:.88;transform:translateY(-1px);}
-    .btn:active{transform:translateY(0);}
-    .btn:disabled{opacity:.4;pointer-events:none;}
-    .error{margin-top:16px;color:#ff5555;font-size:.83rem;min-height:20px;}
-    .success{display:none;text-align:center;padding:20px 0;}
-    .success-name{font-size:1.8rem;font-weight:700;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-    .success-sub{color:var(--dim);font-size:.88rem;margin-top:6px;}
-    /* Splash loading screen */
-    .splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;transition:opacity .8s ease;}
-    .splash.hidden{opacity:0;pointer-events:none;}
-    .splash-logo{width:80px;height:80px;background:linear-gradient(135deg,var(--pink),var(--purple));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 28px;box-shadow:0 0 40px rgba(255,121,198,.5);animation:splashPulse 2s ease-in-out infinite;}
-    @keyframes splashPulse{0%,100%{transform:scale(1);box-shadow:0 0 40px rgba(255,121,198,.5);}50%{transform:scale(1.07);box-shadow:0 0 60px rgba(255,121,198,.8);}}
-    .splash-title{font-size:3rem;font-weight:700;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;letter-spacing:-.5px;}
-    .splash-tag{font-size:.9rem;color:var(--dim);letter-spacing:.12em;text-transform:uppercase;margin-bottom:48px;}
-    .splash-bar-wrap{width:220px;height:4px;background:var(--muted);border-radius:99px;overflow:hidden;}
-    .splash-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:99px;transition:width 6s linear;}
-    /* Onboarding overlay */
-    .onboard{position:fixed;inset:0;z-index:999;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;animation:fadeIn .4s ease;}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-    .onboard-name{font-family:'Comfortaa',sans-serif;font-size:2.8rem;font-weight:700;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
-    .onboard-tag{color:var(--dim);font-size:1rem;margin-bottom:48px;}
-    .onboard-features{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;width:100%;max-width:380px;margin-bottom:40px;}
-    .onboard-feat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 14px;text-align:left;}
-    .onboard-feat-title{font-family:'Comfortaa',sans-serif;font-size:.88rem;font-weight:700;margin-bottom:3px;}
-    .onboard-feat-sub{font-size:.73rem;color:var(--dim);}
-    .onboard-btn{padding:14px 40px;background:linear-gradient(135deg,var(--pink),var(--purple));border:none;border-radius:40px;color:#fff;font-size:.95rem;font-family:'Comfortaa',sans-serif;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(255,121,198,.3);transition:opacity .2s,transform .15s;}
-    .onboard-btn:hover{opacity:.88;transform:translateY(-2px);}
+    :root {
+      --bg: #040404; --bg2: #0c0c0c; --bg3: #141414;
+      --border: rgba(255,255,255,0.07);
+      --pink: #e9198c; --text: #f0f0f0; --dim: #555; --red: #ff5555;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+
+    .bloom {
+      position: fixed; pointer-events: none;
+      width: 500px; height: 500px;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(ellipse at center, rgba(233,25,140,0.1) 0%, transparent 65%);
+    }
+
+    .card {
+      position: relative; z-index: 1;
+      background: rgba(12,12,12,0.92);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 48px 40px;
+      width: 100%; max-width: 360px;
+      text-align: center;
+      backdrop-filter: blur(20px);
+    }
+
+    .logo {
+      width: 56px; height: 56px;
+      background: var(--pink);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 22px;
+      box-shadow: 0 0 32px rgba(233,25,140,0.5),
+                  0 0 64px rgba(233,25,140,0.2);
+    }
+    .logo svg { width: 28px; height: 22px; }
+
+    h1 {
+      font-size: 2rem; font-weight: 900; margin-bottom: 5px;
+      color: var(--pink);
+      text-shadow: 0 0 30px rgba(233,25,140,0.5);
+    }
+    .sub { font-size: 0.82rem; color: var(--dim); margin-bottom: 34px; }
+
+    .pin-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 26px; }
+    .pin-box {
+      width: 50px; height: 58px;
+      background: var(--bg3);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-size: 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      color: var(--text);
+      text-align: center; outline: none;
+      caret-color: transparent;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .pin-box:focus { border-color: var(--pink); box-shadow: 0 0 0 3px rgba(233,25,140,0.15); }
+    .pin-box.filled { border-color: rgba(233,25,140,0.4); }
+
+    .btn {
+      width: 100%; padding: 13px;
+      background: var(--pink);
+      border: none; border-radius: 50px;
+      color: #fff; font-size: 0.95rem;
+      font-family: 'Nunito', sans-serif; font-weight: 700;
+      cursor: pointer;
+      transition: opacity .2s, transform .15s;
+      box-shadow: 0 4px 24px rgba(233,25,140,0.35);
+    }
+    .btn:hover { opacity: .88; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn:disabled { opacity: .35; pointer-events: none; }
+
+    .error { margin-top: 14px; color: var(--red); font-size: .8rem; min-height: 18px; }
+
+    .success { display: none; text-align: center; padding: 18px 0; }
+    .success-name {
+      font-size: 2rem; font-weight: 900;
+      color: var(--pink);
+      text-shadow: 0 0 24px rgba(233,25,140,0.5);
+    }
+    .success-sub { color: var(--dim); font-size: .85rem; margin-top: 5px; }
+
+    .splash {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      transition: opacity .8s ease;
+    }
+    .splash.hidden { opacity: 0; pointer-events: none; }
+    .splash-logo {
+      width: 80px; height: 80px;
+      background: var(--pink);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 28px;
+      box-shadow: 0 0 48px rgba(233,25,140,0.6);
+      animation: splashPulse 2s ease-in-out infinite;
+    }
+    @keyframes splashPulse {
+      0%,100% { transform: scale(1); box-shadow: 0 0 48px rgba(233,25,140,0.6); }
+      50%      { transform: scale(1.07); box-shadow: 0 0 72px rgba(233,25,140,0.9); }
+    }
+    .splash-title {
+      font-size: 3.5rem; font-weight: 900;
+      color: var(--pink);
+      text-shadow: 0 0 40px rgba(233,25,140,0.7), 0 0 80px rgba(233,25,140,0.3);
+      margin-bottom: 10px;
+      letter-spacing: -0.03em;
+    }
+    .splash-tag { font-size: .85rem; color: var(--dim); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 48px; }
+    .splash-bar-wrap { width: 200px; height: 3px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+    .splash-bar { height: 100%; width: 0%; background: var(--pink); border-radius: 99px; transition: width 6s linear; }
+
+    .onboard {
+      position: fixed; inset: 0; z-index: 999;
+      background: var(--bg);
+      display: none; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 32px; text-align: center;
+      animation: fadeIn .4s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+    .onboard-name {
+      font-size: 2.8rem; font-weight: 900;
+      color: var(--pink);
+      text-shadow: 0 0 30px rgba(233,25,140,0.5);
+      margin-bottom: 5px;
+    }
+    .onboard-tag { color: var(--dim); font-size: .95rem; margin-bottom: 44px; }
+    .onboard-features {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+      width: 100%; max-width: 360px; margin-bottom: 40px;
+    }
+    .onboard-feat {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 14px; padding: 15px 12px; text-align: left;
+    }
+    .onboard-feat-title { font-size: .88rem; font-weight: 700; margin-bottom: 3px; }
+    .onboard-feat-sub   { font-size: .72rem; color: var(--dim); }
+    .onboard-btn {
+      padding: 13px 40px;
+      background: var(--pink);
+      border: none; border-radius: 50px;
+      color: #fff; font-size: .95rem;
+      font-family: 'Nunito', sans-serif; font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 24px rgba(233,25,140,0.35);
+      transition: opacity .2s, transform .15s;
+    }
+    .onboard-btn:hover { opacity: .88; transform: translateY(-2px); }
   </style>
 </head>
 <body>
 
-<!-- Splash loading screen -->
 <div class="splash" id="splash">
   <div class="splash-logo">
     <svg viewBox="0 0 20 16" fill="none" width="38" height="30">
@@ -65,15 +183,14 @@
       <path d="M5 12 Q10 15.5 15 12" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
     </svg>
   </div>
-  <div class="splash-title">uwu proxy</div>
-  <div class="splash-tag">protected by israel ai</div>
+  <div class="splash-title">uwu</div>
+  <div class="splash-tag">browse freely</div>
   <div class="splash-bar-wrap">
     <div class="splash-bar" id="splash-bar"></div>
   </div>
 </div>
 
-<div class="bg-orb"></div>
-<div class="bg-orb"></div>
+<div class="bloom"></div>
 
 <div class="card">
   <div class="logo">
@@ -104,7 +221,6 @@
   </div>
 </div>
 
-<!-- Onboarding -->
 <div class="onboard" id="onboard">
   <div class="onboard-name" id="onboard-name"></div>
   <div class="onboard-tag">welcome to uwu proxy</div>
@@ -122,19 +238,17 @@
       <div class="onboard-feat-sub">YouTube, Spotify & more</div>
     </div>
     <div class="onboard-feat">
-      <div class="onboard-feat-title">Links</div>
-      <div class="onboard-feat-sub">10 backup URLs</div>
+      <div class="onboard-feat-title">Chat</div>
+      <div class="onboard-feat-sub">Live global chat</div>
     </div>
   </div>
   <button class="onboard-btn" id="onboard-go">let's go</button>
 </div>
 
 <script>
-  // Splash screen – 6 seconds then reveal login
-  (function(){
+  (function() {
     const splash = document.getElementById("splash");
-    const bar = document.getElementById("splash-bar");
-    // Trigger bar animation on next frame
+    const bar    = document.getElementById("splash-bar");
     requestAnimationFrame(() => { bar.style.width = "100%"; });
     setTimeout(() => {
       splash.classList.add("hidden");
@@ -142,34 +256,30 @@
     }, 6000);
   })();
 
+  try {
+    var s = JSON.parse(localStorage.getItem("uwu_session") || "null");
+    if (s && s.user && Date.now() - s.loginTime < 7*24*60*60*1000) window.location.replace("/");
+  } catch {}
+
   const boxes  = document.querySelectorAll(".pin-box");
   const btn    = document.getElementById("submit-btn");
   const errEl  = document.getElementById("error-msg");
   const form   = document.getElementById("login-form");
-  const success= document.getElementById("success-view");
-  const nameEl = document.getElementById("welcome-name");
-
-  // If already logged in, skip
-  try {
-    const s = JSON.parse(localStorage.getItem("uwu_session") || "null");
-    if (s && s.user && Date.now() - s.loginTime < 7*24*60*60*1000) {
-      window.location.replace("/");
-    }
-  } catch {}
+  const success = document.getElementById("success-view");
+  const nameEl  = document.getElementById("welcome-name");
 
   boxes.forEach((box, i) => {
     box.addEventListener("input", () => {
-      const v = box.value.replace(/\D/g, "");
-      box.value = v.slice(-1);
+      box.value = box.value.replace(/\D/g, "").slice(-1);
       box.classList.toggle("filled", !!box.value);
       if (box.value && i < boxes.length - 1) boxes[i + 1].focus();
       checkFull();
     });
-    box.addEventListener("keydown", (e) => {
+    box.addEventListener("keydown", e => {
       if (e.key === "Backspace" && !box.value && i > 0) boxes[i - 1].focus();
       if (e.key === "Enter") btn.click();
     });
-    box.addEventListener("paste", (e) => {
+    box.addEventListener("paste", e => {
       const text = (e.clipboardData.getData("text")).replace(/\D/g, "").slice(0, 5);
       e.preventDefault();
       [...text].forEach((c, j) => { if (boxes[j]) { boxes[j].value = c; boxes[j].classList.add("filled"); } });
@@ -177,38 +287,27 @@
       checkFull();
     });
   });
-
   boxes[0].focus();
-
-  function playUwuSound() {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      // Cute ascending sparkle chime
-      const notes = [
-        { f: 523.25, t: 0.00 }, { f: 659.25, t: 0.10 },
-        { f: 783.99, t: 0.20 }, { f: 1046.50, t: 0.32 },
-        { f: 1318.51, t: 0.46 }, { f: 1046.50, t: 0.58 },
-      ];
-      notes.forEach(({ f, t }) => {
-        const osc  = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.type = "sine";
-        osc.frequency.value = f;
-        gain.gain.setValueAtTime(0, ctx.currentTime + t);
-        gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + t + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.35);
-        osc.start(ctx.currentTime + t);
-        osc.stop(ctx.currentTime + t + 0.4);
-      });
-    } catch {}
-  }
 
   function checkFull() {
     const code = [...boxes].map(b => b.value).join("");
     btn.disabled = code.length < 5;
     if (code.length === 5) setTimeout(() => btn.click(), 80);
+  }
+
+  function playUwuSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [{ f: 523, t: 0 }, { f: 659, t: 0.10 }, { f: 784, t: 0.20 }, { f: 1047, t: 0.32 }, { f: 1319, t: 0.46 }].forEach(({ f, t }) => {
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = "sine"; osc.frequency.value = f;
+        gain.gain.setValueAtTime(0, ctx.currentTime + t);
+        gain.gain.linearRampToValueAtTime(0.22, ctx.currentTime + t + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.35);
+        osc.start(ctx.currentTime + t); osc.stop(ctx.currentTime + t + 0.4);
+      });
+    } catch {}
   }
 
   btn.addEventListener("click", async () => {
@@ -223,25 +322,27 @@
         body: JSON.stringify({ code }),
       });
       const data = await res.json();
-      if (!res.ok) { errEl.textContent = "wrong code. try again."; boxes.forEach(b => b.value = ""); boxes[0].focus(); btn.disabled = true; return; }
+      if (!res.ok) {
+        errEl.textContent = "wrong code. try again.";
+        boxes.forEach(b => { b.value = ""; b.classList.remove("filled"); });
+        boxes[0].focus();
+        btn.disabled = true;
+        return;
+      }
       localStorage.setItem("uwu_session", JSON.stringify({ ...data, loginTime: Date.now() }));
       nameEl.textContent = data.user;
       form.style.display = "none";
       success.style.display = "block";
-      // Show onboarding after brief delay
       setTimeout(() => {
         document.querySelector(".card").style.display = "none";
         const ob = document.getElementById("onboard");
         document.getElementById("onboard-name").textContent = data.user;
         ob.style.display = "flex";
-        // Skip onboarding if they've seen it before
         const seen = localStorage.getItem("uwu_onboarded_" + data.user);
         if (seen) { window.location.replace("/"); return; }
         localStorage.setItem("uwu_onboarded_" + data.user, "1");
         playUwuSound();
-        document.getElementById("onboard-go").addEventListener("click", () => {
-          window.location.replace("/");
-        });
+        document.getElementById("onboard-go").addEventListener("click", () => window.location.replace("/"));
       }, 600);
     } catch {
       errEl.textContent = "connection error. try again.";
