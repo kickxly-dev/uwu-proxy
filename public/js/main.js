@@ -8,7 +8,7 @@ const GAMES = [];
 const EXTERNAL_GAMES_REPO_API = "https://api.github.com/repos/tw31122007/HTML-Games-V2/contents";
 const EXTERNAL_GAMES_BASE_URL = "https://tw31122007.github.io/HTML-Games-V2";
 const EXTERNAL_GAMES_IGNORED_DIRS = new Set([".github", ".git", "assets", "static", "css", "js", "images", "img"]);
-const EXTERNAL_GAMES_CACHE_KEY = "uwu_external_games_v2_cache";
+const EXTERNAL_GAMES_CACHE_KEY = "html_games_v2_cache";
 const EXTERNAL_GAMES_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
 function formatExternalGameName(slug) {
@@ -64,7 +64,7 @@ async function loadExternalRepoGames() {
         url: `${EXTERNAL_GAMES_BASE_URL}/${encodeURIComponent(slug)}/`,
         tag: "casual",
         category: "casual",
-        desc: `Play ${formatExternalGameName(slug)} from HTML-Games-V2`,
+        desc: "From HTML-Games-V2 collection",
         local: false,
       }));
 
