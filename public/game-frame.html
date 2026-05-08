@@ -19,10 +19,10 @@
   <button class="back" onclick="history.back()">← back</button>
   <div id="gf-loading">loading game…</div>
   <iframe id="gf" allowfullscreen allow="fullscreen; autoplay; gamepad; clipboard-write" sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-downloads allow-modals"></iframe>
-  <script type="module">
-    const p = new URLSearchParams(location.search);
-    const u = p.get("url");
-    const n = p.get("name");
+  <script>
+    const p      = new URLSearchParams(location.search);
+    const u      = p.get("url");
+    const n      = p.get("name");
     const loader = document.getElementById("gf-loading");
     const frame  = document.getElementById("gf");
 
@@ -38,27 +38,7 @@
     }
 
     document.title = (n ? n.slice(0, 80) + " · " : "") + "uwu proxy";
-
-    // Always prefer the UV route so iframe-blocking headers are stripped reliably.
-    // If the worker cannot start (e.g. local non-HTTPS dev), fall back to direct.
-    if (parsed.origin === location.origin) {
-      frame.src = parsed.href;
-    } else {
-      import("/uv/uv.bundle.js").then(() => import("/uv/uv.config.js")).then(async () => {
-        try {
-          const reg = await navigator.serviceWorker.register("/uv/sw.js", {
-            scope: __uv$config.prefix,
-            updateViaCache: "none",
-          });
-          if (reg.installing || reg.waiting) {
-            await navigator.serviceWorker.ready;
-          }
-          frame.src = __uv$config.prefix + __uv$config.encodeUrl(parsed.href);
-        } catch {
-          frame.src = parsed.href;
-        }
-      });
-    }
+    frame.src = parsed.href;
 
     frame.addEventListener("load",  () => loader.classList.add("hidden"), { once: true });
     frame.addEventListener("error", () => loader.classList.add("hidden"), { once: true });

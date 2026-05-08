@@ -353,7 +353,19 @@
     { user:"Liam",    code:"26473", role:"slave"       },
     { user:"Gibson",  code:"98132", role:"slave"       },
   ];
+  const USERS_STORAGE_KEY = "uwu_admin_users";
   let USERS = DEFAULT_USERS.slice();
+
+  function loadUsersFromStorage() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || "null");
+      if (Array.isArray(saved) && saved.length) return saved;
+    } catch {}
+    return null;
+  }
+  function saveUsersToStorage(users) {
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+  }
 
   const CHAT_CHANNEL     = "uwuprx-chat";
   const ANNOUNCE_CHANNEL = "uwuprx-announce";
@@ -492,8 +504,16 @@
       const res = await fetch("/api/auth-codes");
       if (!res.ok) throw new Error("load failed");
       const data = await res.json();
-      if (Array.isArray(data?.users) && data.users.length) USERS = data.users;
-    } catch {
+      if (Array.isArray(data?.users) && data.users.length) {
+        USERS = data.users;
+        saveUsersToStorage(USERS);
+        return;
+      }
+    } catch {}
+    const saved = loadUsersFromStorage();
+    if (saved) {
+      USERS = saved;
+    } else {
       USERS = DEFAULT_USERS.slice();
       showToast("using fallback codes (server unavailable)", "error");
     }
@@ -624,6 +644,15 @@
       showToast("missing session code — relogin required", "error");
       return;
     }
+    // Apply change locally first so it always persists
+    const target = USERS.find(u => u.user === user);
+    if (target) target.code = newCode;
+    saveUsersToStorage(USERS);
+    renderUsersTable();
+    showToast(`saved new code for ${user}`, "success");
+    addLog("🔐", `updated ${user}'s login code`, "yellow");
+
+    // Also try to sync to server
     try {
       const res = await fetch("/api/auth-codes", {
         method: "POST",
@@ -631,17 +660,12 @@
         body: JSON.stringify({ actorCode, user, code: newCode }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        showToast(data?.error || "failed to save code", "error");
-        return;
+      if (res.ok && Array.isArray(data?.users) && data.users.length) {
+        USERS = data.users;
+        saveUsersToStorage(USERS);
+        renderUsersTable();
       }
-      if (Array.isArray(data?.users) && data.users.length) USERS = data.users;
-      renderUsersTable();
-      showToast(`saved new code for ${user}`, "success");
-      addLog("🔐", `updated ${user}'s login code`, "yellow");
-    } catch {
-      showToast("failed to save code", "error");
-    }
+    } catch {}
   }
 
   (async function initUsers() {
