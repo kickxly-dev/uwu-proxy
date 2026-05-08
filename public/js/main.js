@@ -50,7 +50,6 @@ const GAMES = [
   { name: "Learn to Fly 3",     url: "https://3kh0.github.io/projects/learn-to-fly-3/index.html",     tag: "action",  category: "action",  desc: "Launch a penguin into the sky",        direct: true  },
   { name: "Rolling Sky",        url: "/games/Rolling-sky.html",                                       tag: "action",  category: "action",  desc: "Roll a ball across sky platforms",     local: true   },
   { name: "The Backrooms",      url: "/games/backrooms.html",                                         tag: "action",  category: "action",  desc: "Escape the endless liminal rooms",     local: true   },
-  { name: "Bullet Force",       url: "/games/bullet-force.html",                                      tag: "action",  category: "action",  desc: "3D multiplayer FPS shooter",           local: true   },
   // IO
   { name: "Paper.io 2",         url: "https://3kh0.github.io/projects/paperio2/index.html",           tag: "io",      category: "io",      desc: "Claim territory on the map",           direct: true  },
   { name: "Boxing Random",      url: "https://3kh0.github.io/projects/boxing-random/index.html",      tag: "io",      category: "io",      desc: "Random boxing mayhem",                 direct: true  },
@@ -63,13 +62,6 @@ const GAMES = [
   { name: "Zombs Royale",       url: "https://3kh0.github.io/projects/zombs-royale/index.html",       tag: "io",      category: "io",      desc: "2D battle royale survival",            direct: true  },
   { name: "Tube Jumpers",       url: "https://3kh0.github.io/projects/tube-jumpers/index.html",       tag: "io",      category: "io",      desc: "Jump tubes to knock off opponents",    direct: true  },
   { name: "Soccer Random",      url: "https://3kh0.github.io/projects/soccer-random/index.html",      tag: "io",      category: "io",      desc: "Wacky physics soccer battles",         direct: true  },
-  { name: "Narrow One",         url: "/games/narrow-one.html",                                        tag: "io",      category: "io",      desc: "Multiplayer archery capture the flag", local: true   },
-  { name: "Bloxd.io",           url: "/games/bloxd-io.html",                                          tag: "io",      category: "io",      desc: "Multiplayer Minecraft-style building",  local: true   },
-  { name: "Venge.io",           url: "/games/venge-io.html",                                          tag: "io",      category: "io",      desc: "Multiplayer FPS battle arena",         local: true   },
-  { name: "Merc Zone",          url: "/games/Merc-zone.html",                                         tag: "io",      category: "io",      desc: "Top-down multiplayer shooter",         local: true   },
-  { name: "Skribbl.io",         url: "https://skribbl.io/",                                           tag: "io",      category: "io",      desc: "Draw and guess with friends"                          },
-  { name: "Doomz.io",           url: "https://doomz.io/",                                             tag: "io",      category: "io",      desc: "Multiplayer doom-style shooter"                       },
-  { name: "LOLBeans",           url: "https://lolbeans.io/",                                          tag: "io",      category: "io",      desc: "Bean battle royale"                                   },
   // Classic
   { name: "Minecraft (Eaglercraft)", url: "https://3kh0.github.io/projects/minecraft/index.html",     tag: "classic", category: "classic", desc: "Full Minecraft browser edition",       direct: true  },
   { name: "Google Snake",       url: "https://3kh0.github.io/projects/google-snake/index.html",       tag: "classic", category: "classic", desc: "Classic snake game",                   direct: true  },
@@ -98,7 +90,6 @@ const GAMES = [
   { name: "FNAF Sister Location", url: "/games/sister-location.html",                                 tag: "classic", category: "classic", desc: "Five Nights at Freddy's Sister Location", local: true },
   { name: "Minecraft Tower Defense", url: "/games/Minecraft-tower-defense.html",                      tag: "classic", category: "classic", desc: "Defend your Minecraft base",            local: true   },
   { name: "Survival Craft",     url: "/games/Survival-craft.html",                                    tag: "classic", category: "classic", desc: "Eaglercraft multiplayer survival",       local: true   },
-  { name: "Lichess",            url: "https://lichess.org/",                                          tag: "classic", category: "classic", desc: "Free open-source chess"                               },
   // Puzzle
   { name: "Wordle",             url: "https://3kh0.github.io/projects/wordle/index.html",             tag: "puzzle",  category: "puzzle",  desc: "Guess the 5-letter word",              direct: true  },
   { name: "Minesweeper",        url: "https://3kh0.github.io/projects/minesweeper/index.html",        tag: "puzzle",  category: "puzzle",  desc: "Clear the minefield",                  direct: true  },
@@ -113,8 +104,6 @@ const GAMES = [
   { name: "Solitaire",          url: "https://3kh0.github.io/projects/solitaire/index.html",          tag: "puzzle",  category: "puzzle",  desc: "Classic card game",                    direct: true  },
   { name: "Sand Game",          url: "https://3kh0.github.io/projects/sand-game/index.html",          tag: "puzzle",  category: "puzzle",  desc: "Simulate falling sand physics",        direct: true  },
   { name: "There Is No Game",   url: "https://3kh0.github.io/projects/there-is-no-game/index.html",   tag: "puzzle",  category: "puzzle",  desc: "A game that isn't a game",             direct: true  },
-  { name: "Little Alchemy 2",   url: "https://littlealchemy2.com/",                                   tag: "puzzle",  category: "puzzle",  desc: "Combine elements to make new things"                  },
-  { name: "Connect Four",       url: "https://papergames.io/en/connect4",                             tag: "puzzle",  category: "puzzle",  desc: "Classic connect four"                                 },
   { name: "Fancy Pants",        url: "https://3kh0.github.io/projects/fancypantsadventures/index.html", tag: "action",  category: "action",  desc: "Smooth stickman platformer",           direct: true  },
   { name: "Stick War",          url: "https://3kh0.github.io/projects/stickwar/index.html",           tag: "action",  category: "action",  desc: "Build an army of stickmen",            direct: true  },
   // Casual
