@@ -478,7 +478,8 @@
       setGameStatus("✓ game saved for everyone", "success");
       showToast("game uploaded", "success");
       addLog("🎮", `saved custom game ${slug}`, "green");
-      document.getElementById("game-slug").value = slug;
+      const slugEl = document.getElementById("game-slug");
+      if (slugEl) slugEl.value = slug;
       renderCustomGames(Array.isArray(data?.games) ? data.games : []);
     } catch (e) {
       setGameStatus(e.message || "save failed", "error");

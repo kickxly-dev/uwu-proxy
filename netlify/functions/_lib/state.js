@@ -9,7 +9,8 @@ const DEFAULT_USERS = [
 ];
 
 const STORE_NAME = "uwu-proxy";
-const MAX_GAME_HTML_SIZE_BYTES = 500_000; // 500KB
+const MAX_GAME_HTML_SIZE_BYTES = 500_000; // 500 KB
+const CODE_PATTERN = /^\d{5}$/;
 const KEYS = {
   codeOverrides: "auth-code-overrides",
   gameIndex: "custom-games-index",
@@ -59,7 +60,7 @@ function normalizeCodeOverrides(raw) {
   const out = Object.create(null);
   for (const user of DEFAULT_USERS) {
     const value = raw[user.user];
-    if (typeof value === "string" && /^\d{5}$/.test(value)) {
+    if (typeof value === "string" && CODE_PATTERN.test(value)) {
       out[user.user] = value;
     }
   }
@@ -119,7 +120,7 @@ async function getEffectiveUsers({ event, env }) {
 }
 
 async function updateUserCode({ event, env, actorCode, user, code }) {
-  if (!actorCode || !user || !/^\d{5}$/.test(code || "")) {
+  if (!actorCode || !user || !CODE_PATTERN.test(code || "")) {
     return { ok: false, status: 400, error: "invalid payload" };
   }
 
