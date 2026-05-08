@@ -179,7 +179,7 @@ function rebuildGameCollections() {
 
 async function loadCustomGames() {
   try {
-    const res = await fetch(CUSTOM_GAMES_ENDPOINT, { cache: "no-store" });
+    const res = await fetch(CUSTOM_GAMES_ENDPOINT);
     if (!res.ok) return;
     const data = await res.json();
     if (!Array.isArray(data?.games)) return;
