@@ -94,7 +94,7 @@ function cleanGameMeta(meta) {
 }
 
 function looksLikeHtmlDocument(content) {
-  return /<!doctype\s+html|<html\b|<head\b|<body\b|<\/html>|<iframe\b|<script\b[^>]*>/i.test(String(content || ""));
+  return /<!doctype\s+html|<html\b|<head\b|<body\b|<\/html>|<iframe\b|<script\b[^>]*>|<\/script>/i.test(String(content || ""));
 }
 
 function buildCustomGameHtml({ name, code }) {
