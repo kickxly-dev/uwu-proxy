@@ -63,7 +63,10 @@ async function loadExternalRepoGames() {
       for (const baseUrl of [EXTERNAL_GAMES_HTTPS_BASE_URL, EXTERNAL_GAMES_HTTP_BASE_URL]) {
         try {
           const res = await fetch(externalGamesManifestUrl(baseUrl));
-          if (!res.ok) continue;
+          if (!res.ok) {
+            console.warn(`Games manifest request failed at ${baseUrl} with status ${res.status}`);
+            continue;
+          }
           const parsed = await res.json();
           if (!Array.isArray(parsed)) continue;
           data = parsed;
@@ -79,7 +82,13 @@ async function loadExternalRepoGames() {
       // If both slug and name are present on an object, slug is used first.
       // Preferred shape going forward is ["slug"] for smallest payload and simplest parsing.
       slugs = data
-        .map((item) => typeof item === "string" ? item : item?.slug || item?.name)
+        .map((item) => {
+          if (typeof item === "string") return item;
+          if (!item || typeof item !== "object") return "";
+          const slug = typeof item.slug === "string" ? item.slug : "";
+          const name = typeof item.name === "string" ? item.name : "";
+          return slug || name;
+        })
         .map((name) => String(name || "").trim())
         .filter((name) => name && !EXTERNAL_GAMES_IGNORED_DIRS.has(name.toLowerCase()))
         .sort((a, b) => a.localeCompare(b));
@@ -101,7 +110,7 @@ async function loadExternalRepoGames() {
     GAMES.push(...externalGames, ...retainedCustom);
   } catch (error) {
     console.warn("Failed to load external games list", error);
-    const fallbackBaseUrl = externalGamesBaseUrl || EXTERNAL_GAMES_HTTP_BASE_URL;
+    const fallbackBaseUrl = externalGamesBaseUrl;
     GAMES.length = 0;
     GAMES.push(
       {
