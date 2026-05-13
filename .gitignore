@@ -1,9 +1,7 @@
 node_modules/
+.upload-tmp/
 .env
+.netlify/
 *.log
-
-# wrangler files
-.wrangler
-.dev.vars*
-!.dev.vars.example
-!.env.example
+.DS_Store
+dist/

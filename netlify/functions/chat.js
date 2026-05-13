@@ -1,22 +1,21 @@
-const CHAT_CHANNEL = "uwuprx-chat";
-const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*" };
+const NTFY = 'https://ntfy.sh';
 
-exports.handler = async (event) => {
-  if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers: CORS, body: "" };
-  if (event.httpMethod !== "POST")    return { statusCode: 405, headers: { ...CORS, "content-type": "application/json" }, body: JSON.stringify({ error: "method not allowed" }) };
+export const handler = async (event) => {
+  const path = event.path || '';
 
-  const user = event.headers["x-chat-user"] || "anon";
-  const body = event.body || "";
-  if (!body.trim()) return { statusCode: 400, headers: { ...CORS, "content-type": "application/json" }, body: JSON.stringify({ error: "empty message" }) };
-
-  try {
-    const res = await fetch(`https://ntfy.sh/${CHAT_CHANNEL}`, {
-      method: "POST",
-      headers: { "Title": user, "Content-Type": "text/plain" },
-      body,
+  if (event.httpMethod === 'POST' && path.includes('send')) {
+    let body;
+    try { body = JSON.parse(event.body); } catch { return { statusCode: 400, body: JSON.stringify({ error: 'bad json' }) }; }
+    const { channel, user, text } = body;
+    if (!channel || !user || !text) return { statusCode: 400, body: JSON.stringify({ error: 'channel, user, text required' }) };
+    const msg = JSON.stringify({ user, text, ts: Date.now() });
+    await fetch(`${NTFY}/${channel}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain', 'X-Title': user },
+      body: msg,
     });
-    return { statusCode: res.ok ? 200 : 502, headers: CORS, body: "" };
-  } catch (e) {
-    return { statusCode: 500, headers: { ...CORS, "content-type": "application/json" }, body: JSON.stringify({ error: e.message }) };
+    return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   }
+
+  return { statusCode: 405, body: 'Method Not Allowed' };
 };

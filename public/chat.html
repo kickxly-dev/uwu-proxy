@@ -3,278 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>chat · uwu proxy</title>
-  <script>(function(){var s=localStorage.getItem("uwu_session");if(!s)return location.replace("/login.html");try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem("uwu_session");location.replace("/login.html");}}catch{location.replace("/login.html");}})()</script>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%23ff79c6'/><circle cx='11' cy='14' r='3' fill='white'/><circle cx='21' cy='14' r='3' fill='white'/><path d='M10 20 Q16 24 22 20' stroke='white' stroke-width='2' fill='none' stroke-linecap='round'/></svg>" />
+  <title>Chat · Uwu Gaming</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
   <link rel="stylesheet" href="/css/style.css" />
-  <style>
-    .chat-page{display:flex;flex-direction:column;min-height:100vh}
-    .chat-shell{width:min(980px,calc(100% - 32px));margin:26px auto 32px;display:grid;grid-template-columns:280px minmax(0,1fr);gap:20px;flex:1}
-    .chat-sidebar,.chat-main{background:rgba(12,12,30,.82);border:1px solid rgba(255,255,255,.07);border-radius:24px;backdrop-filter:blur(20px);box-shadow:0 18px 60px rgba(0,0,0,.25)}
-    .chat-sidebar{padding:22px;display:flex;flex-direction:column;gap:18px}
-    .chat-main{display:flex;flex-direction:column;min-height:70vh;overflow:hidden}
-    .chat-kicker{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
-    .chat-title{font-family:var(--ff-display);font-size:clamp(2rem,4vw,2.8rem);line-height:.95;margin-bottom:10px}
-    .chat-copy{color:var(--dim);line-height:1.6;font-size:.95rem}
-    .chat-user-card,.chat-tip{background:rgba(19,19,43,.9);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:16px}
-    .chat-user-label,.chat-tip-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px}
-    .chat-user-name{font-family:var(--ff-display);font-size:1.15rem;margin-bottom:4px}
-    .chat-user-role{color:var(--pink);font-size:.82rem}
-    .chat-tip p{color:var(--dim);line-height:1.55;font-size:.88rem}
-    .chat-header{padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .chat-header-title{font-family:var(--ff-display);font-size:1rem;margin-bottom:4px}
-    .chat-header-sub{color:var(--dim);font-size:.82rem}
-    .chat-status{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(19,19,43,.9);border:1px solid rgba(255,255,255,.06);color:var(--dim);font-size:.78rem;white-space:nowrap}
-    .chat-status-dot{width:8px;height:8px;border-radius:50%;background:var(--yellow);box-shadow:0 0 0 6px rgba(241,250,140,.08)}
-    .chat-status.live .chat-status-dot{background:var(--mint);box-shadow:0 0 0 6px rgba(80,250,123,.08)}
-    .chat-feed{flex:1;overflow-y:auto;padding:20px 22px;display:flex;flex-direction:column;gap:12px}
-    .chat-empty{margin:auto;text-align:center;color:var(--dim);max-width:320px}
-    .chat-empty strong{display:block;color:var(--text);font-family:var(--ff-display);margin-bottom:8px;font-size:1.1rem}
-    .chat-row{display:flex;flex-direction:column;gap:6px;max-width:78%;animation:chatIn .16s ease}
-    .chat-row.me{margin-left:auto;align-items:flex-end}
-    .chat-row.other{margin-right:auto;align-items:flex-start}
-    @keyframes chatIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-    .chat-author{font-size:.74rem;color:var(--muted);padding:0 4px}
-    .chat-bubble{padding:12px 14px;border-radius:18px;line-height:1.5;font-size:.92rem;word-break:break-word;white-space:pre-wrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
-    .chat-row.me .chat-bubble{background:linear-gradient(135deg,rgba(255,121,198,.2),rgba(189,147,249,.2));border:1px solid rgba(255,121,198,.24);border-bottom-right-radius:6px}
-    .chat-row.other .chat-bubble{background:rgba(19,19,43,.95);border:1px solid rgba(255,255,255,.06);border-bottom-left-radius:6px}
-    .chat-compose{padding:18px 22px 22px;border-top:1px solid rgba(255,255,255,.07);background:rgba(5,5,16,.42)}
-    .chat-form{display:flex;gap:10px;align-items:flex-end}
-    .chat-input{flex:1;min-height:52px;max-height:160px;resize:none;border:1px solid rgba(255,255,255,.08);background:rgba(19,19,43,.95);color:var(--text);border-radius:18px;padding:14px 16px;font:inherit;line-height:1.5;outline:none;transition:border-color .18s ease,box-shadow .18s ease}
-    .chat-input:focus{border-color:rgba(255,121,198,.42);box-shadow:0 0 0 3px rgba(255,121,198,.08)}
-    .chat-send{width:52px;height:52px;border:none;border-radius:16px;cursor:pointer;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 14px 30px rgba(255,121,198,.22);transition:transform .16s ease,opacity .16s ease}
-    .chat-send:hover{transform:translateY(-1px);opacity:.92}
-    .chat-send:disabled{opacity:.35;pointer-events:none}
-    .chat-help{margin-top:10px;color:var(--muted);font-size:.78rem}
-    @media (max-width:900px){
-      .chat-shell{grid-template-columns:1fr;width:min(100%,calc(100% - 20px));margin:18px auto 22px}
-      .chat-main{min-height:66vh}
-      .chat-row{max-width:92%}
-      .chat-header{flex-direction:column;align-items:flex-start}
-    }
-  </style>
+  <script>(function(){var s=localStorage.getItem('uwu_session');if(!s)return location.replace('/login.html');try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem('uwu_session');location.replace('/login.html');}}catch{location.replace('/login.html');}})()</script>
 </head>
 <body>
-<div class="bg-canvas">
-  <div class="bg-orb"></div>
-  <div class="bg-orb"></div>
-  <div class="bg-orb"></div>
-</div>
 <canvas id="stars-canvas"></canvas>
-
-<nav class="sidebar">
-  <a href="/" class="sb-logo" title="uwu proxy">
-    <svg width="20" height="16" viewBox="0 0 20 16" fill="none">
-      <circle cx="6"  cy="7" r="3" fill="white"/>
-      <circle cx="14" cy="7" r="3" fill="white"/>
-      <path d="M5 12 Q10 15.5 15 12" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-    </svg>
-  </a>
-  <a href="/" class="sb-btn" title="Home">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-  </a>
-  <a href="/games.html" class="sb-btn" title="Games">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4m-2-2v4"/><circle cx="17" cy="11" r="1" fill="currentColor"/><circle cx="15" cy="13" r="1" fill="currentColor"/></svg>
-  </a>
-  <a href="/apps.html" class="sb-btn" title="Apps">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-  </a>
-  <a href="/chat.html" class="sb-btn active" title="Chat">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-  </a>
-  <a href="/ai.html" class="sb-btn" title="AI">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M22 2 12 12"/><path d="m17 7 5-5"/></svg>
-  </a>
-  <a href="/music.html" class="sb-btn" title="Music">
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-  </a>
-  <div class="sb-spacer"></div>
-  <div class="sb-user" id="sb-user">?</div>
-  <button class="sb-logout" id="logout-btn" title="Logout">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-  </button>
-</nav>
-
-<main class="page chat-page">
-  <div class="chat-shell">
-    <aside class="chat-sidebar">
-      <div>
-        <div class="chat-kicker">Global</div>
-        <h1 class="chat-title">chat room</h1>
-        <p class="chat-copy">This is the shared room for everybody on uwu proxy. Anything sent here shows up live for everyone else too.</p>
-      </div>
-      <div class="chat-user-card">
-        <div class="chat-user-label">Signed in as</div>
-        <div class="chat-user-name" id="sidebar-user">unknown</div>
-        <div class="chat-user-role" id="sidebar-role">guest</div>
-      </div>
-      <div class="chat-tip">
-        <div class="chat-tip-label">Heads up</div>
-        <p>Keep it short, keep it chill, and hit <strong>Enter</strong> to send. Use <strong>Shift + Enter</strong> for a new line.</p>
-      </div>
-    </aside>
-
-    <section class="chat-main">
-      <div class="chat-header">
-        <div>
-          <div class="chat-header-title">everyone's here</div>
-          <div class="chat-header-sub">live messages through the shared uwuprx chat channel</div>
-        </div>
-        <div class="chat-status" id="chat-status">
-          <span class="chat-status-dot"></span>
-          <span id="chat-status-text">connecting...</span>
-        </div>
-      </div>
-
-      <div class="chat-feed" id="chat-feed">
-        <div class="chat-empty" id="chat-empty">
-          <strong>no messages yet</strong>
-          <span>start the room with a first message.</span>
-        </div>
-      </div>
-
-      <div class="chat-compose">
-        <form class="chat-form" id="chat-form">
-          <textarea class="chat-input" id="chat-input" placeholder="say something to everyone..." maxlength="200" rows="1"></textarea>
-          <button class="chat-send" id="chat-send" type="submit" aria-label="Send message">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          </button>
-        </form>
-        <div class="chat-help">Messages send instantly to the shared room.</div>
-      </div>
-    </section>
+<nav class="sidebar" id="sidebar"></nav>
+<main class="page">
+  <div class="page-hero">
+    <h1 class="page-hero-title">Chat</h1>
+    <p class="page-hero-sub">real-time messages with everyone online</p>
+  </div>
+  <div class="chat-layout">
+    <div class="chat-messages" id="chat-messages">
+      <div style="color:var(--text3);font-size:13px;text-align:center">connecting to chat…</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-input" placeholder="say something…" maxlength="500" autocomplete="off" />
+      <button class="chat-send" id="chat-send">Send</button>
+    </div>
   </div>
 </main>
-
-<div class="toast-container" id="toast-container"></div>
-
-<script>
-  const CHAT_CHANNEL = "uwuprx-chat";
-  const session = JSON.parse(localStorage.getItem("uwu_session") || "{}");
-  const navUser = document.getElementById("nav-user");
-  const sidebarUser = document.getElementById("sidebar-user");
-  const sidebarRole = document.getElementById("sidebar-role");
-  const chatFeed = document.getElementById("chat-feed");
-  const chatEmpty = document.getElementById("chat-empty");
-  const chatForm = document.getElementById("chat-form");
-  const chatInput = document.getElementById("chat-input");
-  const chatSend = document.getElementById("chat-send");
-  const statusEl = document.getElementById("chat-status");
-  const statusText = document.getElementById("chat-status-text");
-
-  if (navUser && session.user) navUser.textContent = session.user;
-  if (sidebarUser) sidebarUser.textContent = session.user || "unknown";
-  if (sidebarRole) sidebarRole.textContent = session.role || "guest";
-
-  document.getElementById("logout-btn")?.addEventListener("click", () => {
-    localStorage.removeItem("uwu_session");
-    location.replace("/login.html");
-  });
-
-  function escHtml(s) {
-    return String(s)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
-  }
-
-  function toast(msg, type = "info") {
-    const c = document.getElementById("toast-container");
-    if (!c) return;
-    const el = document.createElement("div");
-    el.className = `toast ${type}`;
-    el.innerHTML = `<span>${{ success: "✓", error: "✕", info: "·" }[type]}</span><span>${escHtml(msg)}</span>`;
-    c.appendChild(el);
-    setTimeout(() => {
-      el.style.animation = "toastOut .3s ease forwards";
-      setTimeout(() => el.remove(), 300);
-    }, 2800);
-  }
-
-  function addChatMessage(from, text) {
-    chatEmpty?.remove();
-    const row = document.createElement("div");
-    const isMe = from === session.user;
-    row.className = `chat-row ${isMe ? "me" : "other"}`;
-    row.innerHTML = `
-      <div class="chat-author">${escHtml(from || "?")}</div>
-      <div class="chat-bubble">${escHtml(text || "")}</div>`;
-    chatFeed.appendChild(row);
-    chatFeed.scrollTop = chatFeed.scrollHeight;
-  }
-
-  function setStatus(text, live = false) {
-    statusText.textContent = text;
-    statusEl.classList.toggle("live", live);
-  }
-
-  chatInput.addEventListener("input", () => {
-    chatInput.style.height = "auto";
-    chatInput.style.height = Math.min(chatInput.scrollHeight, 160) + "px";
-  });
-
-  chatInput.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      chatForm.requestSubmit();
-    }
-  });
-
-  chatForm.addEventListener("submit", async e => {
-    e.preventDefault();
-    const text = chatInput.value.trim();
-    if (!text) return;
-    chatSend.disabled = true;
-    try {
-      await fetch("/api/chat/send", {
-        method: "POST",
-        headers: { "x-chat-user": session.user || "anon" },
-        body: text,
-      });
-      chatInput.value = "";
-      chatInput.style.height = "auto";
-    } catch {
-      toast("couldn't send message", "error");
-    }
-    chatSend.disabled = false;
-    chatInput.focus();
-  });
-
-  const chatEs = new EventSource(`/api/chat/stream`);
-  chatEs.addEventListener("open", () => setStatus("live", true));
-  chatEs.addEventListener("error", () => setStatus("reconnecting...", false));
-  chatEs.addEventListener("message", e => {
-    try {
-      const data = JSON.parse(e.data);
-      if (data.event === "message") addChatMessage(data.title || "?", data.message || "");
-    } catch {}
-  });
-</script>
-<script src="/js/main.js" type="module"></script>
 <div class="statusbar">
-  <div id="proxy-status" class="proxy-badge loading">
-    <div class="proxy-dot"></div>
-    <span id="proxy-status-text">loading</span>
-  </div>
+  <div id="proxy-status" class="proxy-badge loading"><div class="proxy-dot"></div><span id="proxy-status-text">loading</span></div>
   <div class="statusbar-spacer"></div>
   <span class="statusbar-version" id="footer-version"></span>
-  <button class="statusbar-settings" id="settings-btn" title="Settings">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-    </svg>
-  </button>
 </div>
-<script>
-  (function() {
-    var _s = JSON.parse(localStorage.getItem("uwu_session") || "{}");
-    var _sbu = document.getElementById("sb-user");
-    if (_s.user && _sbu) _sbu.textContent = _s.user.charAt(0).toUpperCase();
-    document.getElementById("logout-btn")?.addEventListener("click", function() {
-      localStorage.removeItem("uwu_session");
-      location.replace("/login.html");
-    });
-  })();
-</script>
+<div class="toast-container" id="toast-container"></div>
+<script src="/js/main.js" type="module"></script>
 </body>
 </html>

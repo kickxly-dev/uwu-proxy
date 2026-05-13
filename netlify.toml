@@ -1,81 +1,66 @@
 [build]
   publish = "public"
-  command = "npm run build"
+  functions = "netlify/functions"
 
-# Map /api/* to Netlify functions
 [[redirects]]
   from = "/api/auth"
   to = "/.netlify/functions/auth"
   status = 200
-  force = true
 
 [[redirects]]
   from = "/api/auth-codes"
   to = "/.netlify/functions/auth-codes"
   status = 200
-  force = true
 
 [[redirects]]
   from = "/api/ai"
   to = "/.netlify/functions/ai"
   status = 200
-  force = true
-
-[[redirects]]
-  from = "/api/movies"
-  to = "/.netlify/functions/movies"
-  status = 200
-  force = true
 
 [[redirects]]
   from = "/api/chat/send"
   to = "/.netlify/functions/chat"
   status = 200
-  force = true
 
 [[redirects]]
   from = "/api/chat/stream"
-  to = "https://ntfy.sh/uwuprx-chat/sse"
-  status = 302
-  force = true
+  to = "/.netlify/functions/chat-stream"
+  status = 200
 
 [[redirects]]
   from = "/api/presence"
   to = "/.netlify/functions/presence"
   status = 200
-  force = true
 
 [[redirects]]
-  from = "/api/presence/stream"
-  to = "https://ntfy.sh/uwuprx-presence/sse"
-  status = 302
-  force = true
-
-[[redirects]]
-  from = "/api/games"
-  to = "/.netlify/functions/games"
+  from = "/api/games/list"
+  to = "/.netlify/functions/games-list"
   status = 200
-  force = true
 
 [[redirects]]
-  from = "/games/custom/:slug"
-  to = "/.netlify/functions/game-file?slug=:slug"
+  from = "/api/games/upload"
+  to = "/.netlify/functions/games-upload"
   status = 200
-  force = true
+
+[[redirects]]
+  from = "/api/games/delete"
+  to = "/.netlify/functions/games-delete"
+  status = 200
 
 [[redirects]]
   from = "/bare/*"
   to = "/.netlify/functions/bare"
   status = 200
-  force = true
-
-# SW scope header
-[[headers]]
-  for = "/sw.js"
-  [headers.values]
-    Service-Worker-Allowed = "/"
 
 [[headers]]
-  for = "/uv/sw.js"
+  for = "/uv/*"
   [headers.values]
     Service-Worker-Allowed = "/"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Embedder-Policy = "require-corp"
+
+[[headers]]
+  for = "/service/*"
+  [headers.values]
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Embedder-Policy = "require-corp"
