@@ -24,6 +24,12 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
+      - name: Start server
+        run: npm start &
+        
+      - name: Wait for server to start
+        run: sleep 3 && curl -s http://localhost:8080 > /dev/null || exit 1
+
       - name: Run screenshots script
         run: node scripts/screenshot.js
 
