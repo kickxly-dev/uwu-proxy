@@ -61,17 +61,22 @@ async function loadExternalRepoGames() {
       let data = null;
       let activeBaseUrl = EXTERNAL_GAMES_HTTPS_BASE_URL;
       for (const baseUrl of [EXTERNAL_GAMES_HTTPS_BASE_URL, EXTERNAL_GAMES_HTTP_BASE_URL]) {
-        const res = await fetch(externalGamesManifestUrl(baseUrl));
-        if (!res.ok) continue;
-        const parsed = await res.json();
-        if (!Array.isArray(parsed)) continue;
-        data = parsed;
-        activeBaseUrl = baseUrl;
-        break;
+        try {
+          const res = await fetch(externalGamesManifestUrl(baseUrl));
+          if (!res.ok) continue;
+          const parsed = await res.json();
+          if (!Array.isArray(parsed)) continue;
+          data = parsed;
+          activeBaseUrl = baseUrl;
+          break;
+        } catch (fetchError) {
+          console.warn(`Failed to fetch games manifest from ${baseUrl}`, fetchError);
+        }
       }
       if (!Array.isArray(data)) throw new Error("games manifest must be an array");
       externalGamesBaseUrl = activeBaseUrl;
       // Supported manifest shapes (for compatibility with simple generators): ["slug"], [{ slug: "slug" }], or [{ name: "slug" }].
+      // If both slug and name are present on an object, slug is used first.
       // Preferred shape going forward is ["slug"] for smallest payload and simplest parsing.
       slugs = data
         .map((item) => typeof item === "string" ? item : item?.slug || item?.name)
@@ -96,7 +101,7 @@ async function loadExternalRepoGames() {
     GAMES.push(...externalGames, ...retainedCustom);
   } catch (error) {
     console.warn("Failed to load external games list", error);
-    const fallbackBaseUrl = EXTERNAL_GAMES_HTTP_BASE_URL;
+    const fallbackBaseUrl = externalGamesBaseUrl || EXTERNAL_GAMES_HTTP_BASE_URL;
     GAMES.length = 0;
     GAMES.push(
       {
