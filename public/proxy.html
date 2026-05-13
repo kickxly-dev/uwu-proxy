@@ -1,151 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>uwu proxy</title>
-  <script>(function(){var s=localStorage.getItem("uwu_session");if(!s)return location.replace("/login.html");try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem("uwu_session");location.replace("/login.html");}}catch{location.replace("/login.html");}})()</script>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{min-height:100%;background:#050510;color:#f8f8f2;font-family:"DM Sans",sans-serif}
-    body{display:grid;place-items:center;padding:28px}
-    .boot{
-      width:min(520px,100%);
-      background:rgba(12,12,30,.9);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:28px;
-      padding:28px;
-      box-shadow:0 20px 70px rgba(0,0,0,.35);
-      backdrop-filter:blur(18px)
-    }
-    .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#6272a4;margin-bottom:10px}
-    h1{font-size:clamp(2rem,5vw,2.8rem);line-height:.92;margin-bottom:10px}
-    p{color:#9aa3c6;line-height:1.6;font-size:.95rem}
-    .status{
-      margin-top:22px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:14px 16px;
-      border-radius:18px;
-      background:#13132b;
-      border:1px solid rgba(255,255,255,.06)
-    }
-    .dot{
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      background:#f1fa8c;
-      box-shadow:0 0 0 8px rgba(241,250,140,.08)
-    }
-    .status.ready .dot{background:#50fa7b;box-shadow:0 0 0 8px rgba(80,250,123,.08)}
-    .status.error .dot{background:#ff5555;box-shadow:0 0 0 8px rgba(255,85,85,.08)}
-    .progress{
-      margin-top:18px;
-      height:8px;
-      width:100%;
-      overflow:hidden;
-      border-radius:999px;
-      background:rgba(255,255,255,.06)
-    }
-    .progress>span{
-      display:block;
-      width:38%;
-      height:100%;
-      border-radius:999px;
-      background:linear-gradient(90deg,#ff79c6,#bd93f9);
-      animation:load 1.2s ease-in-out infinite
-    }
-    .actions{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap}
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-height:42px;
-      padding:0 16px;
-      border-radius:12px;
-      text-decoration:none;
-      border:1px solid rgba(255,255,255,.08);
-      color:#f8f8f2;
-      background:#13132b
-    }
-    @keyframes load{
-      0%{transform:translateX(-120%)}
-      100%{transform:translateX(320%)}
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uwu Gaming — Proxy</title>
+  <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body>
-  <div class="boot">
-    <div class="eyebrow">Proxy Bootstrap</div>
-    <h1>opening site</h1>
-    <p id="boot-copy">Preparing the proxy and redirecting you into the rewritten page so websites do not get blocked inside an iframe.</p>
-    <div class="status" id="boot-status">
-      <span class="dot"></span>
-      <span id="boot-status-text">starting proxy...</span>
-    </div>
-    <div class="progress"><span></span></div>
-    <div class="actions">
-      <a class="btn" href="/">go home</a>
-    </div>
-  </div>
-
-<script type="module">
-  import "/uv/uv.bundle.js";
-  import "/uv/uv.config.js";
-
-  const status = document.getElementById("boot-status");
-  const statusText = document.getElementById("boot-status-text");
-  const copy = document.getElementById("boot-copy");
-  const params = new URLSearchParams(location.search);
-
-  function setStatus(text, state = "") {
-    statusText.textContent = text;
-    status.className = `status ${state}`.trim();
-  }
-
-  function normalizeTarget(raw) {
-    let value = decodeURIComponent(raw || "").trim();
-    if (!value) return "";
-    if (!value.includes(".") || value.includes(" ")) {
-      value = `https://www.google.com/search?q=${encodeURIComponent(value)}`;
-    } else if (!/^https?:\/\//i.test(value)) {
-      value = "https://" + value;
-    }
-    return value;
-  }
-
-  async function initUv() {
-    const registration = await navigator.serviceWorker.register("/uv/sw.js", {
-      scope: __uv$config.prefix,
-      updateViaCache: "none",
-    });
-
-    if (registration.installing || registration.waiting) {
-      await navigator.serviceWorker.ready;
-    }
-
-    return registration;
-  }
-
-  const target = normalizeTarget(params.get("url"));
-
-  if (!target) {
-    setStatus("missing destination", "error");
-    copy.textContent = "No destination URL was provided. Go back home and try another search.";
-  } else {
-    try {
-      setStatus("starting proxy...");
-      copy.textContent = "Preparing the Ultraviolet worker and sending you into the proxied page.";
-      await initUv();
-      setStatus("redirecting...", "ready");
-      location.replace(__uv$config.prefix + __uv$config.encodeUrl(target));
-    } catch (err) {
-      console.error("proxy bootstrap failed:", err);
-      setStatus("proxy failed to start", "error");
-      copy.textContent = "The proxy bootstrap hit a real startup error before handoff. If this keeps failing, the deploy may still be serving an older worker or the bare endpoint may be blocked.";
-    }
-  }
-</script>
+<body style="background:#0b0b14;display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px;color:#9090b0;font-family:sans-serif">
+  <div style="font-size:32px">🔄</div>
+  <div style="font-size:14px">loading proxy…</div>
+  <script src="/uv/uv.bundle.js"></script>
+  <script src="/uv/uv.client.js"></script>
+  <script>
+    (async function() {
+      try {
+        if (!navigator.serviceWorker.controller) {
+          await navigator.serviceWorker.register('/uv/sw.js', { scope: '/service/' });
+          await new Promise(r => { navigator.serviceWorker.addEventListener('controllerchange', r, { once: true }); });
+        }
+        var url = new URLSearchParams(location.search).get('url') || 'https://google.com';
+        if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+        location.replace(__uv$config.prefix + __uv$config.encodeUrl(url));
+      } catch(e) {
+        document.querySelector('div:last-child').textContent = 'proxy error: ' + e.message;
+      }
+    })();
+  </script>
 </body>
 </html>

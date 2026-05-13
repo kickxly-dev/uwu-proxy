@@ -1,38 +1,34 @@
-const CORS = {
-  "Access-Control-Allow-Origin":  "*",
-  "Access-Control-Allow-Headers": "*",
-  "content-type": "application/json",
-};
+export const handler = async (event) => {
+  if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
+  let body;
+  try { body = JSON.parse(event.body); } catch { return { statusCode: 400, body: JSON.stringify({ error: 'bad json' }) }; }
+  const { messages } = body;
+  if (!messages || !Array.isArray(messages)) return { statusCode: 400, body: JSON.stringify({ error: 'messages required' }) };
 
-exports.handler = async (event) => {
-  if (event.httpMethod === "OPTIONS") return { statusCode: 200, headers: CORS, body: "" };
-  if (event.httpMethod !== "POST")    return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: "method not allowed" }) };
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) return { statusCode: 503, body: JSON.stringify({ error: 'AI not configured' }) };
 
-  const key = process.env.GROQ_API_KEY;
-  if (!key) return { statusCode: 503, headers: CORS, body: JSON.stringify({ error: "AI not configured — add GROQ_API_KEY to Netlify env vars" }) };
-
-  let messages;
   try {
-    messages = JSON.parse(event.body).messages;
-    if (!Array.isArray(messages)) throw new Error();
-  } catch {
-    return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "bad request" }) };
+    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: 'You are a helpful AI assistant on Uwu Gaming, a gaming site. Be friendly and casual.' },
+          ...messages,
+        ],
+        max_tokens: 1024,
+      }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) return { statusCode: 502, body: JSON.stringify({ error: data.error?.message || 'AI error' }) };
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reply: data.choices[0].message.content }),
+    };
+  } catch (e) {
+    return { statusCode: 502, body: JSON.stringify({ error: e.message }) };
   }
-
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-    method: "POST",
-    headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        { role: "system", content: "You are a chill, helpful AI assistant on uwu proxy. Be concise and friendly. No need to be overly formal." },
-        ...messages,
-      ],
-      max_tokens: 1024,
-      temperature: 0.75,
-    }),
-  });
-
-  const data = await res.json();
-  return { statusCode: res.status, headers: CORS, body: JSON.stringify(data) };
 };
