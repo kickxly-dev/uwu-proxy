@@ -110,6 +110,33 @@ async function loadExternalRepoGames() {
     GAMES.push(...externalGames, ...retainedCustom);
   } catch (error) {
     console.warn("Failed to load external games list", error);
+    // Fallback: try to load local games manifest
+    try {
+      const localRes = await fetch("/games-local.json");
+      if (localRes.ok) {
+        const localSlugs = await localRes.json();
+        if (Array.isArray(localSlugs)) {
+          const localGames = localSlugs
+            .filter(slug => typeof slug === "string" && slug.trim())
+            .map(slug => ({
+              name: formatExternalGameName(slug),
+              url: `/games/${encodeURIComponent(slug)}`,
+              icon: "/favicon.ico",
+              tag: "casual",
+              category: "casual",
+              desc: "Local game",
+              local: true,
+            }));
+          GAMES.length = 0;
+          GAMES.push(...localGames, ...retainedCustom);
+          rebuildGameCollections();
+          return;
+        }
+      }
+    } catch (localError) {
+      console.warn("Failed to load local games manifest", localError);
+    }
+    // If local games also fail, show fallback
     const fallbackBaseUrl = externalGamesBaseUrl;
     GAMES.length = 0;
     GAMES.push(
