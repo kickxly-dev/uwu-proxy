@@ -7,6 +7,7 @@ const VERSION = "1.1.0";
 const GAMES = [];
 const EXTERNAL_GAMES_REPO_API = "https://api.github.com/repos/tw31122007/HTML-Games-V2/contents";
 const EXTERNAL_GAMES_BASE_URL = "https://tw31122007.github.io/HTML-Games-V2";
+const EXTERNAL_GAMES_ICON_URL = "https://cdn.jsdelivr.net/gh/un-pkg/npm@main/bundle-min.svg";
 const EXTERNAL_GAMES_IGNORED_DIRS = new Set([".github", ".git", "assets", "static", "css", "js", "images", "img"]);
 const EXTERNAL_GAMES_CACHE_KEY = "html_games_v2_cache";
 const EXTERNAL_GAMES_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
@@ -62,6 +63,7 @@ async function loadExternalRepoGames() {
       .map((slug) => ({
         name: formatExternalGameName(slug),
         url: `${EXTERNAL_GAMES_BASE_URL}/${encodeURIComponent(slug)}/`,
+        icon: EXTERNAL_GAMES_ICON_URL,
         tag: "casual",
         category: "casual",
         desc: "From HTML-Games-V2 collection",
@@ -77,6 +79,7 @@ async function loadExternalRepoGames() {
       {
         name: "HTML Games V2",
         url: `${EXTERNAL_GAMES_BASE_URL}/`,
+        icon: EXTERNAL_GAMES_ICON_URL,
         tag: "casual",
         category: "casual",
         desc: "Open the HTML-Games-V2 collection",
@@ -259,6 +262,13 @@ function faviconUrl(siteUrl) {
   catch { return ""; }
 }
 
+function gameIconUrl(game) {
+  const explicitIcon = typeof game?.icon === "string" ? game.icon.trim() : "";
+  if (explicitIcon) return explicitIcon;
+  const fav = faviconUrl(game?.url || "");
+  return fav || EXTERNAL_GAMES_ICON_URL;
+}
+
 // ── Recent sites ─────────────────────────
 const RECENT_KEY = "uwu_recent";
 function getRecent() {
@@ -287,8 +297,9 @@ function renderRecent() {
 
 // ── Card renderers ───────────────────────
 function quickCard(item) {
+  const icon = item?.tag === "casual" ? gameIconUrl(item) : faviconUrl(item.url);
   return `<div class="card" data-url="${escHtml(item.url)}" data-name="${escHtml(item.name)}">
-    <div class="card-favicon"><img src="${escHtml(faviconUrl(item.url))}" alt="${escHtml(item.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
+    <div class="card-favicon"><img src="${escHtml(icon)}" alt="${escHtml(item.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
     <div class="card-name">${escHtml(item.name)}</div>
     <div class="card-desc">${escHtml(item.desc)}</div>
     <div class="card-tag tag-${item.tag}">${item.tag}</div>
@@ -342,7 +353,7 @@ function renderGames(filter = "all") {
   const list = filter === "all" ? GAMES : GAMES.filter(g => g.category === filter);
   grid.innerHTML = list.map(g => `
     <div class="game-card" data-url="${escHtml(g.url)}" data-name="${escHtml(g.name)}">
-      <div class="game-thumb"><img src="${escHtml(faviconUrl(g.url))}" alt="${escHtml(g.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
+      <div class="game-thumb"><img src="${escHtml(gameIconUrl(g))}" alt="${escHtml(g.name)}" loading="lazy" onerror="this.style.opacity=0"/></div>
       <div class="game-info">
         <div class="game-name">${escHtml(g.name)}</div>
         <div class="game-desc">${escHtml(g.desc)}</div>
