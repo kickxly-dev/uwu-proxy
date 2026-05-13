@@ -124,7 +124,12 @@ function buildCustomGameHtml({ name, code }) {
         const runner = new Function(source);
         runner();
       } catch (error) {
-        document.body.innerHTML = '<pre style="padding:16px;white-space:pre-wrap">Game code error: ' + String(error && error.message ? error.message : error) + '</pre>';
+        document.body.innerHTML = '';
+        const pre = document.createElement('pre');
+        pre.style.padding = '16px';
+        pre.style.whiteSpace = 'pre-wrap';
+        pre.textContent = 'Game code error: ' + String(error && error.message ? error.message : error);
+        document.body.appendChild(pre);
       }
     })();
   </script>
