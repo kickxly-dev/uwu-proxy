@@ -95,13 +95,13 @@ async function loadExternalRepoGames() {
     GAMES.push(...externalGames, ...retainedCustom);
   } catch (error) {
     console.warn("Failed to load external games list", error);
-    externalGamesBaseUrl = EXTERNAL_GAMES_HTTP_BASE_URL;
+    const fallbackBaseUrl = EXTERNAL_GAMES_HTTP_BASE_URL;
     GAMES.length = 0;
     GAMES.push(
       {
         name: "External Games",
-        url: `${externalGamesBaseUrl}/`,
-        icon: externalGamesIconUrl(),
+        url: `${fallbackBaseUrl}/`,
+        icon: externalGamesIconUrl(fallbackBaseUrl),
         tag: "casual",
         category: "casual",
         desc: "Open the external games collection",
