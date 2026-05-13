@@ -271,7 +271,8 @@
             <option value="casual" selected>casual</option>
           </select>
         </div>
-        <textarea class="field html-editor" id="game-html" placeholder="paste the full game HTML file contents here"></textarea>
+        <input class="field" id="game-code-file" type="file" accept=".js,.mjs,.cjs,.ts,.txt,.json"/>
+        <textarea class="field html-editor" id="game-code" placeholder="paste game code here (javascript/code only — html is blocked)"></textarea>
         <div class="announce-row">
           <button class="btn-red" id="save-game-btn">save game for everyone</button>
           <div class="game-status" id="game-status"></div>
@@ -412,6 +413,10 @@
       .slice(0, 64);
   }
 
+  function isLikelyHtml(content) {
+    return /<!doctype\s+html|<html\b|<head\b|<body\b|<\/html>|<iframe\b|<script\b[^>]*>/i.test(String(content || ""));
+  }
+
   async function fetchCustomGames() {
     try {
       const res = await fetch(GAMES_ENDPOINT, { cache: "no-store" });
@@ -472,9 +477,10 @@
     const slug = slugify(slugRaw);
     const desc = document.getElementById("game-desc")?.value.trim() || "";
     const category = document.getElementById("game-category")?.value || "casual";
-    const html = document.getElementById("game-html")?.value || "";
+    const code = document.getElementById("game-code")?.value || "";
     if (!actorCode) return setGameStatus("missing session code — relogin required", "error");
-    if (!name || !slug || !html.trim()) return setGameStatus("name, slug, and html are required", "error");
+    if (!name || !slug || !code.trim()) return setGameStatus("name, slug, and code are required", "error");
+    if (isLikelyHtml(code)) return setGameStatus("html is not allowed — upload code only", "error");
 
     setGameStatus("saving...", "default");
     const btn = document.getElementById("save-game-btn");
@@ -483,7 +489,7 @@
       const res = await fetch(GAMES_ENDPOINT, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ actorCode, name, slug, desc, category, html }),
+        body: JSON.stringify({ actorCode, name, slug, desc, category, code }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "save failed");
@@ -699,6 +705,25 @@
     document.getElementById("games-section").style.display = "block";
     document.getElementById("save-game-btn")?.addEventListener("click", saveCustomGame);
     fetchCustomGames().then(renderCustomGames);
+    document.getElementById("game-code-file")?.addEventListener("change", async (e) => {
+      const file = e.target?.files?.[0];
+      if (!file) return;
+      const lower = String(file.name || "").toLowerCase();
+      if (/\.(html?|xhtml)$/.test(lower)) {
+        setGameStatus("html files are blocked — upload a code file", "error");
+        e.target.value = "";
+        return;
+      }
+      const text = await file.text();
+      if (isLikelyHtml(text)) {
+        setGameStatus("html content is blocked — upload code only", "error");
+        e.target.value = "";
+        return;
+      }
+      const codeEl = document.getElementById("game-code");
+      if (codeEl) codeEl.value = text;
+      setGameStatus(`loaded ${file.name}`, "success");
+    });
     const slugEl = document.getElementById("game-slug");
     slugEl?.addEventListener("input", () => { slugEl.dataset.manual = "1"; });
     document.getElementById("game-name")?.addEventListener("input", (e) => {

@@ -303,7 +303,7 @@ function gameIconUrl(game) {
   const explicitIcon = typeof game?.icon === "string" ? game.icon.trim() : "";
   if (explicitIcon) return explicitIcon;
   const fav = faviconUrl(game?.url || "");
-  return fav || externalGamesIconUrl();
+  return fav || "/favicon.ico";
 }
 
 // ── Recent sites ─────────────────────────
@@ -886,7 +886,6 @@ function initPresence() {
 // ── Boot ─────────────────────────────────
 (async () => {
   rebuildGameCollections();
-  await loadExternalRepoGames();
   await loadCustomGames();
   injectSidebar();
   loadTheme();
