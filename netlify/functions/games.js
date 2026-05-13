@@ -40,7 +40,7 @@ exports.handler = async (event) => {
         name: body.name,
         desc: body.desc,
         category: body.category,
-        html: body.html,
+        code: body.code,
       },
     });
     if (!result.ok) {

@@ -9,7 +9,7 @@ const DEFAULT_USERS = [
 ];
 
 const STORE_NAME = "uwu-proxy";
-const MAX_GAME_HTML_SIZE_BYTES = 500_000; // 500 KB
+const MAX_GAME_CODE_SIZE_BYTES = 500_000; // 500 KB
 const CODE_PATTERN = /^\d{5}$/;
 const KEYS = {
   codeOverrides: "auth-code-overrides",
@@ -91,6 +91,50 @@ function cleanGameMeta(meta) {
     createdBy: String(meta?.createdBy || "").trim().slice(0, 50),
     updatedAt: Number(meta?.updatedAt || Date.now()),
   };
+}
+
+function looksLikeHtmlDocument(content) {
+  return /<!doctype\s+html|<html\b|<head\b|<body\b|<\/html>|<iframe\b|<script\b[^>]*>|<\/script>/i.test(String(content || ""));
+}
+
+function buildCustomGameHtml({ name, code }) {
+  const safeTitle = String(name || "Custom Game")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+  const codeLiteral = JSON.stringify(String(code || ""));
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${safeTitle}</title>
+  <style>
+    html, body { margin: 0; width: 100%; height: 100%; background: #000; color: #fff; font-family: sans-serif; }
+    #app { width: 100%; height: 100%; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    (() => {
+      const source = ${codeLiteral};
+      try {
+        const runner = new Function(source);
+        runner();
+      } catch (error) {
+        while (document.body.firstChild) document.body.removeChild(document.body.firstChild);
+        const pre = document.createElement('pre');
+        pre.style.padding = '16px';
+        pre.style.whiteSpace = 'pre-wrap';
+        pre.textContent = 'Game code error: ' + String(error && error.message ? error.message : error);
+        document.body.appendChild(pre);
+      }
+    })();
+  </script>
+</body>
+</html>`;
 }
 
 async function getCodeOverrides({ event }) {
@@ -181,15 +225,20 @@ async function saveCustomGame({ event, actor, payload }) {
   const name = String(payload?.name || "").trim().slice(0, 80);
   const desc = String(payload?.desc || "").trim().slice(0, 180);
   const category = cleanCategory(payload?.category);
-  const html = String(payload?.html || "");
+  const code = String(payload?.code || "");
 
-  if (!slug || !name || !html.trim()) {
-    return { ok: false, status: 400, error: "slug, name, and html are required" };
+  if (!slug || !name || !code.trim()) {
+    return { ok: false, status: 400, error: "slug, name, and code are required" };
   }
-  const htmlBytes = Buffer.byteLength(html, "utf8");
-  if (htmlBytes > MAX_GAME_HTML_SIZE_BYTES) {
-    return { ok: false, status: 413, error: "html too large (max 500KB)" };
+  if (looksLikeHtmlDocument(code)) {
+    return { ok: false, status: 400, error: "html content is not allowed; upload code only" };
   }
+
+  const codeBytes = Buffer.byteLength(code, "utf8");
+  if (codeBytes > MAX_GAME_CODE_SIZE_BYTES) {
+    return { ok: false, status: 413, error: "code too large (max 500KB)" };
+  }
+  const html = buildCustomGameHtml({ name, code });
 
   const store = await getBlobStore(event);
   const now = Date.now();
