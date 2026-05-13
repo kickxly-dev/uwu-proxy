@@ -124,7 +124,7 @@ function buildCustomGameHtml({ name, code }) {
         const runner = new Function(source);
         runner();
       } catch (error) {
-        document.body.innerHTML = '';
+        document.body.textContent = '';
         const pre = document.createElement('pre');
         pre.style.padding = '16px';
         pre.style.whiteSpace = 'pre-wrap';
