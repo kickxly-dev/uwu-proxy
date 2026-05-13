@@ -50,5 +50,5 @@ jobs:
             quartz-hub \
             lunar-stack-app
           do
-            deploy_with_retry "$worker"
+            deploy_with_retry "$worker" || exit 1
           done
