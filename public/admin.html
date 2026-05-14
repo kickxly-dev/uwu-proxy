@@ -7,52 +7,394 @@
   <link rel="icon" href="/img/game-icon.svg" />
   <link rel="stylesheet" href="/css/style.css" />
   <script>(function(){var s=localStorage.getItem('uwu_session');if(!s)return location.replace('/login.html');try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem('uwu_session');location.replace('/login.html');}}catch{location.replace('/login.html');}})()</script>
+  <style>
+    /* ── Admin layout ── */
+    .admin-wrap { padding: 40px 48px 80px; max-width: 1300px; }
+
+    .admin-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 36px; gap: 16px; flex-wrap: wrap;
+    }
+    .admin-header-left h1 {
+      font-size: 36px; font-weight: 900; letter-spacing: -1px;
+      background: linear-gradient(135deg,#fff 30%,var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      line-height: 1;
+    }
+    .admin-header-left p { font-size: 14px; color: var(--text2); margin-top: 6px; }
+
+    /* ── Stat cards ── */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px; margin-bottom: 36px;
+    }
+    .stat-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 22px;
+      display: flex; flex-direction: column; gap: 4px;
+      transition: border-color .2s;
+    }
+    .stat-card:hover { border-color: var(--accent); }
+    .stat-num {
+      font-size: 32px; font-weight: 900; line-height: 1;
+      color: var(--accent);
+    }
+    .stat-label { font-size: 12px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+
+    /* ── Tabs ── */
+    .admin-tabs {
+      display: flex; gap: 4px; margin-bottom: 28px;
+      border-bottom: 1px solid var(--border); padding-bottom: 0;
+    }
+    .admin-tab {
+      padding: 10px 22px; border-radius: 10px 10px 0 0; border: none;
+      background: none; color: var(--text2);
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: color .15s, background .15s;
+      position: relative; bottom: -1px;
+    }
+    .admin-tab:hover { color: var(--text); background: var(--bg3); }
+    .admin-tab.active {
+      color: var(--text); background: var(--bg2);
+      border: 1px solid var(--border); border-bottom-color: var(--bg);
+    }
+
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* ── Section heading ── */
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; gap: 12px;
+    }
+    .section-head h2 { font-size: 18px; font-weight: 700; }
+
+    /* ── User table ── */
+    .user-table { width: 100%; border-collapse: collapse; }
+    .user-table th {
+      text-align: left; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .1em;
+      color: var(--text3); padding: 0 16px 12px;
+    }
+    .user-table td {
+      padding: 12px 16px; border-top: 1px solid var(--border);
+      font-size: 14px; vertical-align: middle;
+    }
+    .user-table tr:hover td { background: var(--bg3); }
+    .role-badge {
+      display: inline-flex; align-items: center;
+      padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+    }
+    .role-owner { background: rgba(232,25,110,.18); color: var(--accent2); border: 1px solid rgba(232,25,110,.3); }
+    .role-user  { background: rgba(255,255,255,.06); color: var(--text2); border: 1px solid var(--border); }
+    .code-display {
+      font-family: monospace; font-size: 18px; font-weight: 700;
+      letter-spacing: .15em; color: var(--text);
+    }
+    .code-input {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text); font-size: 16px;
+      font-family: monospace; font-weight: 700; letter-spacing: .15em;
+      padding: 8px 12px; width: 90px; text-align: center;
+      transition: border-color .15s;
+    }
+    .code-input:focus { outline: none; border-color: var(--accent); }
+
+    /* ── Add user form ── */
+    .add-user-form {
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+      padding: 16px; background: var(--bg3); border-radius: var(--radius);
+      margin-bottom: 20px;
+    }
+    .add-user-form input { flex: 1; min-width: 140px; }
+
+    /* ── Games management table ── */
+    .games-admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .game-admin-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      transition: border-color .2s;
+    }
+    .game-admin-card:hover { border-color: rgba(232,25,110,.4); }
+    .game-admin-thumb {
+      height: 110px; overflow: hidden; position: relative;
+    }
+    .game-admin-thumb img { width:100%;height:100%;object-fit:cover; }
+    .game-admin-thumb .thumb-fallback {
+      width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+      font-size:40px;font-weight:900;color:rgba(255,255,255,.2);
+    }
+    .game-admin-body { padding: 14px; }
+    .game-admin-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .game-admin-meta { font-size: 12px; color: var(--text2); margin-bottom: 12px; }
+    .game-admin-actions { display: flex; gap: 8px; }
+    .btn-sm {
+      flex: 1; padding: 7px 12px; border-radius: 8px; font-size: 12px;
+      font-weight: 600; border: none; cursor: pointer; transition: opacity .15s;
+    }
+    .btn-sm:hover { opacity: .8; }
+    .btn-edit { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+    .btn-del  { background: rgba(255,75,75,.15); color: #ff6b6b; border: 1px solid rgba(255,75,75,.3); }
+    .btn-play { background: rgba(232,25,110,.15); color: var(--accent2); border: 1px solid rgba(232,25,110,.3); }
+
+    /* ── Upload section ── */
+    .upload-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 700px) { .upload-layout { grid-template-columns: 1fr; } }
+    .upload-form-col { display: flex; flex-direction: column; gap: 12px; }
+    .upload-zone {
+      border: 2px dashed var(--border); border-radius: var(--radius);
+      padding: 32px; text-align: center; cursor: pointer;
+      transition: border-color .2s, background .2s;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .upload-zone:hover, .upload-zone.drag {
+      border-color: var(--accent); background: rgba(232,25,110,.05);
+    }
+    .upload-zone svg { color: var(--text3); }
+    .upload-zone p { font-size: 14px; color: var(--text2); }
+    .upload-zone .file-name { font-size: 13px; color: var(--accent2); font-weight: 600; }
+
+    .upload-info-col {
+      background: var(--bg3); border-radius: var(--radius);
+      padding: 24px; display: flex; flex-direction: column; gap: 16px;
+    }
+    .upload-info-col h3 { font-size: 14px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .08em; }
+    .info-tip {
+      display: flex; gap: 10px; align-items: flex-start;
+      font-size: 13px; color: var(--text2); line-height: 1.5;
+    }
+    .info-tip .dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+      margin-top: 6px; flex-shrink: 0;
+    }
+
+    /* ── Edit modal ── */
+    .edit-modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.7);
+      display: none; align-items: center; justify-content: center; z-index: 200;
+      backdrop-filter: blur(4px);
+    }
+    .edit-modal-overlay.open { display: flex; }
+    .edit-modal {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 18px; padding: 32px; width: 100%; max-width: 460px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .edit-modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 4px; }
+
+    /* ── DB banner ── */
+    .db-banner {
+      background: linear-gradient(135deg,rgba(232,25,110,.08),rgba(99,102,241,.08));
+      border: 1px solid rgba(232,25,110,.2);
+      border-radius: var(--radius); padding: 20px 24px;
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px;
+    }
+    .db-banner svg { flex-shrink: 0; color: var(--accent); }
+    .db-banner p { font-size: 13px; color: var(--text2); line-height: 1.5; }
+    .db-banner strong { color: var(--text); }
+
+    /* form inputs */
+    .form-label { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; display: block; }
+    .form-group { display: flex; flex-direction: column; }
+
+    /* empty state */
+    .empty-state { text-align:center; padding:48px 24px; color:var(--text2); }
+    .empty-state svg { margin-bottom:12px; opacity:.3; }
+    .empty-state p { font-size:14px; }
+  </style>
 </head>
 <body>
 <canvas id="stars-canvas"></canvas>
 <nav class="sidebar" id="sidebar"></nav>
+
 <main class="page">
-  <div class="page-hero">
-    <h1 class="page-hero-title">Admin</h1>
-    <p class="page-hero-sub">owner-only panel</p>
+  <div class="admin-wrap" id="admin-denied" style="display:none">
+    <div class="page-hero">
+      <h1 class="page-hero-title">Access Denied</h1>
+      <p class="page-hero-sub">Owner-only panel. You don't have permission to view this page.</p>
+    </div>
   </div>
-  <div class="admin-grid">
-    <!-- User Codes -->
-    <div class="admin-card">
-      <h3>User Codes</h3>
-      <div id="user-list"></div>
+
+  <div class="admin-wrap" id="admin-content">
+    <div class="admin-header">
+      <div class="admin-header-left">
+        <h1>Admin Dashboard</h1>
+        <p>Full control over Uwu Gaming</p>
+      </div>
     </div>
 
-    <!-- Upload Game -->
-    <div class="admin-card">
-      <h3>Upload Game</h3>
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <input class="setting-input" id="g-name" placeholder="Game name" />
-        <input class="setting-input" id="g-slug" placeholder="URL slug (e.g. my-game)" />
-        <select class="setting-input" id="g-cat">
+    <!-- Stat row -->
+    <div class="stat-row" id="stat-row">
+      <div class="stat-card"><div class="stat-num" id="stat-games">—</div><div class="stat-label">Total Games</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-users">—</div><div class="stat-label">Users</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-online">—</div><div class="stat-label">Online Now</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-uploads">—</div><div class="stat-label">Uploads</div></div>
+    </div>
+
+    <!-- DB Banner -->
+    <div class="db-banner">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      <p><strong>Database not connected.</strong> Connect a Supabase or Upstash database to unlock login history, play counts, analytics, and persistent user management. Add <code>DATABASE_URL</code> to your Netlify environment variables.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-tab="users">Users</button>
+      <button class="admin-tab" data-tab="games">Games</button>
+      <button class="admin-tab" data-tab="upload">Upload</button>
+    </div>
+
+    <!-- ── USERS TAB ── -->
+    <div class="tab-pane active" id="tab-users">
+      <div class="section-head">
+        <h2>User Management</h2>
+        <button class="btn-primary" id="add-user-btn" style="padding:8px 18px;font-size:13px">+ Add User</button>
+      </div>
+
+      <div class="add-user-form" id="add-user-form" style="display:none">
+        <input class="setting-input" id="new-user-name" placeholder="Username" style="flex:1;min-width:140px" />
+        <input class="setting-input" id="new-user-code" placeholder="5-digit code" maxlength="5" inputmode="numeric" style="width:120px;font-family:monospace;font-size:16px;letter-spacing:.15em" />
+        <select class="setting-input" id="new-user-role" style="width:120px">
+          <option value="user">User</option>
+          <option value="owner">Owner</option>
+        </select>
+        <button class="btn-primary" id="create-user-btn" style="padding:8px 18px;font-size:13px">Create</button>
+        <button class="btn-danger" id="cancel-add-btn" style="padding:8px 14px;font-size:13px">Cancel</button>
+      </div>
+
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+        <table class="user-table" id="user-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Role</th>
+              <th>Login Code</th>
+              <th>Last Login</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="user-table-body">
+            <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── GAMES TAB ── -->
+    <div class="tab-pane" id="tab-games">
+      <div class="section-head">
+        <h2>All Games <span id="games-count" style="font-size:14px;color:var(--text2);font-weight:500"></span></h2>
+        <div style="display:flex;gap:8px">
+          <button class="filter-btn active" data-cat="all" id="gf-all">All</button>
+          <button class="filter-btn" data-cat="action">Action</button>
+          <button class="filter-btn" data-cat="classic">Classic</button>
+          <button class="filter-btn" data-cat="casual">Casual</button>
+        </div>
+      </div>
+      <div class="games-admin-grid" id="games-admin-grid">
+        <div style="color:var(--text3);font-size:14px;padding:32px 0">loading…</div>
+      </div>
+    </div>
+
+    <!-- ── UPLOAD TAB ── -->
+    <div class="tab-pane" id="tab-upload">
+      <div class="section-head"><h2>Upload a Game</h2></div>
+      <div class="upload-layout">
+        <div class="upload-form-col">
+          <div class="form-group">
+            <label class="form-label">Game Name</label>
+            <input class="setting-input" id="g-name" placeholder="e.g. Cookie Clicker" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">URL Slug</label>
+            <input class="setting-input" id="g-slug" placeholder="e.g. cookie-clicker" />
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="form-group">
+              <label class="form-label">Category</label>
+              <select class="setting-input" id="g-cat">
+                <option value="action">Action</option>
+                <option value="io">IO</option>
+                <option value="puzzle">Puzzle</option>
+                <option value="classic">Classic</option>
+                <option value="casual" selected>Casual</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Icon URL <span style="color:var(--text3)">(optional)</span></label>
+              <input class="setting-input" id="g-icon" placeholder="https://…" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <input class="setting-input" id="g-desc" placeholder="One sentence about the game" />
+          </div>
+          <div class="upload-zone" id="upload-zone" onclick="document.getElementById('zip-input').click()">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <p id="upload-zone-text">Click or drag a .zip file here</p>
+            <input type="file" id="zip-input" accept=".zip" style="display:none" />
+          </div>
+          <button class="btn-primary" id="upload-btn">Upload Game</button>
+        </div>
+
+        <div class="upload-info-col">
+          <h3>Upload Guide</h3>
+          <div class="info-tip"><div class="dot"></div><span>Zip must contain an <strong>index.html</strong> at the root level</span></div>
+          <div class="info-tip"><div class="dot"></div><span>All assets (JS, CSS, images) should be relative paths inside the zip</span></div>
+          <div class="info-tip"><div class="dot"></div><span>Max zip size is <strong>50MB</strong> — compress assets where possible</span></div>
+          <div class="info-tip"><div class="dot"></div><span>The slug becomes the game URL: <code style="color:var(--accent2)">/games/YOUR-SLUG/</code></span></div>
+          <div class="info-tip"><div class="dot"></div><span>Icon URL is optional — use a direct image link for best results</span></div>
+          <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border)">
+            <p style="font-size:12px;color:var(--text3)">Uploaded games are stored on Netlify's file system. Connect a database for persistent storage and metadata editing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Edit game modal -->
+<div class="edit-modal-overlay" id="edit-modal">
+  <div class="edit-modal">
+    <h2>Edit Game</h2>
+    <input type="hidden" id="edit-slug" />
+    <div class="form-group">
+      <label class="form-label">Name</label>
+      <input class="setting-input" id="edit-name" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <input class="setting-input" id="edit-desc" />
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="setting-input" id="edit-cat">
           <option value="action">Action</option>
           <option value="io">IO</option>
           <option value="puzzle">Puzzle</option>
           <option value="classic">Classic</option>
-          <option value="casual" selected>Casual</option>
+          <option value="casual">Casual</option>
         </select>
-        <input class="setting-input" id="g-desc" placeholder="Short description" />
-        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('zip-input').click()">
-          <div class="upload-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-          <p id="upload-zone-text">Click or drag a .zip file here</p>
-          <input type="file" id="zip-input" accept=".zip" style="display:none" />
-        </div>
-        <button class="btn-primary" id="upload-btn">Upload Game</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Icon URL</label>
+        <input class="setting-input" id="edit-icon" placeholder="https://…" />
       </div>
     </div>
-
-    <!-- Uploaded Games -->
-    <div class="admin-card" style="grid-column:1/-1">
-      <h3>Uploaded Games</h3>
-      <div id="uploaded-list" style="display:flex;flex-direction:column;gap:10px;margin-top:8px"></div>
+    <div class="modal-actions">
+      <button class="btn-primary" id="edit-save-btn" style="flex:1">Save Changes</button>
+      <button class="btn-danger" id="edit-cancel-btn" style="padding:10px 18px">Cancel</button>
     </div>
   </div>
-</main>
+</div>
 
 <div class="statusbar">
   <div id="proxy-status" class="proxy-badge loading"><div class="proxy-dot"></div><span id="proxy-status-text">loading</span></div>
@@ -65,27 +407,73 @@
 (function() {
   var session = JSON.parse(localStorage.getItem('uwu_session') || '{}');
   if (session.role !== 'owner') {
-    document.querySelector('.page-hero-sub').textContent = 'access denied — owner only';
-    document.querySelector('.admin-grid').style.display = 'none';
+    document.getElementById('admin-content').style.display = 'none';
+    document.getElementById('admin-denied').style.display = 'block';
     return;
   }
   var adminCode = session.channel.replace('uwugaming-', '');
 
-  // ── User codes ──
+  // ── Tabs ──
+  document.querySelectorAll('.admin-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.admin-tab').forEach(function(t) { t.classList.remove('active'); });
+      document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('active'); });
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ── Stats ──
+  async function loadStats() {
+    try {
+      var [gRes, uRes, pRes] = await Promise.allSettled([
+        fetch('/games/games.json'),
+        fetch('/api/auth-codes'),
+        fetch('/api/presence'),
+      ]);
+      if (gRes.status === 'fulfilled' && gRes.value.ok) {
+        var games = await gRes.value.json();
+        document.getElementById('stat-games').textContent = games.length;
+        var uploads = games.filter(function(g) { return g.uploaded; }).length;
+        document.getElementById('stat-uploads').textContent = uploads;
+      }
+      if (uRes.status === 'fulfilled' && uRes.value.ok) {
+        var users = await uRes.value.json();
+        document.getElementById('stat-users').textContent = (users.users || []).length;
+      }
+      if (pRes.status === 'fulfilled' && pRes.value.ok) {
+        var pData = await pRes.value.json();
+        document.getElementById('stat-online').textContent = pData.count || 0;
+      }
+    } catch(e) {}
+  }
+  loadStats();
+
+  // ── Users ──
   async function loadUsers() {
     try {
       var res  = await fetch('/api/auth-codes');
       var data = await res.json();
-      var list = document.getElementById('user-list');
-      list.innerHTML = data.users.map(function(u) {
-        return '<div class="admin-user-row">' +
-          '<div><div class="admin-user-name">' + u.user + '</div><div class="admin-user-role">' + u.role + '</div></div>' +
-          '<input class="admin-code-input" id="code-' + u.user + '" value="' + u.code + '" maxlength="5" inputmode="numeric" />' +
-          '<button class="admin-save-btn" onclick="saveCode(\'' + u.user + '\')">Save</button>' +
-          '</div>';
+      var tbody = document.getElementById('user-table-body');
+      if (!data.users || !data.users.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">No users found</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.users.map(function(u) {
+        return '<tr>' +
+          '<td><strong style="font-size:14px">' + esc(u.user) + '</strong></td>' +
+          '<td><span class="role-badge role-' + esc(u.role) + '">' + esc(u.role) + '</span></td>' +
+          '<td><input class="code-input" id="code-' + esc(u.user) + '" value="' + esc(u.code) + '" maxlength="5" inputmode="numeric" /></td>' +
+          '<td style="color:var(--text3);font-size:13px">' + (u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : '—') + '</td>' +
+          '<td style="display:flex;gap:8px;align-items:center">' +
+            '<button class="btn-sm btn-edit" onclick="saveCode(\'' + esc(u.user) + '\')">Save</button>' +
+            (u.role !== 'owner' ? '<button class="btn-sm btn-del" onclick="removeUser(\'' + esc(u.user) + '\')">Remove</button>' : '') +
+          '</td>' +
+          '</tr>';
       }).join('');
-    } catch(e) {}
+    } catch(e) { console.error(e); }
   }
+  loadUsers();
 
   window.saveCode = async function(user) {
     var code = document.getElementById('code-' + user).value.trim();
@@ -100,22 +488,165 @@
     } catch(e) { window.toast && window.toast('error', 'error'); }
   };
 
-  loadUsers();
+  window.removeUser = async function(user) {
+    if (!confirm('Remove user "' + user + '"? This cannot be undone.')) return;
+    window.toast && window.toast('database required to remove users', 'error');
+  };
 
-  // ── Upload game ──
+  // Add user toggle
+  document.getElementById('add-user-btn').addEventListener('click', function() {
+    var f = document.getElementById('add-user-form');
+    f.style.display = f.style.display === 'none' ? 'flex' : 'none';
+  });
+  document.getElementById('cancel-add-btn').addEventListener('click', function() {
+    document.getElementById('add-user-form').style.display = 'none';
+  });
+  document.getElementById('create-user-btn').addEventListener('click', async function() {
+    var name = document.getElementById('new-user-name').value.trim();
+    var code = document.getElementById('new-user-code').value.trim();
+    var role = document.getElementById('new-user-role').value;
+    if (!name) { window.toast && window.toast('username required', 'error'); return; }
+    if (!/^\d{5}$/.test(code)) { window.toast && window.toast('code must be 5 digits', 'error'); return; }
+    try {
+      var res = await fetch('/api/auth-codes', { method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ actorCode: adminCode, user: name, code, role }) });
+      var d = await res.json();
+      if (!res.ok) { window.toast && window.toast(d.error || 'error', 'error'); return; }
+      window.toast && window.toast('user created!', 'success');
+      document.getElementById('new-user-name').value = '';
+      document.getElementById('new-user-code').value = '';
+      document.getElementById('add-user-form').style.display = 'none';
+      loadUsers(); loadStats();
+    } catch(e) { window.toast && window.toast('error', 'error'); }
+  });
+
+  // ── Games ──
+  var allGames = [];
+  var currentFilter = 'all';
+
+  async function loadGamesAdmin() {
+    try {
+      var res = await fetch('/games/games.json');
+      allGames = await res.json();
+      document.getElementById('games-count').textContent = '(' + allGames.length + ')';
+      renderGamesAdmin();
+    } catch(e) {}
+  }
+
+  function renderGamesAdmin() {
+    var list = currentFilter === 'all' ? allGames : allGames.filter(function(g) { return g.category === currentFilter; });
+    var grid = document.getElementById('games-admin-grid');
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4m-2-2v4"/></svg><p>No games in this category</p></div>';
+      return;
+    }
+    grid.innerHTML = list.map(function(g) {
+      var thumb = g.icon
+        ? '<img src="' + esc(g.icon) + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" alt="" /><div class="thumb-fallback" style="display:none;background:' + esc(g.color||'linear-gradient(135deg,#1a1a2e,#16213e)') + '">' + esc((g.name||'?')[0].toUpperCase()) + '</div>'
+        : '<div class="thumb-fallback" style="background:' + esc(g.color||'linear-gradient(135deg,#1a1a2e,#16213e)') + '">' + esc((g.name||'?')[0].toUpperCase()) + '</div>';
+      return '<div class="game-admin-card">' +
+        '<div class="game-admin-thumb">' + thumb + '</div>' +
+        '<div class="game-admin-body">' +
+          '<div class="game-admin-name">' + esc(g.name) + '</div>' +
+          '<div class="game-admin-meta">' + esc(g.slug) + ' · <span class="role-badge role-user" style="font-size:10px;padding:2px 7px">' + esc(g.category||'casual') + '</span></div>' +
+          '<div class="game-admin-actions">' +
+            '<button class="btn-sm btn-play" onclick="window.open(\'' + esc(g.url) + '\',\'_blank\')">▶ Play</button>' +
+            '<button class="btn-sm btn-edit" onclick="openEditModal(\'' + esc(g.slug) + '\')">Edit</button>' +
+            (g.uploaded ? '<button class="btn-sm btn-del" onclick="deleteGame(\'' + esc(g.slug) + '\')">Delete</button>' : '') +
+          '</div>' +
+        '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  loadGamesAdmin();
+
+  document.querySelectorAll('[data-cat]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('[data-cat]').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentFilter = btn.dataset.cat;
+      renderGamesAdmin();
+    });
+  });
+
+  // ── Edit modal ──
+  window.openEditModal = function(slug) {
+    var g = allGames.find(function(x) { return x.slug === slug; });
+    if (!g) return;
+    document.getElementById('edit-slug').value = slug;
+    document.getElementById('edit-name').value = g.name || '';
+    document.getElementById('edit-desc').value = g.desc || '';
+    document.getElementById('edit-cat').value  = g.category || 'casual';
+    document.getElementById('edit-icon').value = g.icon || '';
+    document.getElementById('edit-modal').classList.add('open');
+  };
+
+  document.getElementById('edit-cancel-btn').addEventListener('click', function() {
+    document.getElementById('edit-modal').classList.remove('open');
+  });
+  document.getElementById('edit-modal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+
+  document.getElementById('edit-save-btn').addEventListener('click', async function() {
+    var slug = document.getElementById('edit-slug').value;
+    var g = allGames.find(function(x) { return x.slug === slug; });
+    if (!g) return;
+    g.name     = document.getElementById('edit-name').value.trim();
+    g.desc     = document.getElementById('edit-desc').value.trim();
+    g.category = document.getElementById('edit-cat').value;
+    g.tag      = g.category;
+    g.icon     = document.getElementById('edit-icon').value.trim();
+    window.toast && window.toast('saved locally — database required for persistence', 'success');
+    document.getElementById('edit-modal').classList.remove('open');
+    renderGamesAdmin();
+  });
+
+  // ── Delete game ──
+  window.deleteGame = async function(slug) {
+    if (!confirm('Delete ' + slug + '?')) return;
+    try {
+      var res = await fetch('/api/games/delete', { method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ adminCode, slug }) });
+      var d = await res.json();
+      if (!res.ok) { window.toast && window.toast(d.error || 'error', 'error'); return; }
+      window.toast && window.toast('deleted', 'success');
+      loadGamesAdmin(); loadStats();
+    } catch(e) { window.toast && window.toast('error', 'error'); }
+  };
+
+  // ── Upload ──
   var zone  = document.getElementById('upload-zone');
-  var input = document.getElementById('zip-input');
+  var zinput = document.getElementById('zip-input');
   zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.classList.add('drag'); });
   zone.addEventListener('dragleave', function() { zone.classList.remove('drag'); });
-  zone.addEventListener('drop', function(e) { e.preventDefault(); zone.classList.remove('drag'); input.files = e.dataTransfer.files; document.getElementById('upload-zone-text').textContent = input.files[0]?.name || 'file selected'; });
-  input.addEventListener('change', function() { document.getElementById('upload-zone-text').textContent = input.files[0]?.name || 'file selected'; });
+  zone.addEventListener('drop', function(e) {
+    e.preventDefault(); zone.classList.remove('drag');
+    zinput.files = e.dataTransfer.files;
+    document.getElementById('upload-zone-text').textContent = zinput.files[0]?.name || 'file selected';
+    // auto-fill slug from filename
+    var name = zinput.files[0]?.name.replace(/\.zip$/i,'').replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+    if (name && !document.getElementById('g-slug').value) document.getElementById('g-slug').value = name;
+  });
+  zinput.addEventListener('change', function() {
+    document.getElementById('upload-zone-text').textContent = zinput.files[0]?.name || 'file selected';
+    var name = zinput.files[0]?.name.replace(/\.zip$/i,'').replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+    if (name && !document.getElementById('g-slug').value) document.getElementById('g-slug').value = name;
+  });
+  // auto-fill slug from name
+  document.getElementById('g-name').addEventListener('input', function() {
+    if (!document.getElementById('g-slug').value)
+      document.getElementById('g-slug').value = this.value.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  });
 
   document.getElementById('upload-btn').addEventListener('click', async function() {
     var name = document.getElementById('g-name').value.trim();
     var slug = document.getElementById('g-slug').value.trim();
     var cat  = document.getElementById('g-cat').value;
     var desc = document.getElementById('g-desc').value.trim();
-    var file = input.files[0];
+    var icon = document.getElementById('g-icon').value.trim();
+    var file = zinput.files[0];
     if (!name || !slug || !file) { window.toast && window.toast('name, slug and zip required', 'error'); return; }
     var fd = new FormData();
     fd.append('adminCode', adminCode);
@@ -123,54 +654,26 @@
     fd.append('slug', slug);
     fd.append('category', cat);
     fd.append('desc', desc);
+    fd.append('icon', icon);
     fd.append('zip', file);
-    document.getElementById('upload-btn').disabled = true;
-    document.getElementById('upload-btn').textContent = 'uploading…';
+    var btn = document.getElementById('upload-btn');
+    btn.disabled = true; btn.textContent = 'Uploading…';
     try {
       var res = await fetch('/api/games/upload', { method: 'POST', body: fd });
       var d   = await res.json();
       if (!res.ok) { window.toast && window.toast(d.error || 'upload failed', 'error'); return; }
       window.toast && window.toast('game uploaded!', 'success');
-      document.getElementById('g-name').value = '';
-      document.getElementById('g-slug').value = '';
-      document.getElementById('g-desc').value = '';
-      input.value = '';
+      ['g-name','g-slug','g-desc','g-icon'].forEach(function(id) { document.getElementById(id).value = ''; });
+      zinput.value = '';
       document.getElementById('upload-zone-text').textContent = 'Click or drag a .zip file here';
-      loadUploadedGames();
+      loadGamesAdmin(); loadStats();
+      // switch to games tab
+      document.querySelector('[data-tab="games"]').click();
     } catch(e) { window.toast && window.toast('error: ' + e.message, 'error'); }
-    finally { document.getElementById('upload-btn').disabled = false; document.getElementById('upload-btn').textContent = 'Upload Game'; }
+    finally { btn.disabled = false; btn.textContent = 'Upload Game'; }
   });
 
-  // ── Uploaded games list ──
-  async function loadUploadedGames() {
-    try {
-      var res   = await fetch('/api/games/list');
-      var games = await res.json();
-      var list  = document.getElementById('uploaded-list');
-      var uploaded = games.filter(function(g) { return g.uploaded; });
-      if (!uploaded.length) { list.innerHTML = '<div style="color:var(--text3);font-size:14px">no uploaded games yet</div>'; return; }
-      list.innerHTML = uploaded.map(function(g) {
-        return '<div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--bg3);border-radius:10px">' +
-          '<div style="flex:1"><div style="font-weight:600;font-size:14px">' + g.name + '</div><div style="font-size:12px;color:var(--text2)">' + g.slug + ' · ' + (g.category||'casual') + '</div></div>' +
-          '<a href="' + g.url + '" target="_blank" style="font-size:12px;color:var(--accent2)">preview</a>' +
-          '<button onclick="deleteGame(\'' + g.slug + '\')" style="background:#ff4b4b20;border:1px solid #ff4b4b40;color:#ff6b6b;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer">delete</button>' +
-          '</div>';
-      }).join('');
-    } catch(e) {}
-  }
-
-  window.deleteGame = async function(slug) {
-    if (!confirm('Delete ' + slug + '?')) return;
-    try {
-      var res = await fetch('/api/games/delete', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ adminCode, slug }) });
-      var d   = await res.json();
-      if (!res.ok) { window.toast && window.toast(d.error || 'error', 'error'); return; }
-      window.toast && window.toast('deleted', 'success');
-      loadUploadedGames();
-    } catch(e) { window.toast && window.toast('error', 'error'); }
-  };
-
-  loadUploadedGames();
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 })();
 </script>
 </body>
