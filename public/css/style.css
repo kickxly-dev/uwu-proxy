@@ -110,9 +110,62 @@ button { cursor: pointer; font-family: inherit; }
   max-width: 1400px;
 }
 
+/* ── Home hero ──────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes titleShimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(232,25,110,.5), 0 0 0 0 rgba(232,25,110,.3); }
+  50%       { box-shadow: 0 0 20px rgba(232,25,110,.8), 0 0 32px rgba(232,25,110,.2); }
+}
+@keyframes borderSpin {
+  to { --angle: 360deg; }
+}
+
+.home-hero {
+  padding: 72px 48px 8px;
+  text-align: center;
+}
+.home-hero-eyebrow {
+  font-size: 14px; font-weight: 600; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--text2);
+  margin-bottom: 14px;
+  animation: fadeUp .7s ease both;
+}
+.home-hero-title {
+  font-size: 76px; font-weight: 900; line-height: 1;
+  margin-bottom: 28px; letter-spacing: -2px;
+  background: linear-gradient(90deg, #ffffff 0%, #e8196e 30%, #ff5599 50%, #ffffff 70%, #e8196e 100%);
+  background-size: 250% auto;
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  animation: fadeUp .7s .08s ease both, titleShimmer 8s ease infinite;
+}
+.home-hero-badges {
+  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  animation: fadeUp .7s .18s ease both;
+}
+.hero-badge {
+  padding: 7px 20px; border-radius: 999px; font-size: 13px; font-weight: 700;
+  letter-spacing: .03em;
+  background: rgba(232,25,110,.18); border: 1px solid rgba(232,25,110,.55);
+  color: #fff;
+  animation: badgePulse 3s ease-in-out infinite;
+}
+.hero-badge-dim {
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+  color: var(--text2); font-weight: 600;
+  animation: none;
+}
+
 /* ── Search bar ─────────────────────────── */
 .search-section {
-  padding: 56px 48px 36px;
+  padding: 32px 48px 36px;
 }
 .search-wrap {
   display: flex; align-items: center; gap: 12px;
