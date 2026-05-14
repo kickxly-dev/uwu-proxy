@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin · Uwu Gaming</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
+  <link rel="icon" href="/img/game-icon.svg" />
   <link rel="stylesheet" href="/css/style.css" />
   <script>(function(){var s=localStorage.getItem('uwu_session');if(!s)return location.replace('/login.html');try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem('uwu_session');location.replace('/login.html');}}catch{location.replace('/login.html');}})()</script>
 </head>
@@ -38,7 +38,7 @@
         </select>
         <input class="setting-input" id="g-desc" placeholder="Short description" />
         <div class="upload-zone" id="upload-zone" onclick="document.getElementById('zip-input').click()">
-          <div class="upload-icon">📦</div>
+          <div class="upload-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
           <p id="upload-zone-text">Click or drag a .zip file here</p>
           <input type="file" id="zip-input" accept=".zip" style="display:none" />
         </div>

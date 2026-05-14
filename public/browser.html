@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browser · Uwu Gaming</title>
+  <link rel="icon" href="/img/game-icon.svg" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <script>(function(){var s=localStorage.getItem('uwu_session');if(!s)return location.replace('/login.html');try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem('uwu_session');location.replace('/login.html');}}catch{location.replace('/login.html');}})()</script>
+</head>
+<body>
+<canvas id="stars-canvas"></canvas>
+<nav class="sidebar" id="sidebar"></nav>
+
+<main class="page">
+  <div class="browser-hero">
+    <div class="browser-title">Browser</div>
+    <div class="browser-sub">Enter any URL or search — routed through the proxy</div>
+    <div class="browser-bar" id="browser-bar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <input class="browser-input" id="browser-input" placeholder="Search or go to a URL…" autocomplete="off" autofocus />
+      <button class="browser-go" id="browser-go" disabled>Go</button>
+    </div>
+  </div>
+
+  <div class="container" style="padding-bottom:60px">
+    <div class="browser-quick-title">Quick Launch</div>
+    <div class="browser-quick-grid" id="browser-quick">
+      <button class="browser-quick-btn" data-url="https://google.com"><img src="https://www.google.com/s2/favicons?domain=google.com&sz=32" alt="" />Google</button>
+      <button class="browser-quick-btn" data-url="https://youtube.com"><img src="https://www.google.com/s2/favicons?domain=youtube.com&sz=32" alt="" />YouTube</button>
+      <button class="browser-quick-btn" data-url="https://reddit.com"><img src="https://www.google.com/s2/favicons?domain=reddit.com&sz=32" alt="" />Reddit</button>
+      <button class="browser-quick-btn" data-url="https://x.com"><img src="https://www.google.com/s2/favicons?domain=x.com&sz=32" alt="" />X / Twitter</button>
+      <button class="browser-quick-btn" data-url="https://discord.com/app"><img src="https://www.google.com/s2/favicons?domain=discord.com&sz=32" alt="" />Discord</button>
+      <button class="browser-quick-btn" data-url="https://open.spotify.com"><img src="https://www.google.com/s2/favicons?domain=spotify.com&sz=32" alt="" />Spotify</button>
+      <button class="browser-quick-btn" data-url="https://netflix.com"><img src="https://www.google.com/s2/favicons?domain=netflix.com&sz=32" alt="" />Netflix</button>
+      <button class="browser-quick-btn" data-url="https://instagram.com"><img src="https://www.google.com/s2/favicons?domain=instagram.com&sz=32" alt="" />Instagram</button>
+      <button class="browser-quick-btn" data-url="https://tiktok.com"><img src="https://www.google.com/s2/favicons?domain=tiktok.com&sz=32" alt="" />TikTok</button>
+      <button class="browser-quick-btn" data-url="https://twitch.tv"><img src="https://www.google.com/s2/favicons?domain=twitch.tv&sz=32" alt="" />Twitch</button>
+      <button class="browser-quick-btn" data-url="https://github.com"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=32" alt="" />GitHub</button>
+      <button class="browser-quick-btn" data-url="https://chatgpt.com"><img src="https://www.google.com/s2/favicons?domain=chatgpt.com&sz=32" alt="" />ChatGPT</button>
+    </div>
+  </div>
+</main>
+
+<div class="statusbar">
+  <div id="proxy-status" class="proxy-badge loading"><div class="proxy-dot"></div><span id="proxy-status-text">loading</span></div>
+  <div class="statusbar-spacer"></div>
+  <span class="statusbar-version" id="footer-version"></span>
+</div>
+<div class="toast-container" id="toast-container"></div>
+<script src="/js/main.js" type="module"></script>
+<script>
+(function() {
+  var input = document.getElementById('browser-input');
+  var go    = document.getElementById('browser-go');
+  var bar   = document.getElementById('browser-bar');
+
+  input.addEventListener('input', function() {
+    go.disabled = !input.value.trim();
+  });
+
+  function browse() {
+    var val = input.value.trim();
+    if (!val) return;
+    var looksLikeUrl = /^(https?:\/\/)?[\w-]+(\.[\w-]+)+(\/\S*)?$/.test(val);
+    var url = looksLikeUrl ? val : 'https://duckduckgo.com/?q=' + encodeURIComponent(val);
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    try {
+      window.__addRecent && window.__addRecent(url);
+    } catch {}
+    location.href = '/proxy.html?url=' + encodeURIComponent(url);
+  }
+
+  go.addEventListener('click', browse);
+  input.addEventListener('keydown', function(e) { if (e.key === 'Enter') browse(); });
+
+  document.querySelectorAll('.browser-quick-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      input.value = btn.dataset.url;
+      go.disabled = false;
+      browse();
+    });
+  });
+})();
+</script>
+</body>
+</html>

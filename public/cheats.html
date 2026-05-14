@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cheats · Uwu Gaming</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
+  <link rel="icon" href="/img/game-icon.svg" />
   <link rel="stylesheet" href="/css/style.css" />
   <script>(function(){var s=localStorage.getItem('uwu_session');if(!s)return location.replace('/login.html');try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem('uwu_session');location.replace('/login.html');}}catch{location.replace('/login.html');}})()</script>
 </head>
@@ -21,20 +21,20 @@
       <iframe id="blooket-frame" src="https://www.blooket.com" allowfullscreen></iframe>
     </div>
     <div class="cheats-panel">
-      <h3>🎯 Blooket Tools</h3>
+      <h3>Blooket Tools</h3>
       <p>Open a Blooket game in the frame, then use these buttons.</p>
 
       <div style="height:1px;background:var(--border);margin:4px 0"></div>
 
-      <button class="cheat-btn" onclick="injectScript('flood')">🤖 Flood Bots</button>
-      <button class="cheat-btn" onclick="injectScript('answer')">✅ Auto Answer</button>
-      <button class="cheat-btn" onclick="injectScript('tokens')">🪙 Token Farm</button>
-      <button class="cheat-btn" onclick="injectScript('blooks')">🐟 Unlock All Blooks</button>
-      <button class="cheat-btn" onclick="injectScript('speed')">⚡ Speed Hack</button>
+      <button class="cheat-btn" onclick="injectScript('flood')">Flood Bots</button>
+      <button class="cheat-btn" onclick="injectScript('answer')">Auto Answer</button>
+      <button class="cheat-btn" onclick="injectScript('tokens')">Token Farm</button>
+      <button class="cheat-btn" onclick="injectScript('blooks')">Unlock All Blooks</button>
+      <button class="cheat-btn" onclick="injectScript('speed')">Speed Hack</button>
 
       <div style="height:1px;background:var(--border);margin:4px 0"></div>
 
-      <button class="cheat-btn danger" onclick="reloadFrame()">🔄 Reload Blooket</button>
+      <button class="cheat-btn danger" onclick="reloadFrame()">Reload</button>
 
       <div class="cheat-status" id="cheat-status">ready</div>
 

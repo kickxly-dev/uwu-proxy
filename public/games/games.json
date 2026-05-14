@@ -1,1 +1,13 @@
-[]
+[
+  { "name": "Backrooms",          "slug": "backrooms",               "url": "/games/backrooms.html",               "category": "casual",  "desc": "Explore the unsettling backrooms" },
+  { "name": "Bowmasters",         "slug": "bowmasters",              "url": "/games/bowmasters.html",              "category": "action",  "desc": "Bow and arrow battle game" },
+  { "name": "Escape Road 2",      "slug": "escape-road-2",           "url": "/games/escape-road-2.html",           "category": "action",  "desc": "Dodge police and escape the road" },
+  { "name": "FNaF: Last Breath",  "slug": "fnaf-last-breath",        "url": "/games/five-nights-at-last-breath.html", "category": "classic", "desc": "Five Nights at Freddy's fan game" },
+  { "name": "FNaF: Epstein's",    "slug": "fnaf-epsteins",           "url": "/games/five-nights-at-epsteins.html", "category": "classic", "desc": "Five Nights fan game parody" },
+  { "name": "Geometry Dash",      "slug": "geometry-dash",           "url": "/games/geometry-dash.html",           "category": "action",  "desc": "Rhythm-based platformer" },
+  { "name": "Epstein Basics",     "slug": "epstein-basics",          "url": "/games/jeffrey-epstein-basics.html",  "category": "casual",  "desc": "Baldi's Basics parody" },
+  { "name": "Minecraft 1.12.2",   "slug": "minecraft-1122",          "url": "/games/minecraft-1122.html",          "category": "classic", "desc": "Classic Minecraft in your browser" },
+  { "name": "Retro Bowl",         "slug": "retro-bowl",              "url": "/games/retro-bowl.html",              "category": "casual",  "desc": "Retro-style American football" },
+  { "name": "Retro Bowl College", "slug": "retro-bowl-college",      "url": "/games/retro-bowl-college.html",      "category": "casual",  "desc": "Retro Bowl college edition" },
+  { "name": "Who's Your Daddy",   "slug": "whos-your-daddy",         "url": "/games/whos-your-daddy.html",         "category": "casual",  "desc": "Keep your baby safe — or not" }
+]
