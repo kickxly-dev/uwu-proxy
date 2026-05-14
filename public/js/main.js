@@ -223,6 +223,7 @@ function initFilters(id, renderFn) {
 // ── Recent ───────────────────────────────
 const RECENT_KEY = "uwug_recent";
 function getRecent() { try { return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); } catch { return []; } }
+window.__addRecent = function(url) { addRecent(url); };
 function addRecent(url) {
   const list = getRecent().filter(r => r.url !== url);
   try {
