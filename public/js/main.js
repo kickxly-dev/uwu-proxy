@@ -1,6 +1,6 @@
-/* Uwu Gaming — main.js v2.2 */
+/* Uwu Gaming — main.js v2.3 */
 
-const VERSION = "2.2";
+const VERSION = "2.3";
 
 // ── Apps data ────────────────────────────
 const APPS = [
@@ -30,7 +30,7 @@ let proxyReady = false;
 // ── Games ────────────────────────────────
 async function loadGames() {
   try {
-    const res = await fetch("/api/games/list");
+    const res = await fetch("/games/games.json");
     if (!res.ok) return;
     const data = await res.json();
     if (!Array.isArray(data)) return;
