@@ -714,3 +714,39 @@ button { cursor: pointer; font-family: inherit; }
   border-color: var(--accent); color: var(--text); background: var(--bg3);
 }
 .browser-quick-btn img { width: 16px; height: 16px; object-fit: contain; }
+
+/* ── Sidebar settings button ────────────── */
+.sb-settings-btn {
+  color: var(--accent) !important;
+  border: 1px solid rgba(232,25,110,.25) !important;
+  background: rgba(232,25,110,.08) !important;
+  margin-bottom: 4px;
+}
+.sb-settings-btn:hover {
+  background: rgba(232,25,110,.2) !important;
+  border-color: var(--accent) !important;
+}
+
+/* ── Cloak presets grid ─────────────────── */
+.cloak-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.cloak-preset {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 4px;
+  color: var(--text2);
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.cloak-preset:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  background: rgba(232,25,110,.08);
+}

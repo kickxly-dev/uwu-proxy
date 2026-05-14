@@ -66,13 +66,64 @@ function setProxyStatus(state, text) {
   txt.textContent = text;
 }
 
+// ── Frame overlay ────────────────────────
+function initOverlay() {
+  if (document.getElementById("game-overlay")) {
+    // already in HTML — just ensure closeGameOverlay is global
+    if (typeof window.openGameOverlay !== "function") registerOverlayFns();
+    return;
+  }
+  const div = document.createElement("div");
+  div.id = "game-overlay";
+  div.style.cssText = "display:none;position:fixed;inset:0;z-index:9999;flex-direction:column;background:#000";
+  div.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 16px;background:#0d0d1a;border-bottom:1px solid #1e1e3a;flex-shrink:0">
+      <button onclick="closeGameOverlay()" style="background:rgba(255,255,255,.08);border:none;color:#fff;padding:6px 16px;border-radius:8px;cursor:pointer;font-family:sans-serif;font-size:13px">← back</button>
+      <span id="go-title" style="flex:1;color:#c4c9e8;font-family:sans-serif;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      <button onclick="document.getElementById('go-frame').requestFullscreen()" style="background:rgba(255,255,255,.08);border:none;color:#fff;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px">⛶</button>
+    </div>
+    <iframe id="go-frame" style="flex:1;border:none;width:100%;height:100%;display:block" allowfullscreen allow="fullscreen;autoplay;gamepad;clipboard-write" sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-downloads allow-modals allow-top-navigation-by-user-activation"></iframe>`;
+  document.body.appendChild(div);
+  registerOverlayFns();
+  window.addEventListener("popstate", () => {
+    const o = document.getElementById("game-overlay");
+    if (o && o.style.display !== "none") closeGameOverlay();
+  });
+}
+
+function registerOverlayFns() {
+  window.openGameOverlay = function(url, name) {
+    const o = document.getElementById("game-overlay");
+    if (!o) { location.href = url; return; }
+    document.getElementById("go-title").textContent = name || "";
+    document.getElementById("go-frame").src = url;
+    o.style.display = "flex";
+    document.body.style.overflow = "hidden";
+    history.pushState({ gameOverlay: true }, "", location.href);
+  };
+  window.closeGameOverlay = function() {
+    const o = document.getElementById("game-overlay");
+    if (!o) return;
+    document.getElementById("go-frame").src = "";
+    o.style.display = "none";
+    document.body.style.overflow = "";
+  };
+}
+
 // ── Navigation ───────────────────────────
 function navigate(url) {
   if (!url) return;
   if (url.startsWith("/")) { location.href = url; return; }
   if (!proxyReady) { toast("proxy not ready yet", "error"); return; }
   addRecent(url);
-  location.href = `/proxy.html?url=${encodeURIComponent(url)}`;
+  // open inside overlay so tab/URL never change
+  if (typeof window.openGameOverlay === "function") {
+    let hostname = url;
+    try { hostname = new URL(url.startsWith("http") ? url : "https://" + url).hostname.replace(/^www\./, ""); } catch {}
+    window.openGameOverlay(`/proxy.html?url=${encodeURIComponent(url)}`, hostname);
+  } else {
+    location.href = `/proxy.html?url=${encodeURIComponent(url)}`;
+  }
 }
 
 function handleSearch() {
@@ -109,6 +160,7 @@ function buildSidebar() {
     ${SIDEBAR_LINKS.map(l => `<a href="${l.path}" class="sb-btn${cur === l.path ? " active" : ""}" title="${l.title}">${l.icon}</a>`).join("")}
     ${session.role === "owner" ? `<a href="/admin.html" class="sb-btn${cur === "/admin.html" ? " active" : ""}" title="Admin"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></a>` : ""}
     <div class="sb-spacer"></div>
+    <button class="sb-btn sb-settings-btn" id="settings-btn" title="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 1 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     <div class="sb-user" id="sb-user">${session.user ? session.user.charAt(0).toUpperCase() : "?"}</div>
     <button class="sb-logout" id="logout-btn" title="Logout"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
   `;
@@ -298,14 +350,69 @@ function loadCloak() {
   }
 }
 
+const CLOAK_PRESETS = [
+  { label: "Google",       title: "Google",                              icon: "https://www.google.com/favicon.ico" },
+  { label: "Docs",         title: "Untitled document - Google Docs",     icon: "https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico" },
+  { label: "Classroom",    title: "Google Classroom",                    icon: "https://www.gstatic.com/classroom/favicon.png" },
+  { label: "Canvas",       title: "Dashboard - Canvas",                  icon: "https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" },
+  { label: "Khan",         title: "Khan Academy",                        icon: "https://cdn.kastatic.org/images/favicon.ico" },
+  { label: "Kahoot",       title: "Kahoot!",                             icon: "https://kahoot.com/favicon.ico" },
+  { label: "Quizlet",      title: "Quizlet",                             icon: "https://quizlet.com/favicon.ico" },
+  { label: "Desmos",       title: "Desmos | Graphing Calculator",        icon: "https://www.desmos.com/favicon.ico" },
+  { label: "Schoology",    title: "Schoology",                           icon: "https://asset-cdn.schoology.com/sites/all/themes/schoology_theme/favicon.ico" },
+  { label: "Blank",        title: "",                                    icon: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" },
+  { label: "Reset",        title: "Uwu Gaming",                          icon: "" },
+];
+
 function initSettings() {
+  // create modal if not already in HTML
+  if (!document.getElementById("settings-modal")) {
+    const modal = document.createElement("div");
+    modal.className = "modal-overlay";
+    modal.id = "settings-modal";
+    modal.innerHTML = `
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">Settings</div>
+          <button class="modal-close" id="modal-close-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        </div>
+        <div class="modal-body">
+          <div class="setting-group">
+            <div class="setting-label">Tab Cloak</div>
+            <div class="cloak-presets" id="cloak-presets-grid"></div>
+            <div class="setting-row"><input class="setting-input" id="cloak-title" placeholder="custom tab title" /></div>
+            <div class="setting-row"><input class="setting-input" id="cloak-icon" placeholder="custom favicon url" /></div>
+            <button class="btn-primary" id="apply-cloak-btn">Apply Cloak</button>
+          </div>
+          <div class="setting-group">
+            <div class="setting-label">Data</div>
+            <button class="btn-danger" id="clear-history-btn">Clear All History</button>
+          </div>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+  }
+
+  // populate presets
+  const grid = document.getElementById("cloak-presets-grid");
+  if (grid && !grid.children.length) {
+    grid.innerHTML = CLOAK_PRESETS.map(p =>
+      `<button class="cloak-preset" data-title="${escHtml(p.title)}" data-icon="${escHtml(p.icon)}"><span>${escHtml(p.label)}</span></button>`
+    ).join("");
+  }
+
   const overlay = document.getElementById("settings-modal");
   if (!overlay) return;
-  document.getElementById("settings-btn")?.addEventListener("click",    () => overlay.classList.add("open"));
+
+  // open via sidebar button (added by buildSidebar) and any legacy statusbar button
+  document.addEventListener("click", e => {
+    if (e.target.closest("#settings-btn")) overlay.classList.add("open");
+  });
   document.getElementById("modal-close-btn")?.addEventListener("click", () => overlay.classList.remove("open"));
   overlay.addEventListener("click", e => { if (e.target === overlay) overlay.classList.remove("open"); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && overlay.classList.contains("open")) overlay.classList.remove("open"); });
 
-  document.querySelectorAll(".cloak-preset").forEach(btn => {
+  overlay.querySelectorAll(".cloak-preset").forEach(btn => {
     btn.addEventListener("click", () => {
       document.getElementById("cloak-title").value = btn.dataset.title || "";
       document.getElementById("cloak-icon").value  = btn.dataset.icon  || "";
@@ -315,14 +422,12 @@ function initSettings() {
   document.getElementById("apply-cloak-btn")?.addEventListener("click", () => {
     const title = document.getElementById("cloak-title").value.trim();
     const icon  = document.getElementById("cloak-icon").value.trim();
-    if (title) { localStorage.setItem("uwug_cloak_title", title); document.title = title; }
-    else localStorage.removeItem("uwug_cloak_title");
-    if (icon) {
-      localStorage.setItem("uwug_cloak_icon", icon);
-      let link = document.querySelector("link[rel~='icon']");
-      if (!link) { link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
-      link.href = icon;
-    } else localStorage.removeItem("uwug_cloak_icon");
+    localStorage.setItem("uwug_cloak_title", title);
+    localStorage.setItem("uwug_cloak_icon", icon);
+    document.title = title || "Uwu Gaming";
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) { link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
+    link.href = icon || "/favicon.ico";
     overlay.classList.remove("open");
     toast("cloak applied", "success");
   });
@@ -478,6 +583,7 @@ function initPresence() {
   buildSidebar();
   loadCloak();
   showVersion();
+  initOverlay();
   initStars();
   initSearch();
   initSettings();
