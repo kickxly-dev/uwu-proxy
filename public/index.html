@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Uwu Gaming</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
+  <link rel="icon" href="/img/game-icon.svg" />
   <link rel="stylesheet" href="/css/style.css" />
   <script>(function(){var s=localStorage.getItem('uwu_session');if(!s)return location.replace('/login.html');try{var d=JSON.parse(s);if(!d.user||Date.now()-d.loginTime>7*24*60*60*1000){localStorage.removeItem('uwu_session');location.replace('/login.html');}}catch{location.replace('/login.html');}})()</script>
 </head>
@@ -71,10 +71,10 @@
       <div class="setting-group">
         <div class="setting-label">Tab Cloak</div>
         <div class="cloak-presets">
-          <button class="cloak-preset" data-title="Google" data-icon="https://www.google.com/favicon.ico"><span>🔍</span><span>Google</span></button>
-          <button class="cloak-preset" data-title="Canvas" data-icon="https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico"><span>📚</span><span>Canvas</span></button>
-          <button class="cloak-preset" data-title="Khan Academy" data-icon="https://cdn.kastatic.org/images/favicon.ico"><span>🎓</span><span>Khan</span></button>
-          <button class="cloak-preset" data-title="New Tab" data-icon=""><span>✕</span><span>Reset</span></button>
+          <button class="cloak-preset" data-title="Google" data-icon="https://www.google.com/favicon.ico"><span>Google</span></button>
+          <button class="cloak-preset" data-title="Canvas" data-icon="https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico"><span>Canvas</span></button>
+          <button class="cloak-preset" data-title="Khan Academy" data-icon="https://cdn.kastatic.org/images/favicon.ico"><span>Khan</span></button>
+          <button class="cloak-preset" data-title="New Tab" data-icon=""><span>Reset</span></button>
         </div>
         <div class="setting-row"><input class="setting-input" id="cloak-title" placeholder="custom tab title" /></div>
         <div class="setting-row"><input class="setting-input" id="cloak-icon" placeholder="custom favicon url" /></div>
@@ -94,7 +94,7 @@
   <div style="display:flex;align-items:center;gap:10px;padding:8px 16px;background:#0d0d1a;border-bottom:1px solid #1e1e3a;flex-shrink:0">
     <button onclick="closeGameOverlay()" style="background:rgba(255,255,255,.08);border:none;color:#fff;padding:6px 16px;border-radius:8px;cursor:pointer;font-family:sans-serif;font-size:13px">← back</button>
     <span id="go-title" style="flex:1;color:#c4c9e8;font-family:sans-serif;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
-    <button onclick="document.getElementById('go-frame').requestFullscreen()" style="background:rgba(255,255,255,.08);border:none;color:#fff;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px">⛶ fullscreen</button>
+    <button onclick="document.getElementById('go-frame').requestFullscreen()" style="background:rgba(255,255,255,.08);border:none;color:#fff;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px">fullscreen</button>
   </div>
   <iframe id="go-frame" style="flex:1;border:none;width:100%;height:100%;display:block" allowfullscreen allow="fullscreen;autoplay;gamepad;clipboard-write" sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-downloads allow-modals allow-top-navigation-by-user-activation"></iframe>
 </div>

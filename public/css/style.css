@@ -2,15 +2,15 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:        #0b0b14;
-  --bg2:       #10101c;
-  --bg3:       #16162a;
-  --border:    #1e1e38;
-  --accent:    #7c6fff;
-  --accent2:   #a78bfa;
-  --text:      #e8e8f0;
-  --text2:     #9090b0;
-  --text3:     #5a5a80;
+  --bg:        #0a0a0a;
+  --bg2:       #111111;
+  --bg3:       #1a1a1a;
+  --border:    #242424;
+  --accent:    #e8196e;
+  --accent2:   #ff5599;
+  --text:      #f0f0f0;
+  --text2:     #888888;
+  --text3:     #505050;
   --sidebar-w: 68px;
   --radius:    14px;
   --radius-sm: 8px;
@@ -96,7 +96,7 @@ button { cursor: pointer; font-family: inherit; }
 }
 .page-hero-title {
   font-size: 42px; font-weight: 800;
-  background: linear-gradient(135deg, #fff 30%, var(--accent2));
+  background: linear-gradient(135deg, #fff 20%, var(--accent));
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1.1; margin-bottom: 10px;
@@ -570,3 +570,63 @@ button { cursor: pointer; font-family: inherit; }
 .tag-ai          { background: #9c27b020; color: #ce93d8; }
 .tag-productivity{ background: #4caf5020; color: #a5d6a7; }
 .tag-dev         { background: #ff980020; color: #ffcc80; }
+
+/* ── Browser (Proxy) page ───────────────── */
+.browser-hero {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 55vh; padding: 60px 48px 48px; text-align: center;
+}
+.browser-title {
+  font-size: 52px; font-weight: 900;
+  background: linear-gradient(135deg, #fff 20%, var(--accent));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1; margin-bottom: 12px; letter-spacing: -1px;
+}
+.browser-sub {
+  font-size: 16px; color: var(--text2); margin-bottom: 40px;
+}
+.browser-bar {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg2); border: 2px solid var(--border);
+  border-radius: 18px; padding: 14px 20px;
+  width: 100%; max-width: 760px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.browser-bar:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(232,25,110,.12);
+}
+.browser-bar svg { color: var(--text3); flex-shrink: 0; }
+.browser-input {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text); font-size: 18px; min-width: 0;
+}
+.browser-input::placeholder { color: var(--text3); }
+.browser-go {
+  background: var(--accent); border: none; color: #fff;
+  padding: 10px 28px; border-radius: 12px; font-size: 15px; font-weight: 700;
+  flex-shrink: 0; transition: opacity .2s;
+}
+.browser-go:hover { opacity: .85; }
+.browser-go:disabled { opacity: .4; }
+.browser-quick-title {
+  font-size: 13px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: .08em;
+  text-align: center; margin-bottom: 16px;
+}
+.browser-quick-grid {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+  max-width: 720px; margin: 0 auto;
+}
+.browser-quick-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 18px;
+  color: var(--text2); font-size: 13px; font-weight: 500;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.browser-quick-btn:hover {
+  border-color: var(--accent); color: var(--text); background: var(--bg3);
+}
+.browser-quick-btn img { width: 16px; height: 16px; object-fit: contain; }
